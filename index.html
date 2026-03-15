@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArcherAI — Score par photo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --red: #C0392B;
+    --dark: #0D0D0D;
+    --dark2: #161616;
+    --dark3: #1E1E1E;
+    --border: rgba(201,168,76,0.2);
+    --text: #E8E0D0;
+    --text-muted: #8A8070;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(circle at 20% 50%, rgba(201,168,76,0.04) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(192,57,43,0.04) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .logo {
+    width: 48px; height: 48px;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .logo svg { width: 100%; height: 100%; }
+
+  .header-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .header-text p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* Session bar */
+  .session-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  .session-info { display: flex; align-items: center; gap: 32px; }
+
+  .stat { text-align: center; }
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .stat-divider {
+    width: 1px; height: 40px;
+    background: var(--border);
+  }
+
+  .btn-end-session {
+    background: transparent;
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-end-session:hover {
+    background: var(--red);
+    color: white;
+  }
+
+  /* Upload zone */
+  .upload-section {
+    animation: fadeUp 0.6s ease 0.2s both;
+    margin-bottom: 32px;
+  }
+
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: var(--dark2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upload-zone::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at center, rgba(201,168,76,0.06) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--gold);
+  }
+  .upload-zone:hover::before, .upload-zone.dragover::before {
+    opacity: 1;
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .upload-zone h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .upload-zone p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  #file-input { display: none; }
+
+  /* Preview + analyze */
+  .analyze-section {
+    display: none;
+    animation: fadeUp 0.4s ease;
+    margin-bottom: 32px;
+  }
+
+  .analyze-section.visible { display: block; }
+
+  .preview-wrapper {
+    position: relative;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .preview-img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .preview-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .preview-overlay.analyzing { opacity: 1; }
+
+  .analyzing-text {
+    text-align: center;
+  }
+
+  .spinner {
+    width: 48px; height: 48px;
+    border: 3px solid rgba(201,168,76,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  .analyzing-text p {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  .btn-analyze {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
+    color: var(--dark);
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* Result card */
+  .result-card {
+    display: none;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .result-card.visible { display: block; }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-header h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .volley-number {
+    background: var(--gold);
+    color: var(--dark);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  .arrows-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .arrow-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .arrow-badge {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    font-weight: bold;
+  }
+
+  .badge-x    { background: #FFD700; color: #000; border: 2px solid #FFD700; }
+  .badge-10   { background: #FFD700; color: #000; }
+  .badge-9    { background: #FFD700; color: #000; }
+  .badge-8    { background: #E74C3C; color: #fff; }
+  .badge-7    { background: #E74C3C; color: #fff; }
+  .badge-6    { background: #3498DB; color: #fff; }
+  .badge-5    { background: #3498DB; color: #fff; }
+  .badge-4    { background: #2ECC71; color: #fff; }
+  .badge-3    { background: #2ECC71; color: #fff; }
+  .badge-low  { background: #555; color: #fff; }
+  .badge-miss { background: transparent; color: #555; border: 2px solid #333; }
+
+  .arrow-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  .result-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+
+  .total-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .total-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .result-analysis {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.6;
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Score history */
+  .history-section {
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .history-empty {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.9rem;
+    background: var(--dark2);
+    border-radius: 12px;
+    border: 1px dashed var(--border);
+  }
+
+  .history-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    transition: border-color 0.2s;
+  }
+
+  .history-item:hover { border-color: rgba(201,168,76,0.4); }
+
+  .history-left { display: flex; align-items: center; gap: 14px; }
+
+  .history-volley {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    min-width: 60px;
+  }
+
+  .history-arrows {
+    display: flex;
+    gap: 6px;
+  }
+
+  .mini-badge {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .history-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+  }
+
+  /* Session result modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.visible { display: flex; animation: fadeIn 0.3s ease; }
+
+  .modal {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    animation: scaleIn 0.3s ease;
+  }
+
+  .modal-icon { font-size: 3rem; margin-bottom: 16px; }
+
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .modal-result {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    color: white;
+    line-height: 1;
+    margin: 16px 0;
+  }
+
+  .modal-comparison {
+    font-size: 1rem;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin: 16px 0 24px;
+    font-weight: 500;
+  }
+
+  .comparison-better {
+    background: rgba(46,204,113,0.15);
+    border: 1px solid rgba(46,204,113,0.3);
+    color: #2ECC71;
+  }
+
+  .comparison-worse {
+    background: rgba(231,76,60,0.15);
+    border: 1px solid rgba(231,76,60,0.3);
+    color: #E74C3C;
+  }
+
+  .comparison-first {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: var(--gold);
+  }
+
+  .modal-details {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 28px;
+  }
+
+  .modal-stat { text-align: center; }
+  .modal-stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--text);
+  }
+  .modal-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .btn-new-session {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
+    color: var(--dark);
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-new-session:hover { opacity: 0.9; }
+
+  /* Animations */
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp   { from { opacity: 0; transform: translateY(20px);  } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scaleIn  { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  @keyframes spin     { to { transform: rotate(360deg); } }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .session-info { gap: 16px; }
+    .stat-value { font-size: 1.5rem; }
+    .modal { padding: 24px; }
+    .modal-result { font-size: 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="22" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+        <circle cx="24" cy="24" r="15" stroke="#C9A84C" stroke-width="1" fill="none" opacity="0.5"/>
+        <circle cx="24" cy="24" r="8" stroke="#C9A84C" stroke-width="1" fill="none" opacity="0.3"/>
+        <circle cx="24" cy="24" r="2.5" fill="#C9A84C"/>
+        <line x1="24" y1="2" x2="24" y2="10" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/>
+        <line x1="23" y1="6" x2="24" y2="2" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="25" y1="6" x2="24" y2="2" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <h1>ArcherAI</h1>
+      <p>Score par intelligence artificielle</p>
+    </div>
+  </div>
+
+  <!-- Session Bar -->
+  <div class="session-bar">
+    <div class="session-info">
+      <div class="stat">
+        <div class="stat-value" id="total-score">0</div>
+        <div class="stat-label">Points total</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-value" id="volley-count">0</div>
+        <div class="stat-label">Volées</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-value" id="arrow-count">0</div>
+        <div class="stat-label">Flèches</div>
+      </div>
+    </div>
+    <button class="btn-end-session" onclick="endSession()">Terminer</button>
+  </div>
+
+  <!-- Upload Zone -->
+  <div class="upload-section">
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+         ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
+      <span class="upload-icon">🎯</span>
+      <h3>Photographier la cible</h3>
+      <p>Cliquez ou déposez une photo ici — avant de retirer les flèches !</p>
+    </div>
+    <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
+  </div>
+
+  <!-- Analyze Section -->
+  <div class="analyze-section" id="analyze-section">
+    <div class="preview-wrapper">
+      <img class="preview-img" id="preview-img" src="" alt="Cible">
+      <div class="preview-overlay" id="preview-overlay">
+        <div class="analyzing-text">
+          <div class="spinner"></div>
+          <p>Analyse en cours...</p>
+        </div>
+      </div>
+    </div>
+    <button class="btn-analyze" id="btn-analyze" onclick="analyzeImage()">
+      🏹 Analyser les points
+    </button>
+  </div>
+
+  <!-- Result Card -->
+  <div class="result-card" id="result-card">
+    <div class="result-header">
+      <h3>Résultat de la volée</h3>
+      <span class="volley-number" id="result-volley-label">Volée 1</span>
+    </div>
+    <div class="arrows-grid" id="arrows-grid"></div>
+    <div class="result-total">
+      <div>
+        <div class="total-label">Score volée</div>
+      </div>
+      <div class="total-value" id="result-total-value">0</div>
+    </div>
+    <div class="result-analysis" id="result-analysis"></div>
+  </div>
+
+  <!-- History -->
+  <div class="history-section">
+    <div class="section-title">Feuille de score</div>
+    <div id="history-container">
+      <div class="history-empty">Aucune volée encore — prenez votre première photo !</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Session End Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-icon" id="modal-icon">🏆</div>
+    <h2>Session terminée</h2>
+    <div class="modal-result" id="modal-total">0</div>
+    <div class="modal-comparison" id="modal-comparison"></div>
+    <div class="modal-details">
+      <div class="modal-stat">
+        <div class="modal-stat-value" id="modal-volleys">0</div>
+        <div class="modal-stat-label">Volées</div>
+      </div>
+      <div class="modal-stat">
+        <div class="modal-stat-value" id="modal-arrows">0</div>
+        <div class="modal-stat-label">Flèches</div>
+      </div>
+      <div class="modal-stat">
+        <div class="modal-stat-value" id="modal-avg">0</div>
+        <div class="modal-stat-label">Moy./flèche</div>
+      </div>
+    </div>
+    <button class="btn-new-session" onclick="newSession()">Nouvelle session</button>
+  </div>
+</div>
+
+<script>
+  // State
+  let session = {
+    volleys: [],
+    totalScore: 0,
+    arrowCount: 0
+  };
+
+  let currentImageBase64 = null;
+  let lastSessionScore = parseInt(localStorage.getItem('lastSessionScore') || '0');
+
+  // Drag & Drop
+  function handleDragOver(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.add('dragover');
+  }
+  function handleDragLeave(e) {
+    document.getElementById('upload-zone').classList.remove('dragover');
+  }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) processFile(file);
+  }
+  function handleFile(e) {
+    const file = e.target.files[0];
+    if (file) processFile(file);
+  }
+
+  function processFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      currentImageBase64 = dataUrl.split(',')[1];
+      document.getElementById('preview-img').src = dataUrl;
+      document.getElementById('analyze-section').classList.add('visible');
+      document.getElementById('result-card').classList.remove('visible');
+      document.getElementById('btn-analyze').disabled = false;
+      // Scroll to analyze
+      document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Analyze with Claude API
+  async function analyzeImage() {
+    if (!currentImageBase64) return;
+
+    const btn = document.getElementById('btn-analyze');
+    const overlay = document.getElementById('preview-overlay');
+    btn.disabled = true;
+    overlay.classList.add('analyzing');
+
+    try {
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: currentImageBase64 })
+      });
+
+      const result = await response.json();
+      overlay.classList.remove('analyzing');
+
+      if (result.error) {
+        alert('⚠️ ' + result.error + '\nVeuillez prendre une photo d\'une cible de tir à l\'arc.');
+        btn.disabled = false;
+        return;
+      }
+
+      displayResult(result);
+      addToSession(result);
+      updateSessionBar();
+
+    } catch (err) {
+      overlay.classList.remove('analyzing');
+      btn.disabled = false;
+      console.error(err);
+      alert('Erreur lors de l\'analyse. Vérifiez votre connexion.');
+    }
+  }
+
+  function getBadgeClass(score) {
+    if (score === 'X' || score === 10) return 'badge-x';
+    if (score === 9) return 'badge-10';
+    if (score === 8 || score === 7) return 'badge-8';
+    if (score === 6 || score === 5) return 'badge-6';
+    if (score === 4 || score === 3) return 'badge-4';
+    if (score === 2 || score === 1) return 'badge-low';
+    return 'badge-miss';
+  }
+
+  function displayResult(result) {
+    const card = document.getElementById('result-card');
+    const grid = document.getElementById('arrows-grid');
+    const totalEl = document.getElementById('result-total-value');
+    const analysisEl = document.getElementById('result-analysis');
+    const volleyLabel = document.getElementById('result-volley-label');
+
+    volleyLabel.textContent = `Volée ${session.volleys.length + 1}`;
+
+    grid.innerHTML = result.arrows.map((score, i) => `
+      <div class="arrow-score">
+        <div class="arrow-badge ${getBadgeClass(score)}">${score}</div>
+        <div class="arrow-label">F${i+1}</div>
+      </div>
+    `).join('');
+
+    totalEl.textContent = result.total;
+    analysisEl.textContent = result.analysis || '';
+
+    card.classList.add('visible');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    // Reset for next photo
+    document.getElementById('analyze-section').classList.remove('visible');
+    document.getElementById('preview-overlay').classList.remove('analyzing');
+    currentImageBase64 = null;
+    document.getElementById('file-input').value = '';
+  }
+
+  function addToSession(result) {
+    session.volleys.push(result);
+    session.totalScore += result.total;
+    session.arrowCount += result.count;
+    updateHistory();
+  }
+
+  function updateSessionBar() {
+    document.getElementById('total-score').textContent = session.totalScore;
+    document.getElementById('volley-count').textContent = session.volleys.length;
+    document.getElementById('arrow-count').textContent = session.arrowCount;
+  }
+
+  function updateHistory() {
+    const container = document.getElementById('history-container');
+    if (session.volleys.length === 0) {
+      container.innerHTML = '<div class="history-empty">Aucune volée encore — prenez votre première photo !</div>';
+      return;
+    }
+
+    container.innerHTML = `<div class="history-list">` +
+      [...session.volleys].reverse().map((v, ri) => {
+        const i = session.volleys.length - ri;
+        const arrowsHtml = v.arrows.map(s =>
+          `<div class="mini-badge ${getBadgeClass(s)}">${s}</div>`
+        ).join('');
+        return `
+          <div class="history-item">
+            <div class="history-left">
+              <div class="history-volley">VOLÉE ${i}</div>
+              <div class="history-arrows">${arrowsHtml}</div>
+            </div>
+            <div class="history-score">${v.total}</div>
+          </div>`;
+      }).join('') +
+    `</div>`;
+  }
+
+  function endSession() {
+    if (session.volleys.length === 0) {
+      alert('Aucune volée enregistrée pour cette session !');
+      return;
+    }
+
+    const total = session.totalScore;
+    const avg = session.arrowCount > 0 ? (total / session.arrowCount).toFixed(1) : 0;
+
+    document.getElementById('modal-total').textContent = total;
+    document.getElementById('modal-volleys').textContent = session.volleys.length;
+    document.getElementById('modal-arrows').textContent = session.arrowCount;
+    document.getElementById('modal-avg').textContent = avg;
+
+    const compEl = document.getElementById('modal-comparison');
+    const iconEl = document.getElementById('modal-icon');
+
+    if (lastSessionScore === 0) {
+      compEl.textContent = '🏹 Première session — référence enregistrée !';
+      compEl.className = 'modal-comparison comparison-first';
+      iconEl.textContent = '🏹';
+    } else {
+      const diff = total - lastSessionScore;
+      if (diff > 0) {
+        compEl.textContent = `🎉 Bravo ! +${diff} pts par rapport à la dernière session !`;
+        compEl.className = 'modal-comparison comparison-better';
+        iconEl.textContent = '🏆';
+      } else if (diff < 0) {
+        compEl.textContent = `💪 ${Math.abs(diff)} pts de moins — la prochaine sera meilleure !`;
+        compEl.className = 'modal-comparison comparison-worse';
+        iconEl.textContent = '🎯';
+      } else {
+        compEl.textContent = `👌 Même score — régularité parfaite !`;
+        compEl.className = 'modal-comparison comparison-first';
+        iconEl.textContent = '👌';
+      }
+    }
+
+    localStorage.setItem('lastSessionScore', total);
+    document.getElementById('modal-overlay').classList.add('visible');
+  }
+
+  function newSession() {
+    lastSessionScore = parseInt(localStorage.getItem('lastSessionScore') || '0');
+    session = { volleys: [], totalScore: 0, arrowCount: 0 };
+    updateSessionBar();
+    updateHistory();
+    document.getElementById('result-card').classList.remove('visible');
+    document.getElementById('analyze-section').classList.remove('visible');
+    document.getElementById('modal-overlay').classList.remove('visible');
+  }
+</script>
+</body>
+</html>
