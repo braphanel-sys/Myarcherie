@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArcherAI — Guide de comptage des points</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --dark: #0D0D0D;
+    --dark2: #161616;
+    --dark3: #1E1E1E;
+    --text: #E8E0D0;
+    --muted: #8A8070;
+    --red: #C0392B;
+    --green: #27AE60;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 40px; }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--gold);
+    letter-spacing: 4px;
+  }
+  .header p { color: var(--muted); font-size: 0.95rem; margin-top: 6px; }
+
+  /* Section */
+  .section { margin-bottom: 40px; }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(201,168,76,0.2);
+  }
+
+  /* Target diagram */
+  .target-container {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .target-svg-wrap {
+    flex: 0 0 auto;
+    background: var(--dark3);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .zones-list {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .zone-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--dark3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .zone-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .zone-info { flex: 1; }
+  .zone-name { font-size: 0.85rem; font-weight: 500; }
+  .zone-desc { font-size: 0.75rem; color: var(--muted); }
+
+  .zone-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: var(--gold);
+  }
+
+  /* App mockup */
+  .mockup {
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .mockup-header {
+    background: var(--dark3);
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mockup-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  .volley-badge {
+    background: var(--gold);
+    color: var(--dark);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.8rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  .mockup-body { padding: 20px; }
+
+  /* Photo simulation */
+  .photo-sim {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Arrows grid */
+  .arrows-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .arrow-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .arrow-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    font-weight: bold;
+    position: relative;
+  }
+
+  .arrow-badge.pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .badge-x    { background: #FFD700; color: #000; box-shadow: 0 0 12px rgba(255,215,0,0.5); }
+  .badge-10   { background: #FFD700; color: #000; }
+  .badge-9    { background: #F0C840; color: #000; }
+  .badge-8    { background: #C0392B; color: #fff; }
+  .badge-7    { background: #E74C3C; color: #fff; }
+  .badge-6    { background: #2980B9; color: #fff; }
+  .badge-5    { background: #3498DB; color: #fff; }
+  .badge-4    { background: #27AE60; color: #fff; }
+  .badge-3    { background: #2ECC71; color: #fff; }
+  .badge-low  { background: #555; color: #fff; }
+  .badge-miss { background: transparent; color: #555; border: 2px solid #333; }
+
+  .arrow-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 1px; }
+
+  /* Total */
+  .total-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+  }
+
+  .total-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+  .total-value { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--gold); }
+
+  .analysis-text {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.6;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* Annotation arrows showing zones */
+  .annotation {
+    background: var(--dark3);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .annotation-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .annotation-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.85rem;
+  }
+  .annotation-row:last-child { border-bottom: none; }
+
+  .ann-color {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .ann-zone { flex: 1; color: var(--text); }
+  .ann-score { color: var(--gold); font-family: 'Bebas Neue', sans-serif; font-size: 1rem; }
+
+  /* Tips */
+  .tips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 500px) {
+    .tips { grid-template-columns: 1fr; }
+    .target-container { flex-direction: column; }
+  }
+
+  .tip {
+    background: var(--dark3);
+    border-radius: 12px;
+    padding: 16px;
+    border-left: 3px solid var(--gold);
+  }
+
+  .tip-icon { font-size: 1.5rem; margin-bottom: 8px; }
+  .tip-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 4px; }
+  .tip-text { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+  .tip.bad { border-left-color: var(--red); }
+  .tip.good { border-left-color: var(--green); }
+
+  /* Step by step */
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--dark3);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    line-height: 1;
+    min-width: 32px;
+  }
+
+  .step-content h4 { font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; }
+  .step-content p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+  .tag {
+    display: inline-block;
+    background: rgba(201,168,76,0.15);
+    color: var(--gold);
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🎯 Guide de scoring</h1>
+    <p>Comment ArcherAI compte les points sur vos photos</p>
+  </div>
+
+  <!-- Section 1 : Zones de la cible -->
+  <div class="section">
+    <div class="section-title">01 — Les zones de la cible WA</div>
+    <div class="target-container">
+      <div class="target-svg-wrap">
+        <!-- SVG cible WA avec annotations -->
+        <svg width="220" height="220" viewBox="0 0 220 220">
+          <!-- Blanc zone 1-2 -->
+          <circle cx="110" cy="110" r="105" fill="white" stroke="#ccc" stroke-width="1"/>
+          <circle cx="110" cy="110" r="84" fill="white" stroke="#ccc" stroke-width="1"/>
+          <!-- Noir zone 3-4 -->
+          <circle cx="110" cy="110" r="63" fill="#1a1a1a"/>
+          <circle cx="110" cy="110" r="42" fill="#1a1a1a" stroke="#333" stroke-width="0.5"/>
+          <!-- Bleu zone 5-6 -->
+          <circle cx="110" cy="110" r="63" fill="#2980B9"/>
+          <circle cx="110" cy="110" r="52.5" fill="#2980B9" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+          <!-- Rouge zone 7-8 -->
+          <circle cx="110" cy="110" r="42" fill="#C0392B"/>
+          <circle cx="110" cy="110" r="31.5" fill="#C0392B" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+          <!-- Jaune zone 9-10 -->
+          <circle cx="110" cy="110" r="21" fill="#FFD700"/>
+          <!-- X centre -->
+          <circle cx="110" cy="110" r="10.5" fill="#FFD700" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+          <text x="110" y="114" text-anchor="middle" fill="rgba(0,0,0,0.5)" font-size="7" font-family="sans-serif">X</text>
+
+          <!-- Numéros -->
+          <text x="110" y="100" text-anchor="middle" fill="rgba(0,0,0,0.6)" font-size="7">10</text>
+          <text x="127" y="114" text-anchor="middle" fill="rgba(0,0,0,0.4)" font-size="6">9</text>
+          <text x="144" y="114" text-anchor="middle" fill="white" font-size="6">8</text>
+          <text x="156" y="114" text-anchor="middle" fill="white" font-size="6">7</text>
+          <text x="170" y="114" text-anchor="middle" fill="white" font-size="6">6</text>
+          <text x="181" y="114" text-anchor="middle" fill="#333" font-size="6">5</text>
+          <text x="192" y="114" text-anchor="middle" fill="#333" font-size="6">4</text>
+
+          <!-- Flèches simulées avec labels -->
+          <!-- F1 : X -->
+          <circle cx="108" cy="108" r="4" fill="#333" stroke="white" stroke-width="1.5"/>
+          <line x1="108" y1="108" x2="80" y2="60" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="75" y="55" fill="#FFD700" font-size="9" font-family="Bebas Neue, sans-serif">X</text>
+
+          <!-- F2 : 9 -->
+          <circle cx="118" cy="106" r="4" fill="#333" stroke="white" stroke-width="1.5"/>
+          <line x1="118" y1="106" x2="150" y2="65" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="147" y="60" fill="#FFD700" font-size="9" font-family="Bebas Neue, sans-serif">9</text>
+
+          <!-- F3 : 8 -->
+          <circle cx="128" cy="118" r="4" fill="#333" stroke="white" stroke-width="1.5"/>
+          <line x1="128" y1="118" x2="175" y2="90" stroke="#666" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="173" y="86" fill="#FFD700" font-size="9" font-family="Bebas Neue, sans-serif">8</text>
+
+          <!-- F4 : 7 -->
+          <circle cx="104" cy="125" r="4" fill="#333" stroke="white" stroke-width="1.5"/>
+          <line x1="104" y1="125" x2="80" y2="170" stroke="#666" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="76" y="180" fill="#FFD700" font-size="9" font-family="Bebas Neue, sans-serif">7</text>
+
+          <!-- F5 : 6 -->
+          <circle cx="152" cy="110" r="4" fill="#333" stroke="white" stroke-width="1.5"/>
+          <line x1="152" y1="110" x2="195" y2="145" stroke="#444" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="192" y="155" fill="#FFD700" font-size="9" font-family="Bebas Neue, sans-serif">6</text>
+
+          <!-- F6 : M -->
+          <circle cx="215" cy="190" r="4" fill="#333" stroke="#555" stroke-width="1.5"/>
+          <line x1="215" y1="190" x2="215" y2="165" stroke="#444" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="210" y="160" fill="#C0392B" font-size="9" font-family="Bebas Neue, sans-serif">M</text>
+        </svg>
+      </div>
+
+      <div class="zones-list">
+        <div class="zone-item">
+          <div class="zone-dot" style="background:#FFD700; box-shadow: 0 0 8px rgba(255,215,0,0.4)"></div>
+          <div class="zone-info">
+            <div class="zone-name">Jaune — Or</div>
+            <div class="zone-desc">Centre de la cible</div>
+          </div>
+          <div class="zone-score">X / 10 / 9</div>
+        </div>
+        <div class="zone-item">
+          <div class="zone-dot" style="background:#C0392B"></div>
+          <div class="zone-info">
+            <div class="zone-name">Rouge</div>
+            <div class="zone-desc">Anneau intermédiaire</div>
+          </div>
+          <div class="zone-score">8 / 7</div>
+        </div>
+        <div class="zone-item">
+          <div class="zone-dot" style="background:#2980B9"></div>
+          <div class="zone-info">
+            <div class="zone-name">Bleu</div>
+            <div class="zone-desc">Anneau extérieur coloré</div>
+          </div>
+          <div class="zone-score">6 / 5</div>
+        </div>
+        <div class="zone-item">
+          <div class="zone-dot" style="background:#1a1a1a; border: 1px solid #444"></div>
+          <div class="zone-info">
+            <div class="zone-name">Noir</div>
+            <div class="zone-desc">Zone sombre</div>
+          </div>
+          <div class="zone-score">4 / 3</div>
+        </div>
+        <div class="zone-item">
+          <div class="zone-dot" style="background:#ccc"></div>
+          <div class="zone-info">
+            <div class="zone-name">Blanc</div>
+            <div class="zone-desc">Bord de cible</div>
+          </div>
+          <div class="zone-score">2 / 1</div>
+        </div>
+        <div class="zone-item">
+          <div class="zone-dot" style="background:transparent; border: 2px solid #555"></div>
+          <div class="zone-info">
+            <div class="zone-name">Hors cible</div>
+            <div class="zone-desc">Flèche ratée</div>
+          </div>
+          <div class="zone-score" style="color:#C0392B">M</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2 : Résultat app -->
+  <div class="section">
+    <div class="section-title">02 — Ce que l'app affiche</div>
+    <div class="mockup">
+      <div class="mockup-header">
+        <div class="mockup-title">Résultat de la volée</div>
+        <div class="volley-badge">Volée 3</div>
+      </div>
+      <div class="mockup-body">
+
+        <!-- Annotation zones -->
+        <div class="annotation">
+          <div class="annotation-title">DÉTECTION PAR L'IA</div>
+          <div class="annotation-row">
+            <div class="ann-color" style="background:#FFD700"></div>
+            <div class="ann-zone">F1 — Jaune centre (très proche du X)</div>
+            <div class="ann-score">X</div>
+          </div>
+          <div class="annotation-row">
+            <div class="ann-color" style="background:#F0C840"></div>
+            <div class="ann-zone">F2 — Jaune extérieur</div>
+            <div class="ann-score">9</div>
+          </div>
+          <div class="annotation-row">
+            <div class="ann-color" style="background:#C0392B"></div>
+            <div class="ann-zone">F3 — Rouge intérieur</div>
+            <div class="ann-score">8</div>
+          </div>
+          <div class="annotation-row">
+            <div class="ann-color" style="background:#E74C3C"></div>
+            <div class="ann-zone">F4 — Rouge extérieur</div>
+            <div class="ann-score">7</div>
+          </div>
+          <div class="annotation-row">
+            <div class="ann-color" style="background:#2980B9"></div>
+            <div class="ann-zone">F5 — Bleu</div>
+            <div class="ann-score">6</div>
+          </div>
+          <div class="annotation-row">
+            <div class="ann-color" style="background:transparent; border:1px solid #555"></div>
+            <div class="ann-zone">F6 — Hors cible</div>
+            <div class="ann-score" style="color:#C0392B">M</div>
+          </div>
+        </div>
+
+        <!-- Badges -->
+        <div class="arrows-grid">
+          <div class="arrow-score">
+            <div class="arrow-badge badge-x pulse">X</div>
+            <div class="arrow-label">F1</div>
+          </div>
+          <div class="arrow-score">
+            <div class="arrow-badge badge-9">9</div>
+            <div class="arrow-label">F2</div>
+          </div>
+          <div class="arrow-score">
+            <div class="arrow-badge badge-8">8</div>
+            <div class="arrow-label">F3</div>
+          </div>
+          <div class="arrow-score">
+            <div class="arrow-badge badge-7">7</div>
+            <div class="arrow-label">F4</div>
+          </div>
+          <div class="arrow-score">
+            <div class="arrow-badge badge-6">6</div>
+            <div class="arrow-label">F5</div>
+          </div>
+          <div class="arrow-score">
+            <div class="arrow-badge badge-miss">M</div>
+            <div class="arrow-label">F6</div>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="total-bar">
+          <div class="total-label">Score volée</div>
+          <div class="total-value">40 / 60</div>
+        </div>
+
+        <div class="analysis-text">
+          💡 Bon groupe centré avec un X et trois flèches dans le rouge, mais une flèche hors cible pénalise le score. La dispersion verticale est à travailler.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3 : Étapes -->
+  <div class="section">
+    <div class="section-title">03 — Comment utiliser l'app</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>📸 Photographiez la cible</h4>
+          <p>Avant de retirer les flèches ! De face, à 1-2m de distance, bonne lumière.</p>
+          <span class="tag">IMPORTANT : avant de retirer les flèches !</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>🤖 L'IA analyse la photo</h4>
+          <p>Claude identifie chaque flèche, détecte sa zone d'impact et calcule le score.</p>
+          <span class="tag">~5 secondes d'analyse</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>📋 Vérifiez le résultat</h4>
+          <p>Les scores s'affichent avec les badges colorés. Vous pouvez corriger manuellement si besoin.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>🏁 Terminez la session</h4>
+          <p>Cliquez "Terminer" pour voir votre total et la comparaison avec la dernière session.</p>
+          <span class="tag">📈 Bravo +15 pts !</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4 : Conseils photos -->
+  <div class="section">
+    <div class="section-title">04 — Conseils pour de bonnes photos</div>
+    <div class="tips">
+      <div class="tip good">
+        <div class="tip-icon">✅</div>
+        <div class="tip-title">Photo de face</div>
+        <div class="tip-text">Centrez la cible dans le cadre, tenez-vous droit devant.</div>
+      </div>
+      <div class="tip good">
+        <div class="tip-icon">✅</div>
+        <div class="tip-title">Bonne lumière</div>
+        <div class="tip-text">En extérieur ou sous éclairage salle. Évitez le contre-jour.</div>
+      </div>
+      <div class="tip good">
+        <div class="tip-icon">✅</div>
+        <div class="tip-title">1 à 2m de distance</div>
+        <div class="tip-text">Assez proche pour voir les impacts, assez loin pour toute la cible.</div>
+      </div>
+      <div class="tip bad">
+        <div class="tip-icon">❌</div>
+        <div class="tip-title">Évitez les biais</div>
+        <div class="tip-text">Photo de côté ou en diagonale — les flèches cachent les zones.</div>
+      </div>
+      <div class="tip bad">
+        <div class="tip-icon">❌</div>
+        <div class="tip-title">Évitez le flou</div>
+        <div class="tip-text">Tenez fermement le téléphone ou attendez que les flèches arrêtent de bouger.</div>
+      </div>
+      <div class="tip bad">
+        <div class="tip-icon">❌</div>
+        <div class="tip-title">Ne retirez pas les flèches</div>
+        <div class="tip-text">L'analyse doit se faire AVANT de retirer les flèches de la cible !</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
