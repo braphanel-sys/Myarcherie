@@ -28,7 +28,6 @@
     overflow-x: hidden;
   }
 
-  /* Background texture */
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -46,21 +45,15 @@
     z-index: 1;
   }
 
-  /* Header */
   .header {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 48px;
+    margin-bottom: 32px;
     animation: fadeDown 0.6s ease;
   }
 
-  .logo {
-    width: 48px; height: 48px;
-    position: relative;
-    flex-shrink: 0;
-  }
-
+  .logo { width: 48px; height: 48px; flex-shrink: 0; }
   .logo svg { width: 100%; height: 100%; }
 
   .header-text h1 {
@@ -79,6 +72,35 @@
     margin-top: 2px;
   }
 
+  /* Mode toggle */
+  .mode-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s ease 0.05s both;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--dark3);
+    color: var(--text-muted);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .mode-btn.active {
+    background: var(--gold);
+    color: var(--dark);
+    border-color: var(--gold);
+  }
+
   /* Session bar */
   .session-bar {
     display: flex;
@@ -88,30 +110,16 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 16px 24px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     animation: fadeUp 0.6s ease 0.1s both;
   }
 
-  .session-info { display: flex; align-items: center; gap: 32px; }
+  .session-info { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 
   .stat { text-align: center; }
-  .stat-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem;
-    color: var(--gold);
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-  }
-
-  .stat-divider {
-    width: 1px; height: 40px;
-    background: var(--border);
-  }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--gold); line-height: 1; }
+  .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
+  .stat-divider { width: 1px; height: 40px; background: var(--border); }
 
   .btn-end-session {
     background: transparent;
@@ -126,16 +134,116 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-  .btn-end-session:hover {
-    background: var(--red);
-    color: white;
+  .btn-end-session:hover { background: var(--red); color: white; }
+
+  /* Profils archers V3 */
+  .archers-config {
+    display: none;
+    gap: 12px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .archers-config.visible { display: flex; flex-direction: column; }
+
+  .archer-card {
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+  }
+
+  .archer-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .archer-card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  .archer-name-input {
+    width: 100%;
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    outline: none;
+  }
+
+  .archer-name-input:focus { border-color: var(--gold); }
+
+  .colors-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+
+  .colors-grid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .color-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    background: var(--dark2);
+    color: var(--text-muted);
+  }
+
+  .color-chip.selected {
+    border-color: var(--gold);
+    color: var(--text);
+  }
+
+  .color-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .selected-colors-preview {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    align-items: center;
+    min-height: 24px;
+  }
+
+  .preview-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+
+  .preview-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
   }
 
   /* Upload zone */
-  .upload-section {
-    animation: fadeUp 0.6s ease 0.2s both;
-    margin-bottom: 32px;
-  }
+  .upload-section { margin-bottom: 24px; animation: fadeUp 0.6s ease 0.2s both; }
 
   .upload-zone {
     border: 2px dashed var(--border);
@@ -157,18 +265,9 @@
     transition: opacity 0.3s;
   }
 
-  .upload-zone:hover, .upload-zone.dragover {
-    border-color: var(--gold);
-  }
-  .upload-zone:hover::before, .upload-zone.dragover::before {
-    opacity: 1;
-  }
-
-  .upload-icon {
-    font-size: 3rem;
-    margin-bottom: 16px;
-    display: block;
-  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--gold); }
+  .upload-zone:hover::before, .upload-zone.dragover::before { opacity: 1; }
+  .upload-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
 
   .upload-zone h3 {
     font-family: 'Bebas Neue', sans-serif;
@@ -178,21 +277,11 @@
     margin-bottom: 8px;
   }
 
-  .upload-zone p {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    font-style: italic;
-  }
-
+  .upload-zone p { color: var(--text-muted); font-size: 0.9rem; font-style: italic; }
   #file-input { display: none; }
 
-  /* Preview + analyze */
-  .analyze-section {
-    display: none;
-    animation: fadeUp 0.4s ease;
-    margin-bottom: 32px;
-  }
-
+  /* Analyze section */
+  .analyze-section { display: none; animation: fadeUp 0.4s ease; margin-bottom: 24px; }
   .analyze-section.visible { display: block; }
 
   .preview-wrapper {
@@ -204,29 +293,16 @@
     margin-bottom: 16px;
   }
 
-  .preview-img {
-    width: 100%;
-    max-height: 400px;
-    object-fit: contain;
-    display: block;
-  }
+  .preview-img { width: 100%; max-height: 400px; object-fit: contain; display: block; }
 
   .preview-overlay {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background: rgba(0,0,0,0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s;
   }
 
   .preview-overlay.analyzing { opacity: 1; }
-
-  .analyzing-text {
-    text-align: center;
-  }
 
   .spinner {
     width: 48px; height: 48px;
@@ -237,12 +313,8 @@
     margin: 0 auto 16px;
   }
 
-  .analyzing-text p {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
-    letter-spacing: 2px;
-    color: var(--gold);
-  }
+  .analyzing-text { text-align: center; }
+  .analyzing-text p { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--gold); }
 
   .btn-analyze {
     width: 100%;
@@ -261,69 +333,89 @@
   .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
   .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-  /* Result card */
+  /* Result card — mode solo */
   .result-card {
     display: none;
     background: var(--dark3);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 28px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     animation: fadeUp 0.4s ease;
   }
 
   .result-card.visible { display: block; }
 
   .result-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
   }
 
   .result-header h3 {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    color: var(--text-muted);
-    text-transform: uppercase;
+    font-size: 1rem; letter-spacing: 2px;
+    color: var(--text-muted); text-transform: uppercase;
   }
 
   .volley-number {
-    background: var(--gold);
-    color: var(--dark);
+    background: var(--gold); color: var(--dark);
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.9rem;
-    padding: 4px 12px;
-    border-radius: 20px;
-    letter-spacing: 1px;
+    font-size: 0.9rem; padding: 4px 12px;
+    border-radius: 20px; letter-spacing: 1px;
   }
 
-  .arrows-grid {
-    display: flex;
+  /* Result duo — mode V3 */
+  .result-duo {
+    display: none;
     gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.4s ease;
   }
 
-  .arrow-score {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+  .result-duo.visible { display: flex; flex-direction: column; }
+
+  .duo-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
   }
+
+  .duo-archer-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem; letter-spacing: 2px;
+    color: var(--text);
+  }
+
+  .duo-colors {
+    display: flex; gap: 5px; align-items: center;
+  }
+
+  .duo-color-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .duo-card {
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  /* Arrows grid */
+  .arrows-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+
+  .arrow-score { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 
   .arrow-badge {
     width: 48px; height: 48px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.3rem;
-    font-weight: bold;
+    font-size: 1.3rem; font-weight: bold;
   }
 
   .badge-x    { background: #FFD700; color: #000; border: 2px solid #FFD700; }
@@ -338,91 +430,51 @@
   .badge-low  { background: #555; color: #fff; }
   .badge-miss { background: transparent; color: #555; border: 2px solid #333; }
 
-  .arrow-label {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-  }
+  .arrow-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; }
 
   .result-total {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
     background: rgba(201,168,76,0.08);
     border: 1px solid rgba(201,168,76,0.2);
     border-radius: 10px;
-    padding: 16px 20px;
-    margin-bottom: 16px;
+    padding: 16px 20px; margin-bottom: 16px;
   }
 
-  .total-label {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .total-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.5rem;
-    color: var(--gold);
-    line-height: 1;
-  }
+  .total-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+  .total-value { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold); line-height: 1; }
 
   .result-analysis {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    font-style: italic;
-    line-height: 1.6;
-    padding: 12px 0;
-    border-top: 1px solid var(--border);
+    font-size: 0.9rem; color: var(--text-muted);
+    font-style: italic; line-height: 1.6;
+    padding: 12px 0; border-top: 1px solid var(--border);
   }
 
-  /* Score history */
-  .history-section {
-    animation: fadeUp 0.6s ease 0.3s both;
-  }
+  /* History */
+  .history-section { animation: fadeUp 0.6s ease 0.3s both; }
 
   .section-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 3px;
-    color: var(--text-muted);
-    text-transform: uppercase;
+    font-size: 1rem; letter-spacing: 3px;
+    color: var(--text-muted); text-transform: uppercase;
     margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    display: flex; align-items: center; gap: 12px;
   }
 
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
   .history-empty {
-    text-align: center;
-    padding: 32px;
-    color: var(--text-muted);
-    font-style: italic;
-    font-size: 0.9rem;
-    background: var(--dark2);
-    border-radius: 12px;
+    text-align: center; padding: 32px;
+    color: var(--text-muted); font-style: italic; font-size: 0.9rem;
+    background: var(--dark2); border-radius: 12px;
     border: 1px dashed var(--border);
   }
 
   .history-list { display: flex; flex-direction: column; gap: 10px; }
 
   .history-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--dark2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--dark2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 20px;
     transition: border-color 0.2s;
   }
 
@@ -432,147 +484,78 @@
 
   .history-volley {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    min-width: 60px;
+    font-size: 0.85rem; color: var(--text-muted);
+    letter-spacing: 1px; min-width: 60px;
   }
 
-  .history-arrows {
-    display: flex;
-    gap: 6px;
-  }
+  .history-arrows { display: flex; gap: 6px; }
 
   .mini-badge {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 600;
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 600;
   }
 
-  .history-score {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
-    color: var(--gold);
-  }
+  .history-score { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--gold); }
 
-  /* Session result modal */
+  /* Modal */
   .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
+    display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.85);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    backdrop-filter: blur(4px);
+    z-index: 100; align-items: center; justify-content: center;
+    padding: 24px; backdrop-filter: blur(4px);
   }
 
   .modal-overlay.visible { display: flex; animation: fadeIn 0.3s ease; }
 
   .modal {
-    background: var(--dark2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 40px;
-    max-width: 480px;
-    width: 100%;
-    text-align: center;
-    animation: scaleIn 0.3s ease;
+    background: var(--dark2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 40px;
+    max-width: 480px; width: 100%;
+    text-align: center; animation: scaleIn 0.3s ease;
   }
 
   .modal-icon { font-size: 3rem; margin-bottom: 16px; }
 
   .modal h2 {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem;
-    letter-spacing: 3px;
-    color: var(--gold);
-    margin-bottom: 8px;
+    font-size: 2rem; letter-spacing: 3px;
+    color: var(--gold); margin-bottom: 8px;
   }
 
-  .modal-result {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 4rem;
-    color: white;
-    line-height: 1;
-    margin: 16px 0;
-  }
+  .modal-result { font-family: 'Bebas Neue', sans-serif; font-size: 4rem; color: white; line-height: 1; margin: 16px 0; }
 
   .modal-comparison {
-    font-size: 1rem;
-    padding: 12px 20px;
-    border-radius: 8px;
-    margin: 16px 0 24px;
-    font-weight: 500;
+    font-size: 1rem; padding: 12px 20px;
+    border-radius: 8px; margin: 16px 0 24px; font-weight: 500;
   }
 
-  .comparison-better {
-    background: rgba(46,204,113,0.15);
-    border: 1px solid rgba(46,204,113,0.3);
-    color: #2ECC71;
-  }
+  .comparison-better { background: rgba(46,204,113,0.15); border: 1px solid rgba(46,204,113,0.3); color: #2ECC71; }
+  .comparison-worse  { background: rgba(231,76,60,0.15);  border: 1px solid rgba(231,76,60,0.3);  color: #E74C3C; }
+  .comparison-first  { background: rgba(201,168,76,0.1);  border: 1px solid rgba(201,168,76,0.2); color: var(--gold); }
 
-  .comparison-worse {
-    background: rgba(231,76,60,0.15);
-    border: 1px solid rgba(231,76,60,0.3);
-    color: #E74C3C;
-  }
-
-  .comparison-first {
-    background: rgba(201,168,76,0.1);
-    border: 1px solid rgba(201,168,76,0.2);
-    color: var(--gold);
-  }
-
-  .modal-details {
-    display: flex;
-    justify-content: center;
-    gap: 32px;
-    margin-bottom: 28px;
-  }
-
+  .modal-details { display: flex; justify-content: center; gap: 32px; margin-bottom: 28px; }
   .modal-stat { text-align: center; }
-  .modal-stat-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
-    color: var(--text);
-  }
-  .modal-stat-label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
+  .modal-stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--text); }
+  .modal-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
   .btn-new-session {
     width: 100%;
     background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
-    color: var(--dark);
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
-    letter-spacing: 3px;
-    cursor: pointer;
-    transition: all 0.2s;
+    color: var(--dark); border: none; padding: 16px;
+    border-radius: 12px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem; letter-spacing: 3px;
+    cursor: pointer; transition: all 0.2s;
   }
 
   .btn-new-session:hover { opacity: 0.9; }
 
-  /* Animations */
   @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeUp   { from { opacity: 0; transform: translateY(20px);  } to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
   @keyframes scaleIn  { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   @keyframes spin     { to { transform: rotate(360deg); } }
 
-  /* Responsive */
   @media (max-width: 600px) {
     .session-info { gap: 16px; }
     .stat-value { font-size: 1.5rem; }
@@ -582,7 +565,6 @@
 </style>
 </head>
 <body>
-
 <div class="container">
 
   <!-- Header -->
@@ -591,7 +573,7 @@
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="24" cy="24" r="22" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
         <circle cx="24" cy="24" r="15" stroke="#C9A84C" stroke-width="1" fill="none" opacity="0.5"/>
-        <circle cx="24" cy="24" r="8" stroke="#C9A84C" stroke-width="1" fill="none" opacity="0.3"/>
+        <circle cx="24" cy="24" r="8"  stroke="#C9A84C" stroke-width="1" fill="none" opacity="0.3"/>
         <circle cx="24" cy="24" r="2.5" fill="#C9A84C"/>
         <line x1="24" y1="2" x2="24" y2="10" stroke="#C0392B" stroke-width="2" stroke-linecap="round"/>
         <line x1="23" y1="6" x2="24" y2="2" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/>
@@ -602,6 +584,12 @@
       <h1>ArcherAI</h1>
       <p>Score par intelligence artificielle</p>
     </div>
+  </div>
+
+  <!-- Mode toggle -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="setMode('solo')" id="btn-mode-solo">🏹 Solo</button>
+    <button class="mode-btn" onclick="setMode('duo')" id="btn-mode-duo">🏹🏹 Duo (2 archers)</button>
   </div>
 
   <!-- Session Bar -->
@@ -625,9 +613,37 @@
     <button class="btn-end-session" onclick="endSession()">Terminer</button>
   </div>
 
+  <!-- Config archers (mode duo) -->
+  <div class="archers-config" id="archers-config">
+
+    <!-- Archer 1 -->
+    <div class="archer-card">
+      <div class="archer-card-title">🏹 Archer 1</div>
+      <input type="text" class="archer-name-input" id="archer1-name" placeholder="Prénom de l'archer 1" oninput="saveProfiles()">
+      <div class="colors-label">Couleur(s) des plumes</div>
+      <div class="colors-grid" id="colors1"></div>
+      <div class="selected-colors-preview" id="preview1">
+        <span class="preview-label">Sélectionnez 1 à 3 couleurs</span>
+      </div>
+    </div>
+
+    <!-- Archer 2 -->
+    <div class="archer-card">
+      <div class="archer-card-title">🏹 Archer 2</div>
+      <input type="text" class="archer-name-input" id="archer2-name" placeholder="Prénom de l'archer 2" oninput="saveProfiles()">
+      <div class="colors-label">Couleur(s) des plumes</div>
+      <div class="colors-grid" id="colors2"></div>
+      <div class="selected-colors-preview" id="preview2">
+        <span class="preview-label">Sélectionnez 1 à 3 couleurs</span>
+      </div>
+    </div>
+
+  </div>
+
   <!-- Upload Zone -->
   <div class="upload-section">
-    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+    <div class="upload-zone" id="upload-zone"
+         onclick="document.getElementById('file-input').click()"
          ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
       <span class="upload-icon">🎯</span>
       <h3>Photographier la cible</h3>
@@ -652,7 +668,7 @@
     </button>
   </div>
 
-  <!-- Result Card -->
+  <!-- Result Card solo -->
   <div class="result-card" id="result-card">
     <div class="result-header">
       <h3>Résultat de la volée</h3>
@@ -660,12 +676,40 @@
     </div>
     <div class="arrows-grid" id="arrows-grid"></div>
     <div class="result-total">
-      <div>
-        <div class="total-label">Score volée</div>
-      </div>
+      <div class="total-label">Score volée</div>
       <div class="total-value" id="result-total-value">0</div>
     </div>
     <div class="result-analysis" id="result-analysis"></div>
+  </div>
+
+  <!-- Result Duo -->
+  <div class="result-duo" id="result-duo">
+    <!-- Archer 1 result -->
+    <div class="duo-card" id="duo-card-1">
+      <div class="duo-header">
+        <div class="duo-archer-name" id="duo-name-1">Archer 1</div>
+        <div class="duo-colors" id="duo-colors-1"></div>
+      </div>
+      <div class="arrows-grid" id="arrows-grid-1"></div>
+      <div class="result-total">
+        <div class="total-label">Score volée</div>
+        <div class="total-value" id="total-value-1">0</div>
+      </div>
+      <div class="result-analysis" id="analysis-1"></div>
+    </div>
+    <!-- Archer 2 result -->
+    <div class="duo-card" id="duo-card-2">
+      <div class="duo-header">
+        <div class="duo-archer-name" id="duo-name-2">Archer 2</div>
+        <div class="duo-colors" id="duo-colors-2"></div>
+      </div>
+      <div class="arrows-grid" id="arrows-grid-2"></div>
+      <div class="result-total">
+        <div class="total-label">Score volée</div>
+        <div class="total-value" id="total-value-2">0</div>
+      </div>
+      <div class="result-analysis" id="analysis-2"></div>
+    </div>
   </div>
 
   <!-- History -->
@@ -678,7 +722,7 @@
 
 </div>
 
-<!-- Session End Modal -->
+<!-- Modal fin de session -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-icon" id="modal-icon">🏆</div>
@@ -704,15 +748,101 @@
 </div>
 
 <script>
-  // State
-  let session = {
-    volleys: [],
-    totalScore: 0,
-    arrowCount: 0
-  };
+  // ── COULEURS DISPONIBLES ──
+  const COLORS = [
+    { name: 'Blanc',  hex: '#FFFFFF', textDark: true },
+    { name: 'Noir',   hex: '#222222', textDark: false },
+    { name: 'Rouge',  hex: '#E74C3C', textDark: false },
+    { name: 'Bleu',   hex: '#3498DB', textDark: false },
+    { name: 'Vert',   hex: '#2ECC71', textDark: true },
+    { name: 'Orange', hex: '#E67E22', textDark: true },
+    { name: 'Jaune',  hex: '#F1C40F', textDark: true },
+    { name: 'Violet', hex: '#9B59B6', textDark: false },
+    { name: 'Rose',   hex: '#FF69B4', textDark: true },
+    { name: 'Gris',   hex: '#95A5A6', textDark: true },
+  ];
 
+  // ── STATE ──
+  let mode = 'solo'; // 'solo' ou 'duo'
+  let session = { volleys: [], totalScore: 0, arrowCount: 0 };
   let currentImageBase64 = null;
   let lastSessionScore = parseInt(localStorage.getItem('lastSessionScore') || '0');
+
+  let archer1Colors = JSON.parse(localStorage.getItem('archer1Colors') || '[]');
+  let archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
+
+  // ── INIT COULEURS ──
+  function buildColorGrid(containerId, archerIdx) {
+    const container = document.getElementById(containerId);
+    const selectedColors = archerIdx === 1 ? archer1Colors : archer2Colors;
+    container.innerHTML = '';
+
+    COLORS.forEach(c => {
+      const chip = document.createElement('div');
+      chip.className = 'color-chip' + (selectedColors.includes(c.name) ? ' selected' : '');
+      chip.innerHTML = `<div class="color-dot" style="background:${c.hex};border:1px solid rgba(255,255,255,0.2)"></div>${c.name}`;
+      chip.onclick = () => toggleColor(c.name, archerIdx);
+      container.appendChild(chip);
+    });
+
+    updateColorPreview(archerIdx);
+  }
+
+  function toggleColor(colorName, archerIdx) {
+    let arr = archerIdx === 1 ? archer1Colors : archer2Colors;
+    if (arr.includes(colorName)) {
+      arr = arr.filter(c => c !== colorName);
+    } else {
+      if (arr.length >= 3) {
+        alert('Maximum 3 couleurs par archer !');
+        return;
+      }
+      arr.push(colorName);
+    }
+    if (archerIdx === 1) archer1Colors = arr;
+    else archer2Colors = arr;
+    saveProfiles();
+    buildColorGrid(archerIdx === 1 ? 'colors1' : 'colors2', archerIdx);
+  }
+
+  function updateColorPreview(archerIdx) {
+    const preview = document.getElementById(`preview${archerIdx}`);
+    const arr = archerIdx === 1 ? archer1Colors : archer2Colors;
+    if (arr.length === 0) {
+      preview.innerHTML = '<span class="preview-label">Sélectionnez 1 à 3 couleurs</span>';
+      return;
+    }
+    preview.innerHTML = arr.map(name => {
+      const c = COLORS.find(x => x.name === name);
+      return `<div class="preview-dot" style="background:${c.hex}"></div>`;
+    }).join('') + `<span class="preview-label">${arr.join(' + ')}</span>`;
+  }
+
+  function saveProfiles() {
+    localStorage.setItem('archer1Name', document.getElementById('archer1-name').value);
+    localStorage.setItem('archer2Name', document.getElementById('archer2-name').value);
+    localStorage.setItem('archer1Colors', JSON.stringify(archer1Colors));
+    localStorage.setItem('archer2Colors', JSON.stringify(archer2Colors));
+  }
+
+  function loadProfiles() {
+    document.getElementById('archer1-name').value = localStorage.getItem('archer1Name') || '';
+    document.getElementById('archer2-name').value = localStorage.getItem('archer2Name') || '';
+    archer1Colors = JSON.parse(localStorage.getItem('archer1Colors') || '[]');
+    archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
+    buildColorGrid('colors1', 1);
+    buildColorGrid('colors2', 2);
+  }
+
+  // ── MODE SOLO / DUO ──
+  function setMode(m) {
+    mode = m;
+    document.getElementById('btn-mode-solo').classList.toggle('active', m === 'solo');
+    document.getElementById('btn-mode-duo').classList.toggle('active', m === 'duo');
+    document.getElementById('archers-config').classList.toggle('visible', m === 'duo');
+    document.getElementById('result-card').classList.remove('visible');
+    document.getElementById('result-duo').classList.remove('visible');
+  }
 
   // ── FILE D'ATTENTE HORS LIGNE ──
   const QUEUE_KEY = 'archerAI_queue';
@@ -722,13 +852,14 @@
     catch { return []; }
   }
 
-  function saveQueue(q) {
-    localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
-  }
+  function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
 
   function addToQueue(imageBase64) {
     const q = getQueue();
-    q.push({ imageBase64, timestamp: Date.now() });
+    q.push({ imageBase64, mode, archer1Colors, archer2Colors,
+      archer1Name: document.getElementById('archer1-name').value,
+      archer2Name: document.getElementById('archer2-name').value,
+      timestamp: Date.now() });
     saveQueue(q);
     updateQueueBanner();
   }
@@ -736,92 +867,52 @@
   function updateQueueBanner() {
     const q = getQueue();
     let banner = document.getElementById('queue-banner');
-    if (q.length === 0) {
-      if (banner) banner.remove();
-      return;
-    }
+    if (q.length === 0) { if (banner) banner.remove(); return; }
     if (!banner) {
       banner = document.createElement('div');
       banner.id = 'queue-banner';
-      banner.style.cssText = `
-        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-        background: #C9A84C; color: #0D0D0D; padding: 12px 20px; border-radius: 12px;
-        font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px;
-        z-index: 999; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.4);
-        display: flex; align-items: center; gap: 10px;
-      `;
+      banner.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+        background:#C9A84C;color:#0D0D0D;padding:12px 20px;border-radius:12px;
+        font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;
+        z-index:999;cursor:pointer;box-shadow:0 4px 20px rgba(201,168,76,0.4);`;
       banner.onclick = processQueue;
       document.body.appendChild(banner);
     }
-    banner.innerHTML = `📶 ${q.length} photo(s) en attente — Cliquez pour analyser`;
+    banner.innerHTML = `📶 ${q.length} photo(s) en attente — Analyser`;
   }
 
   async function processQueue() {
     const q = getQueue();
     if (q.length === 0) return;
-
     const banner = document.getElementById('queue-banner');
     if (banner) banner.innerHTML = '⏳ Analyse en cours...';
-
     let processed = 0;
     for (const item of q) {
       try {
-        const response = await fetch("/api/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBase64: item.imageBase64 })
-        });
-        const result = await response.json();
-        if (!result.error) {
-          displayResult(result);
-          addToSession(result);
-          updateSessionBar();
-          processed++;
-        }
-      } catch(e) {
-        console.error('Erreur file d\'attente:', e);
-        break;
-      }
+        const result = await callAPI(item.imageBase64, item.mode, item.archer1Colors, item.archer2Colors, item.archer1Name, item.archer2Name);
+        if (result) { processed++; }
+      } catch(e) { break; }
     }
-
-    // Vider la file si tout s'est bien passé
-    if (processed === q.length) {
-      saveQueue([]);
-    } else {
-      // Garder les non-traités
-      saveQueue(q.slice(processed));
-    }
+    saveQueue(processed === q.length ? [] : q.slice(processed));
     updateQueueBanner();
   }
 
-  // Vérifier la connexion au chargement
   window.addEventListener('load', () => {
+    loadProfiles();
     updateQueueBanner();
-    // Relancer automatiquement si connexion retrouvée
-    window.addEventListener('online', () => {
-      const q = getQueue();
-      if (q.length > 0) processQueue();
-    });
+    window.addEventListener('online', () => { if (getQueue().length > 0) processQueue(); });
   });
 
-  // Drag & Drop
-  function handleDragOver(e) {
-    e.preventDefault();
-    document.getElementById('upload-zone').classList.add('dragover');
-  }
-  function handleDragLeave(e) {
-    document.getElementById('upload-zone').classList.remove('dragover');
-  }
+  // ── DRAG & DROP ──
+  function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('dragover'); }
+  function handleDragLeave(e) { document.getElementById('upload-zone').classList.remove('dragover'); }
   function handleDrop(e) {
     e.preventDefault();
     document.getElementById('upload-zone').classList.remove('dragover');
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) processFile(file);
   }
-  function handleFile(e) {
-    const file = e.target.files[0];
-    if (file) processFile(file);
-  }
+  function handleFile(e) { const file = e.target.files[0]; if (file) processFile(file); }
 
   function processFile(file) {
     const reader = new FileReader();
@@ -831,72 +922,132 @@
       document.getElementById('preview-img').src = dataUrl;
       document.getElementById('analyze-section').classList.add('visible');
       document.getElementById('result-card').classList.remove('visible');
+      document.getElementById('result-duo').classList.remove('visible');
       document.getElementById('btn-analyze').disabled = false;
-      // Scroll to analyze
       document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
     reader.readAsDataURL(file);
   }
 
-  // Analyze with Claude API
+  // ── APPEL API ──
+  async function callAPI(imageBase64, currentMode, a1colors, a2colors, a1name, a2name) {
+    const isDuo = currentMode === 'duo';
+    const a1 = a1name || 'Archer 1';
+    const a2 = a2name || 'Archer 2';
+    const c1 = a1colors.length > 0 ? a1colors.join(' + ') : 'inconnue';
+    const c2 = a2colors.length > 0 ? a2colors.join(' + ') : 'inconnue';
+
+    const prompt = isDuo
+      ? `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible avec des flèches de 2 archers.
+
+${a1} a des plumes de couleur : ${c1}
+${a2} a des plumes de couleur : ${c2}
+
+ÉTAPE 1 — Identifie le type de cible (WA, VEGAS, BEURSAULT, GEF) et applique le bon barème.
+ÉTAPE 2 — Pour chaque flèche, identifie à qui elle appartient selon la couleur des plumes, et estime son score.
+
+Barèmes :
+- WA : jaune=X/10/9, rouge=8/7, bleu=6/5, noir=4/3, blanc=2/1, hors cible=M
+- VEGAS : jaune=X/10/9, rouge=8/7, bleu=6, hors blason=M
+- BEURSAULT/GEF : centre=3, milieu=2, extérieur=1, hors cible=M
+
+Réponds UNIQUEMENT en JSON :
+{
+  "type": "WA",
+  "archer1": {"name": "${a1}", "arrows": [9, 8, 7], "total": 24, "count": 3, "analysis": "..."},
+  "archer2": {"name": "${a2}", "arrows": [10, 9, 8], "total": 27, "count": 3, "analysis": "..."}
+}
+
+Si les plumes ne sont pas visibles ou ambiguës, fais de ton mieux. Si pas de cible : {"error": "Pas de cible détectée"}`
+      : `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible avec des flèches.
+
+ÉTAPE 1 — Identifie le type de cible (WA, VEGAS, BEURSAULT, GEF).
+ÉTAPE 2 — Applique le bon barème.
+
+Barèmes :
+- WA : jaune=X/10/9, rouge=8/7, bleu=6/5, noir=4/3, blanc=2/1, hors cible=M
+- VEGAS : jaune=X/10/9, rouge=8/7, bleu=6, hors blason=M
+- BEURSAULT/GEF : centre=3, milieu=2, extérieur=1, hors cible=M
+
+Réponds UNIQUEMENT en JSON :
+{"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."}
+
+Si pas de cible : {"error": "Pas de cible détectée"}`;
+
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageBase64, prompt })
+    });
+
+    const result = await response.json();
+    if (result.error) return null;
+
+    if (isDuo && result.archer1) {
+      displayDuoResult(result);
+      session.volleys.push({ duo: true, archer1: result.archer1, archer2: result.archer2 });
+      session.totalScore += (result.archer1.total || 0) + (result.archer2.total || 0);
+      session.arrowCount += (result.archer1.count || 0) + (result.archer2.count || 0);
+    } else if (result.arrows) {
+      displayResult(result);
+      session.volleys.push(result);
+      session.totalScore += result.total || 0;
+      session.arrowCount += result.count || 0;
+    }
+    updateSessionBar();
+    updateHistory();
+    return result;
+  }
+
+  // ── ANALYZE IMAGE ──
   async function analyzeImage() {
     if (!currentImageBase64) return;
+
+    if (mode === 'duo' && (archer1Colors.length === 0 || archer2Colors.length === 0)) {
+      alert('⚠️ Veuillez configurer les couleurs des plumes des 2 archers avant d\'analyser !');
+      return;
+    }
 
     const btn = document.getElementById('btn-analyze');
     const overlay = document.getElementById('preview-overlay');
     btn.disabled = true;
     overlay.classList.add('analyzing');
 
-    // Vérifier la connexion
     if (!navigator.onLine) {
       overlay.classList.remove('analyzing');
       btn.disabled = false;
       addToQueue(currentImageBase64);
-      // Reset
       document.getElementById('analyze-section').classList.remove('visible');
       document.getElementById('file-input').value = '';
       currentImageBase64 = null;
-      alert('📶 Pas de connexion — photo mise en file d\'attente !\nElle sera analysée automatiquement dès que le réseau revient.');
+      alert('📶 Pas de connexion — photo mise en file d\'attente !');
       return;
     }
 
     try {
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: currentImageBase64 })
-      });
-
-      const result = await response.json();
+      const a1name = document.getElementById('archer1-name').value;
+      const a2name = document.getElementById('archer2-name').value;
+      await callAPI(currentImageBase64, mode, archer1Colors, archer2Colors, a1name, a2name);
       overlay.classList.remove('analyzing');
-
-      if (result.error) {
-        alert('⚠️ ' + result.error + '\nVeuillez prendre une photo d\'une cible de tir à l\'arc.');
-        btn.disabled = false;
-        return;
-      }
-
-      displayResult(result);
-      addToSession(result);
-      updateSessionBar();
-
     } catch (err) {
       overlay.classList.remove('analyzing');
       btn.disabled = false;
       console.error(err);
-      // Si erreur réseau, mettre en file d'attente
-      if (!navigator.onLine || err.message.includes('fetch')) {
+      if (!navigator.onLine) {
         addToQueue(currentImageBase64);
-        document.getElementById('analyze-section').classList.remove('visible');
-        document.getElementById('file-input').value = '';
-        currentImageBase64 = null;
-        alert('📶 Connexion perdue — photo mise en file d\'attente !\nElle sera analysée dès que le réseau revient.');
+        alert('📶 Connexion perdue — photo mise en file d\'attente !');
       } else {
         alert('Erreur lors de l\'analyse. Vérifiez votre connexion.');
       }
     }
+
+    document.getElementById('analyze-section').classList.remove('visible');
+    document.getElementById('preview-overlay').classList.remove('analyzing');
+    currentImageBase64 = null;
+    document.getElementById('file-input').value = '';
   }
 
+  // ── BADGE CLASS ──
   function getBadgeClass(score) {
     if (score === 'X' || score === 10) return 'badge-x';
     if (score === 9) return 'badge-10';
@@ -907,42 +1058,56 @@
     return 'badge-miss';
   }
 
-  function displayResult(result) {
-    const card = document.getElementById('result-card');
-    const grid = document.getElementById('arrows-grid');
-    const totalEl = document.getElementById('result-total-value');
-    const analysisEl = document.getElementById('result-analysis');
-    const volleyLabel = document.getElementById('result-volley-label');
-
-    volleyLabel.textContent = `Volée ${session.volleys.length + 1}`;
-
-    grid.innerHTML = result.arrows.map((score, i) => `
+  function arrowsHtml(arrows, prefix) {
+    return (arrows || []).map((score, i) => `
       <div class="arrow-score">
         <div class="arrow-badge ${getBadgeClass(score)}">${score}</div>
-        <div class="arrow-label">F${i+1}</div>
-      </div>
-    `).join('');
+        <div class="arrow-label">${prefix}${i+1}</div>
+      </div>`).join('');
+  }
 
-    totalEl.textContent = result.total;
-    analysisEl.textContent = result.analysis || '';
-
+  // ── DISPLAY SOLO ──
+  function displayResult(result) {
+    const card = document.getElementById('result-card');
+    document.getElementById('result-volley-label').textContent = `Volée ${session.volleys.length + 1}`;
+    document.getElementById('arrows-grid').innerHTML = arrowsHtml(result.arrows, 'F');
+    document.getElementById('result-total-value').textContent = result.total;
+    document.getElementById('result-analysis').textContent = result.analysis || '';
     card.classList.add('visible');
     card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-    // Reset for next photo
-    document.getElementById('analyze-section').classList.remove('visible');
-    document.getElementById('preview-overlay').classList.remove('analyzing');
-    currentImageBase64 = null;
-    document.getElementById('file-input').value = '';
   }
 
-  function addToSession(result) {
-    session.volleys.push(result);
-    session.totalScore += result.total;
-    session.arrowCount += result.count;
-    updateHistory();
+  // ── DISPLAY DUO ──
+  function displayDuoResult(result) {
+    const duo = document.getElementById('result-duo');
+
+    // Archer 1
+    document.getElementById('duo-name-1').textContent = result.archer1.name || 'Archer 1';
+    document.getElementById('arrows-grid-1').innerHTML = arrowsHtml(result.archer1.arrows, 'F');
+    document.getElementById('total-value-1').textContent = result.archer1.total || 0;
+    document.getElementById('analysis-1').textContent = result.archer1.analysis || '';
+    const dc1 = document.getElementById('duo-colors-1');
+    dc1.innerHTML = archer1Colors.map(name => {
+      const c = COLORS.find(x => x.name === name);
+      return `<div class="duo-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
+    }).join('');
+
+    // Archer 2
+    document.getElementById('duo-name-2').textContent = result.archer2.name || 'Archer 2';
+    document.getElementById('arrows-grid-2').innerHTML = arrowsHtml(result.archer2.arrows, 'F');
+    document.getElementById('total-value-2').textContent = result.archer2.total || 0;
+    document.getElementById('analysis-2').textContent = result.archer2.analysis || '';
+    const dc2 = document.getElementById('duo-colors-2');
+    dc2.innerHTML = archer2Colors.map(name => {
+      const c = COLORS.find(x => x.name === name);
+      return `<div class="duo-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
+    }).join('');
+
+    duo.classList.add('visible');
+    duo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  // ── SESSION ──
   function updateSessionBar() {
     document.getElementById('total-score').textContent = session.totalScore;
     document.getElementById('volley-count').textContent = session.volleys.length;
@@ -955,63 +1120,49 @@
       container.innerHTML = '<div class="history-empty">Aucune volée encore — prenez votre première photo !</div>';
       return;
     }
-
     container.innerHTML = `<div class="history-list">` +
       [...session.volleys].reverse().map((v, ri) => {
         const i = session.volleys.length - ri;
-        const arrowsHtml = v.arrows.map(s =>
-          `<div class="mini-badge ${getBadgeClass(s)}">${s}</div>`
-        ).join('');
-        return `
-          <div class="history-item">
+        if (v.duo) {
+          const a1 = v.archer1; const a2 = v.archer2;
+          return `<div class="history-item">
             <div class="history-left">
               <div class="history-volley">VOLÉE ${i}</div>
-              <div class="history-arrows">${arrowsHtml}</div>
+              <div style="font-size:0.8rem;color:var(--text-muted)">${a1.name}: ${a1.total}pts &nbsp;|&nbsp; ${a2.name}: ${a2.total}pts</div>
             </div>
-            <div class="history-score">${v.total}</div>
+            <div class="history-score">${(a1.total||0)+(a2.total||0)}</div>
           </div>`;
-      }).join('') +
-    `</div>`;
+        }
+        return `<div class="history-item">
+          <div class="history-left">
+            <div class="history-volley">VOLÉE ${i}</div>
+            <div class="history-arrows">${(v.arrows||[]).map(s => `<div class="mini-badge ${getBadgeClass(s)}">${s}</div>`).join('')}</div>
+          </div>
+          <div class="history-score">${v.total}</div>
+        </div>`;
+      }).join('') + `</div>`;
   }
 
   function endSession() {
-    if (session.volleys.length === 0) {
-      alert('Aucune volée enregistrée pour cette session !');
-      return;
-    }
-
+    if (session.volleys.length === 0) { alert('Aucune volée enregistrée !'); return; }
     const total = session.totalScore;
     const avg = session.arrowCount > 0 ? (total / session.arrowCount).toFixed(1) : 0;
-
     document.getElementById('modal-total').textContent = total;
     document.getElementById('modal-volleys').textContent = session.volleys.length;
     document.getElementById('modal-arrows').textContent = session.arrowCount;
     document.getElementById('modal-avg').textContent = avg;
-
     const compEl = document.getElementById('modal-comparison');
     const iconEl = document.getElementById('modal-icon');
-
     if (lastSessionScore === 0) {
       compEl.textContent = '🏹 Première session — référence enregistrée !';
       compEl.className = 'modal-comparison comparison-first';
       iconEl.textContent = '🏹';
     } else {
       const diff = total - lastSessionScore;
-      if (diff > 0) {
-        compEl.textContent = `🎉 Bravo ! +${diff} pts par rapport à la dernière session !`;
-        compEl.className = 'modal-comparison comparison-better';
-        iconEl.textContent = '🏆';
-      } else if (diff < 0) {
-        compEl.textContent = `💪 ${Math.abs(diff)} pts de moins — la prochaine sera meilleure !`;
-        compEl.className = 'modal-comparison comparison-worse';
-        iconEl.textContent = '🎯';
-      } else {
-        compEl.textContent = `👌 Même score — régularité parfaite !`;
-        compEl.className = 'modal-comparison comparison-first';
-        iconEl.textContent = '👌';
-      }
+      if (diff > 0) { compEl.textContent = `🎉 Bravo ! +${diff} pts !`; compEl.className = 'modal-comparison comparison-better'; iconEl.textContent = '🏆'; }
+      else if (diff < 0) { compEl.textContent = `💪 ${Math.abs(diff)} pts de moins — la prochaine sera meilleure !`; compEl.className = 'modal-comparison comparison-worse'; iconEl.textContent = '🎯'; }
+      else { compEl.textContent = '👌 Même score — régularité parfaite !'; compEl.className = 'modal-comparison comparison-first'; iconEl.textContent = '👌'; }
     }
-
     localStorage.setItem('lastSessionScore', total);
     document.getElementById('modal-overlay').classList.add('visible');
   }
@@ -1022,6 +1173,7 @@
     updateSessionBar();
     updateHistory();
     document.getElementById('result-card').classList.remove('visible');
+    document.getElementById('result-duo').classList.remove('visible');
     document.getElementById('analyze-section').classList.remove('visible');
     document.getElementById('modal-overlay').classList.remove('visible');
   }
