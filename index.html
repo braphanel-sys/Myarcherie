@@ -714,6 +714,96 @@
   let currentImageBase64 = null;
   let lastSessionScore = parseInt(localStorage.getItem('lastSessionScore') || '0');
 
+  // ── FILE D'ATTENTE HORS LIGNE ──
+  const QUEUE_KEY = 'archerAI_queue';
+
+  function getQueue() {
+    try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }
+    catch { return []; }
+  }
+
+  function saveQueue(q) {
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+  }
+
+  function addToQueue(imageBase64) {
+    const q = getQueue();
+    q.push({ imageBase64, timestamp: Date.now() });
+    saveQueue(q);
+    updateQueueBanner();
+  }
+
+  function updateQueueBanner() {
+    const q = getQueue();
+    let banner = document.getElementById('queue-banner');
+    if (q.length === 0) {
+      if (banner) banner.remove();
+      return;
+    }
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'queue-banner';
+      banner.style.cssText = `
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+        background: #C9A84C; color: #0D0D0D; padding: 12px 20px; border-radius: 12px;
+        font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px;
+        z-index: 999; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.4);
+        display: flex; align-items: center; gap: 10px;
+      `;
+      banner.onclick = processQueue;
+      document.body.appendChild(banner);
+    }
+    banner.innerHTML = `📶 ${q.length} photo(s) en attente — Cliquez pour analyser`;
+  }
+
+  async function processQueue() {
+    const q = getQueue();
+    if (q.length === 0) return;
+
+    const banner = document.getElementById('queue-banner');
+    if (banner) banner.innerHTML = '⏳ Analyse en cours...';
+
+    let processed = 0;
+    for (const item of q) {
+      try {
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64: item.imageBase64 })
+        });
+        const result = await response.json();
+        if (!result.error) {
+          displayResult(result);
+          addToSession(result);
+          updateSessionBar();
+          processed++;
+        }
+      } catch(e) {
+        console.error('Erreur file d\'attente:', e);
+        break;
+      }
+    }
+
+    // Vider la file si tout s'est bien passé
+    if (processed === q.length) {
+      saveQueue([]);
+    } else {
+      // Garder les non-traités
+      saveQueue(q.slice(processed));
+    }
+    updateQueueBanner();
+  }
+
+  // Vérifier la connexion au chargement
+  window.addEventListener('load', () => {
+    updateQueueBanner();
+    // Relancer automatiquement si connexion retrouvée
+    window.addEventListener('online', () => {
+      const q = getQueue();
+      if (q.length > 0) processQueue();
+    });
+  });
+
   // Drag & Drop
   function handleDragOver(e) {
     e.preventDefault();
@@ -757,6 +847,19 @@
     btn.disabled = true;
     overlay.classList.add('analyzing');
 
+    // Vérifier la connexion
+    if (!navigator.onLine) {
+      overlay.classList.remove('analyzing');
+      btn.disabled = false;
+      addToQueue(currentImageBase64);
+      // Reset
+      document.getElementById('analyze-section').classList.remove('visible');
+      document.getElementById('file-input').value = '';
+      currentImageBase64 = null;
+      alert('📶 Pas de connexion — photo mise en file d\'attente !\nElle sera analysée automatiquement dès que le réseau revient.');
+      return;
+    }
+
     try {
       const response = await fetch("/api/analyze", {
         method: "POST",
@@ -781,7 +884,16 @@
       overlay.classList.remove('analyzing');
       btn.disabled = false;
       console.error(err);
-      alert('Erreur lors de l\'analyse. Vérifiez votre connexion.');
+      // Si erreur réseau, mettre en file d'attente
+      if (!navigator.onLine || err.message.includes('fetch')) {
+        addToQueue(currentImageBase64);
+        document.getElementById('analyze-section').classList.remove('visible');
+        document.getElementById('file-input').value = '';
+        currentImageBase64 = null;
+        alert('📶 Connexion perdue — photo mise en file d\'attente !\nElle sera analysée dès que le réseau revient.');
+      } else {
+        alert('Erreur lors de l\'analyse. Vérifiez votre connexion.');
+      }
     }
   }
 
