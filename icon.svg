@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Fond sombre -->
+  <rect width="192" height="192" rx="40" fill="#0D0D0D"/>
+  <!-- Cercles cible -->
+  <circle cx="96" cy="96" r="84" stroke="#C9A84C" stroke-width="3" fill="none"/>
+  <circle cx="96" cy="96" r="58" stroke="#C9A84C" stroke-width="2" fill="none" opacity="0.5"/>
+  <circle cx="96" cy="96" r="32" stroke="#C9A84C" stroke-width="2" fill="none" opacity="0.3"/>
+  <!-- Centre doré -->
+  <circle cx="96" cy="96" r="10" fill="#C9A84C"/>
+  <!-- Flèche (de haut vers bas, pointe en haut) -->
+  <line x1="96" y1="12" x2="96" y2="56" stroke="#C0392B" stroke-width="5" stroke-linecap="round"/>
+  <!-- Empennage -->
+  <line x1="88" y1="30" x2="96" y2="12" stroke="#C0392B" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="104" y1="30" x2="96" y2="12" stroke="#C0392B" stroke-width="3.5" stroke-linecap="round"/>
+</svg>
