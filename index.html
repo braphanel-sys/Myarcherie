@@ -281,6 +281,77 @@
   }
   .preview-label { font-size: 0.75rem; color: var(--text-muted); font-style: italic; }
 
+  /* ── COUNTER COLOR UI ── */
+  .color-counter-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .color-counter-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: var(--dark2);
+    border: 1px solid transparent;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .color-counter-row.active {
+    border-color: rgba(201,168,76,0.4);
+    background: rgba(201,168,76,0.04);
+  }
+
+  .color-counter-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .color-counter-name {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    transition: color 0.2s;
+  }
+  .color-counter-row.active .color-counter-name { color: var(--text); }
+
+  .color-counter-controls { display: flex; align-items: center; gap: 8px; }
+
+  .btn-counter {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--dark3);
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .btn-counter:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+  .btn-counter:disabled { opacity: 0.2; cursor: not-allowed; }
+
+  .counter-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1;
+    color: var(--gold);
+  }
+  .counter-value.zero { color: var(--text-muted); }
+
+  .colors-summary {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--gold);
+    font-weight: 500;
+    min-height: 20px;
+  }
+  .colors-summary.empty { color: var(--text-muted); font-style: italic; font-weight: 400; }
+
   /* Beursault info banner */
   .beursault-info {
     display: none;
@@ -930,6 +1001,54 @@
   const BEURSAULT_KEY  = 'archerAI_beursault_archers';
   const QUEUE_KEY      = 'archerAI_queue';
 
+  // ── COULEURS : helpers compteur ──
+  // colors est un objet { 'Noir': 2, 'Jaune': 1 }
+
+  function totalColors(colors) {
+    if (!colors) return 0;
+    if (Array.isArray(colors)) return colors.length; // rétrocompat
+    return Object.values(colors).reduce((s, v) => s + v, 0);
+  }
+
+  function colorsToString(colors) {
+    if (!colors) return '';
+    if (Array.isArray(colors)) {
+      // rétrocompat : compte les doublons
+      const obj = {};
+      colors.forEach(c => { obj[c] = (obj[c] || 0) + 1; });
+      colors = obj;
+    }
+    const parts = Object.entries(colors)
+      .filter(([, v]) => v > 0)
+      .map(([k, v]) => v > 1 ? `${v} × ${k}` : k);
+    return parts.join(' + ');
+  }
+
+  function migrateColors(colors) {
+    if (!colors) return {};
+    if (Array.isArray(colors)) {
+      const obj = {};
+      colors.forEach(c => { obj[c] = (obj[c] || 0) + 1; });
+      return obj;
+    }
+    return colors;
+  }
+
+  // Génère le HTML d'une ligne compteur
+  function counterRowHtml(c, count, total, incCall, decCall) {
+    const canInc = total < 3;
+    const canDec = count > 0;
+    return `<div class="color-counter-row${count > 0 ? ' active' : ''}">
+      <div class="color-counter-dot" style="background:${c.hex}"></div>
+      <span class="color-counter-name">${c.name}</span>
+      <div class="color-counter-controls">
+        <button class="btn-counter" onclick="${decCall}" ${!canDec ? 'disabled' : ''}>&minus;</button>
+        <span class="counter-value${count === 0 ? ' zero' : ''}">${count}</span>
+        <button class="btn-counter" onclick="${incCall}" ${(!canInc && count === 0) ? 'disabled' : ''}>+</button>
+      </div>
+    </div>`;
+  }
+
   // ── STATE ──
   let mode = 'solo'; // 'solo' | 'duo' | 'beursault'
   let session = { volleys: [], totalScore: 0, arrowCount: 0 };
@@ -950,7 +1069,7 @@
   ];
 
   // Temp state formulaire profil/welcome
-  let wPlumes   = [];
+  let wPlumes   = {}; // { colorName: count }
   let wEncoche  = '';
   let wArcTypes = [];
   let wIsEdit   = false;
@@ -969,7 +1088,11 @@
   function loadProfile() {
     try {
       const saved = JSON.parse(localStorage.getItem(PROFILE_KEY));
-      if (saved && saved.prenom !== undefined) { userProfile = saved; return true; }
+      if (saved && saved.prenom !== undefined) {
+        saved.plumeColors = migrateColors(saved.plumeColors);
+        userProfile = saved;
+        return true;
+      }
     } catch(e) {}
     return false;
   }
@@ -986,7 +1109,7 @@
 
   function openWelcome(isEdit) {
     wIsEdit   = isEdit;
-    wPlumes   = isEdit ? [...(userProfile.plumeColors || [])] : [];
+    wPlumes   = isEdit ? migrateColors(userProfile.plumeColors) : {};
     wEncoche  = isEdit ? (userProfile.encocheColor || '') : '';
     wArcTypes = isEdit ? [...(userProfile.arcTypes || [])] : [];
 
@@ -1023,30 +1146,40 @@
   }
 
   function buildWPlumeGrid() {
-    document.getElementById('welcome-plumes-grid').innerHTML = COLORS.map(c =>
-      `<div class="color-chip${wPlumes.includes(c.name) ? ' selected' : ''}"
-            onclick="toggleWPlume('${c.name}')">
-        <div class="color-dot" style="background:${c.hex};border:1px solid rgba(255,255,255,0.2)"></div>${c.name}
-      </div>`
-    ).join('');
+    const total = totalColors(wPlumes);
+    document.getElementById('welcome-plumes-grid').innerHTML =
+      `<div class="color-counter-list">${
+        COLORS.map(c => counterRowHtml(
+          c,
+          wPlumes[c.name] || 0,
+          total,
+          `incWPlume('${c.name}')`,
+          `decWPlume('${c.name}')`
+        )).join('')
+      }</div>`;
     updateWPlumePreview();
   }
 
-  function toggleWPlume(name) {
-    if (wPlumes.includes(name)) { wPlumes = wPlumes.filter(c => c !== name); }
-    else {
-      if (wPlumes.length >= 3) { alert('Maximum 3 couleurs !'); return; }
-      wPlumes.push(name);
-    }
+  function incWPlume(name) {
+    if (totalColors(wPlumes) >= 3) return;
+    wPlumes[name] = (wPlumes[name] || 0) + 1;
+    buildWPlumeGrid();
+  }
+
+  function decWPlume(name) {
+    if (!wPlumes[name] || wPlumes[name] === 0) return;
+    wPlumes[name]--;
+    if (wPlumes[name] === 0) delete wPlumes[name];
     buildWPlumeGrid();
   }
 
   function updateWPlumePreview() {
     const p = document.getElementById('welcome-plumes-preview');
-    if (wPlumes.length === 0) { p.innerHTML = '<span class="preview-label">Sélectionnez 1 à 3 couleurs</span>'; return; }
-    p.innerHTML = wPlumes.map(n =>
-      `<div class="preview-dot" style="background:${hex(n)}"></div>`
-    ).join('') + `<span class="preview-label">${wPlumes.join(' + ')}</span>`;
+    const s = colorsToString(wPlumes);
+    const empty = totalColors(wPlumes) === 0;
+    p.innerHTML = `<span class="colors-summary${empty ? ' empty' : ''}">${
+      empty ? 'Sélectionnez jusqu\'à 3 plumes' : s
+    }</span>`;
   }
 
   function buildWEncoche() {
@@ -1079,10 +1212,10 @@
 
     // Première ouverture : pré-remplir archer 1 dans duo et beursault
     if (!wIsEdit) {
-      duoArchers[0].name        = prenom;
-      duoArchers[0].colors      = [...wPlumes];
-      beursaultArchers[0].name  = prenom;
-      beursaultArchers[0].colors = [...wPlumes];
+      duoArchers[0].name         = prenom;
+      duoArchers[0].colors       = { ...wPlumes };
+      beursaultArchers[0].name   = prenom;
+      beursaultArchers[0].colors = { ...wPlumes };
       saveDuoArchers();
       saveBeursaultArchers();
       renderArchersConfig();
@@ -1093,11 +1226,14 @@
   function loadDuoArchers() {
     try {
       const saved = JSON.parse(localStorage.getItem(DUO_KEY));
-      if (saved && Array.isArray(saved) && saved.length === 2) { duoArchers = saved; return; }
+      if (saved && Array.isArray(saved) && saved.length === 2) {
+        duoArchers = saved.map(a => ({ ...a, colors: migrateColors(a.colors) }));
+        return;
+      }
     } catch(e) {}
     duoArchers = [
-      { name: userProfile.prenom || '', colors: [...(userProfile.plumeColors || [])] },
-      { name: '', colors: [] }
+      { name: userProfile.prenom || '', colors: migrateColors(userProfile.plumeColors) },
+      { name: '', colors: {} }
     ];
   }
 
@@ -1109,10 +1245,13 @@
   function loadBeursaultArchers() {
     try {
       const saved = JSON.parse(localStorage.getItem(BEURSAULT_KEY));
-      if (saved && Array.isArray(saved) && saved.length >= 1) { beursaultArchers = saved; return; }
+      if (saved && Array.isArray(saved) && saved.length >= 1) {
+        beursaultArchers = saved.map(a => ({ ...a, colors: migrateColors(a.colors) }));
+        return;
+      }
     } catch(e) {}
     beursaultArchers = [
-      { name: userProfile.prenom || '', colors: [...(userProfile.plumeColors || [])] }
+      { name: userProfile.prenom || '', colors: migrateColors(userProfile.plumeColors) }
     ];
   }
 
@@ -1134,16 +1273,21 @@
     renderArchersConfig();
   }
 
-  // ── COLOR GRID PER ARCHER ──
-  function toggleArcherColor(archerIdx, colorName) {
+  // ── COLOR COUNTER PER ARCHER ──
+  function incArcherColor(archerIdx, colorName) {
     const arr = getCurrentArchers();
-    const sel = arr[archerIdx].colors;
-    if (sel.includes(colorName)) {
-      arr[archerIdx].colors = sel.filter(c => c !== colorName);
-    } else {
-      if (sel.length >= 3) { alert('Maximum 3 couleurs par archer !'); return; }
-      arr[archerIdx].colors = [...sel, colorName];
-    }
+    if (totalColors(arr[archerIdx].colors) >= 3) return;
+    arr[archerIdx].colors[colorName] = (arr[archerIdx].colors[colorName] || 0) + 1;
+    if (mode === 'duo') saveDuoArchers(); else saveBeursaultArchers();
+    renderArcherColorGrid(archerIdx);
+  }
+
+  function decArcherColor(archerIdx, colorName) {
+    const arr = getCurrentArchers();
+    const colors = arr[archerIdx].colors;
+    if (!colors[colorName]) return;
+    colors[colorName]--;
+    if (colors[colorName] === 0) delete colors[colorName];
     if (mode === 'duo') saveDuoArchers(); else saveBeursaultArchers();
     renderArcherColorGrid(archerIdx);
   }
@@ -1152,20 +1296,24 @@
     const grid    = document.getElementById(`archer-colors-${idx}`);
     const preview = document.getElementById(`archer-preview-${idx}`);
     if (!grid || !preview) return;
-    const sel = getCurrentArchers()[idx].colors;
-    grid.innerHTML = COLORS.map(c =>
-      `<div class="color-chip${sel.includes(c.name) ? ' selected' : ''}"
-            onclick="toggleArcherColor(${idx}, '${c.name}')">
-        <div class="color-dot" style="background:${c.hex};border:1px solid rgba(255,255,255,0.2)"></div>${c.name}
-      </div>`
-    ).join('');
-    if (sel.length === 0) {
-      preview.innerHTML = '<span class="preview-label">Sélectionnez 1 à 3 couleurs</span>';
-    } else {
-      preview.innerHTML = sel.map(n =>
-        `<div class="preview-dot" style="background:${hex(n)}"></div>`
-      ).join('') + `<span class="preview-label">${sel.join(' + ')}</span>`;
-    }
+    const colors = getCurrentArchers()[idx].colors;
+    const total  = totalColors(colors);
+
+    grid.innerHTML = `<div class="color-counter-list">${
+      COLORS.map(c => counterRowHtml(
+        c,
+        colors[c.name] || 0,
+        total,
+        `incArcherColor(${idx}, '${c.name}')`,
+        `decArcherColor(${idx}, '${c.name}')`
+      )).join('')
+    }</div>`;
+
+    const s = colorsToString(colors);
+    const empty = total === 0;
+    preview.innerHTML = `<span class="colors-summary${empty ? ' empty' : ''}">${
+      empty ? 'Sélectionnez jusqu\'à 3 plumes' : s
+    }</span>`;
   }
 
   function renderArchersConfig() {
@@ -1341,7 +1489,7 @@
     if (currentMode === 'beursault') {
       const list = currentArchers.map((a, i) => {
         const nom  = a.name || `Archer ${i + 1}`;
-        const cols = a.colors.length > 0 ? a.colors.join(' + ') : 'inconnue';
+        const cols = colorsToString(a.colors) || 'inconnue';
         return `- ${nom} : plumes ${cols}`;
       }).join('\n');
       const exArr = currentArchers.map((a, i) =>
@@ -1369,8 +1517,8 @@ Si pas de cible Beursault : {"error":"Pas de cible Beursault détectée"}`;
       const a1 = currentArchers[1] || {};
       const n0 = a0.name || 'Archer 1';
       const n1 = a1.name || 'Archer 2';
-      const c0 = (a0.colors || []).length > 0 ? a0.colors.join(' + ') : 'inconnue';
-      const c1 = (a1.colors || []).length > 0 ? a1.colors.join(' + ') : 'inconnue';
+      const c0 = colorsToString(a0.colors) || 'inconnue';
+      const c1 = colorsToString(a1.colors) || 'inconnue';
 
       return `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible avec des flèches de 2 archers.
 
@@ -1391,7 +1539,7 @@ Si pas de cible : {"error":"Pas de cible détectée"}`;
     }
 
     // Solo
-    const c   = (userProfile.plumeColors || []).join(' + ');
+    const c   = colorsToString(userProfile.plumeColors || {});
     const enc = userProfile.encocheColor || '';
     const colorInfo = c ? `\nLes plumes de l'archer : ${c}${enc ? ` — encoche : ${enc}` : ''}.` : '';
 
@@ -1468,7 +1616,7 @@ Si pas de cible : {"error":"Pas de cible détectée"}`;
 
     const activeArchers = getCurrentArchers();
 
-    if ((mode === 'duo' || mode === 'beursault') && !activeArchers.every(a => a.colors.length > 0)) {
+    if ((mode === 'duo' || mode === 'beursault') && !activeArchers.every(a => totalColors(a.colors) > 0)) {
       alert('⚠️ Veuillez configurer les couleurs des plumes de chaque archer !');
       return;
     }
@@ -1552,7 +1700,11 @@ Si pas de cible : {"error":"Pas de cible détectée"}`;
         <span class="volley-number${isBeursault ? ' beursault' : ''}">${result.type || (isBeursault ? 'BEURSAULT' : '')}</span>
       </div>` +
       (result.archers || []).map((a, i) => {
-        const cols = (currentArchers[i]?.colors || []).map(name =>
+        const rawColors = currentArchers[i]?.colors || {};
+        const colorArr  = Array.isArray(rawColors)
+          ? rawColors
+          : Object.entries(rawColors).flatMap(([n, v]) => Array(v).fill(n));
+        const cols = colorArr.map(name =>
           `<div class="multi-color-dot" style="background:${hex(name)}"></div>`
         ).join('');
 
