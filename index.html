@@ -7,555 +7,329 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold: #C9A84C;
-    --gold-light: #F0D080;
-    --red: #C0392B;
-    --green: #27AE60;
-    --dark: #0D0D0D;
-    --dark2: #161616;
-    --dark3: #1E1E1E;
-    --border: rgba(201,168,76,0.2);
-    --text: #E8E0D0;
-    --text-muted: #8A8070;
+    --gold: #C9A84C; --gold-light: #F0D080; --red: #C0392B; --green: #27AE60;
+    --dark: #0D0D0D; --dark2: #161616; --dark3: #1E1E1E;
+    --border: rgba(201,168,76,0.2); --text: #E8E0D0; --text-muted: #8A8070;
   }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--dark); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+  body::before { content:''; position:fixed; inset:0;
+    background-image:radial-gradient(circle at 20% 50%,rgba(201,168,76,0.04) 0%,transparent 50%),
+                     radial-gradient(circle at 80% 20%,rgba(192,57,43,0.04) 0%,transparent 40%);
+    pointer-events:none; z-index:0; }
+  .container { max-width:900px; margin:0 auto; padding:32px 20px 60px; position:relative; z-index:1; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* HEADER */
+  .header { display:flex; align-items:center; gap:14px; margin-bottom:24px; animation:fadeDown 0.6s ease; }
+  .logo { width:42px; height:42px; flex-shrink:0; }
+  .logo svg { width:100%; height:100%; }
+  .header-text h1 { font-family:'Bebas Neue',sans-serif; font-size:2.1rem; letter-spacing:3px; color:var(--gold); line-height:1; }
+  .header-text p { font-size:0.72rem; color:var(--text-muted); letter-spacing:2px; text-transform:uppercase; margin-top:2px; }
+  .header-actions { margin-left:auto; display:flex; gap:8px; align-items:center; flex-shrink:0; }
+  .btn-icon { background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:7px 13px;
+    border-radius:8px; font-family:'Bebas Neue',sans-serif; font-size:0.82rem; letter-spacing:2px;
+    cursor:pointer; transition:all 0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:5px; }
+  .btn-icon:hover { border-color:var(--gold); color:var(--gold); }
 
-  body {
-    background: var(--dark);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
+  /* SCREENS */
+  .screen { display:none; }
+  .screen.active { display:block; animation:fadeUp 0.4s ease; }
+
+  /* ── PROFIL CARD (home) ── */
+  .profil-card {
+    background:var(--dark3); border:1px solid var(--border); border-radius:14px;
+    padding:18px 20px; margin-bottom:16px; cursor:pointer; transition:border-color 0.2s;
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
   }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: radial-gradient(circle at 20% 50%, rgba(201,168,76,0.04) 0%, transparent 50%),
-                      radial-gradient(circle at 80% 20%, rgba(192,57,43,0.04) 0%, transparent 40%);
-    pointer-events: none; z-index: 0;
+  .profil-card:hover { border-color:rgba(201,168,76,0.4); }
+  .profil-card-left { display:flex; align-items:center; gap:14px; flex:1; min-width:0; }
+  .profil-avatar {
+    width:44px; height:44px; border-radius:50%;
+    background:rgba(201,168,76,0.12); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.4rem; flex-shrink:0;
   }
+  .profil-info { min-width:0; }
+  .profil-name { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:2px; color:var(--text); }
+  .profil-meta { font-size:0.78rem; color:var(--text-muted); margin-top:3px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .profil-colors { display:flex; gap:4px; align-items:center; }
+  .profil-color-dot { width:12px; height:12px; border-radius:50%; border:1px solid rgba(255,255,255,0.2); }
+  .profil-edit-hint { font-size:0.7rem; color:var(--text-muted); opacity:0.6; flex-shrink:0; }
 
-  .container { max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; position: relative; z-index: 1; }
+  /* ── PROFIL SCREEN ── */
+  .profil-screen-title { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:3px; color:var(--gold); margin-bottom:22px; }
 
-  /* ── HEADER ── */
-  .header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; animation: fadeDown 0.6s ease; }
-  .logo { width: 44px; height: 44px; flex-shrink: 0; }
-  .logo svg { width: 100%; height: 100%; }
-  .header-text h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 3px; color: var(--gold); line-height: 1; }
-  .header-text p { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
-  .header-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
-  .btn-icon {
-    background: transparent; border: 1px solid var(--border);
-    color: var(--text-muted); padding: 8px 14px; border-radius: 8px;
-    font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 2px;
-    cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  /* HOME */
+  .home-actions { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
+  .btn-primary { width:100%; background:linear-gradient(135deg,var(--gold) 0%,#A07830 100%);
+    color:var(--dark); border:none; padding:17px; border-radius:14px;
+    font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:3px; cursor:pointer; transition:all 0.2s; }
+  .btn-primary:hover { opacity:0.9; transform:translateY(-1px); }
+  .btn-secondary { width:100%; background:var(--dark3); color:var(--text); border:1px solid var(--border);
+    padding:14px; border-radius:14px; font-family:'Bebas Neue',sans-serif;
+    font-size:1.05rem; letter-spacing:3px; cursor:pointer; transition:all 0.2s; }
+  .btn-secondary:hover { border-color:var(--gold); color:var(--gold); }
+
+  .last-session-recap { background:var(--dark3); border:1px solid var(--border); border-radius:14px; padding:18px 20px; }
+  .recap-label { font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; }
+  .recap-row { display:flex; align-items:center; justify-content:space-between; }
+  .recap-format { font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:1px; color:var(--text); }
+  .recap-score { font-family:'Bebas Neue',sans-serif; font-size:1.9rem; color:var(--gold); line-height:1; }
+  .recap-date { font-size:0.78rem; color:var(--text-muted); margin-top:4px; }
+
+  /* SETUP */
+  .setup-title { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:3px; color:var(--gold); margin-bottom:22px; }
+  .form-section { margin-bottom:22px; }
+  .form-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; display:block; }
+
+  .format-section-label {
+    font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px;
+    padding:6px 0 8px; display:flex; align-items:center; gap:8px;
   }
-  .btn-icon:hover { border-color: var(--gold); color: var(--gold); }
-
-  /* ── SCREENS ── */
-  .screen { display: none; }
-  .screen.active { display: block; animation: fadeUp 0.4s ease; }
-
-  /* ── HOME ── */
-  .home-actions { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
-
-  .btn-primary {
-    width: 100%; background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
-    color: var(--dark); border: none; padding: 18px;
-    border-radius: 14px; font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.3rem; letter-spacing: 3px; cursor: pointer; transition: all 0.2s;
-  }
-  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-
-  .btn-secondary {
-    width: 100%; background: var(--dark3); color: var(--text);
-    border: 1px solid var(--border); padding: 16px;
-    border-radius: 14px; font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem; letter-spacing: 3px; cursor: pointer; transition: all 0.2s;
-  }
-  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
-
-  .last-session-recap {
-    background: var(--dark3); border: 1px solid var(--border);
-    border-radius: 14px; padding: 20px 24px;
-  }
-
-  .recap-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
-
-  .recap-row { display: flex; align-items: center; justify-content: space-between; }
-  .recap-format { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; color: var(--text); }
-  .recap-score { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--gold); line-height: 1; }
-  .recap-date { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
-
-  /* ── SETUP SESSION ── */
-  .setup-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 24px; }
-
-  .form-section { margin-bottom: 24px; }
-  .form-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; }
-
-  /* Formats FFTA */
-  .formats-grid { display: flex; flex-direction: column; gap: 8px; }
-
-  .format-card {
-    background: var(--dark3); border: 1px solid var(--border);
-    border-radius: 12px; padding: 14px 18px; cursor: pointer;
-    transition: all 0.2s; display: flex; align-items: center; justify-content: space-between;
-  }
-  .format-card:hover { border-color: rgba(201,168,76,0.5); }
-  .format-card.selected { border-color: var(--gold); background: rgba(201,168,76,0.08); }
-
-  .format-card-left { display: flex; flex-direction: column; gap: 3px; }
-  .format-name { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; color: var(--text); }
-  .format-detail { font-size: 0.78rem; color: var(--text-muted); }
-  .format-score-max { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--text-muted); }
-  .format-card.selected .format-score-max { color: var(--gold); }
-
-  /* Custom format */
-  .custom-fields {
-    display: none; flex-direction: column; gap: 10px; margin-top: 10px;
-    background: var(--dark3); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px;
-  }
-  .custom-fields.visible { display: flex; }
-
-  .custom-row { display: flex; gap: 10px; }
-
-  .input-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-  .input-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
-
-  .field-input {
-    background: var(--dark2); border: 1px solid var(--border);
-    border-radius: 8px; padding: 10px 14px;
-    color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem; outline: none; width: 100%;
-    -webkit-appearance: none;
-  }
-  .field-input:focus { border-color: var(--gold); }
-  .field-input::placeholder { color: var(--text-muted); }
-
-  select.field-input { cursor: pointer; }
-  select.field-input option { background: var(--dark2); }
-
-  /* Arc type chips */
-  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
-  .chip {
-    padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border);
-    background: var(--dark3); color: var(--text-muted);
-    font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
-  }
-  .chip.selected { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
-
-  /* Objectif */
-  .objectif-section {
-    background: var(--dark3); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 18px;
-  }
-
-  .objectif-toggle {
-    display: flex; align-items: center; justify-content: space-between; cursor: pointer;
-  }
-
-  .objectif-toggle-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 2px; color: var(--text-muted); }
-
-  .toggle-switch {
-    width: 44px; height: 24px; background: var(--dark2);
-    border: 1px solid var(--border); border-radius: 12px;
-    position: relative; transition: all 0.2s;
-  }
-  .toggle-switch::after {
-    content: ''; position: absolute; width: 18px; height: 18px;
-    background: var(--text-muted); border-radius: 50%;
-    top: 2px; left: 2px; transition: all 0.2s;
-  }
-  .toggle-switch.on { background: rgba(201,168,76,0.2); border-color: var(--gold); }
-  .toggle-switch.on::after { background: var(--gold); left: 22px; }
-
-  .objectif-fields { display: none; margin-top: 14px; flex-direction: column; gap: 10px; }
-  .objectif-fields.visible { display: flex; }
-
-  .btn-start {
-    width: 100%; background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
-    color: var(--dark); border: none; padding: 18px;
-    border-radius: 14px; font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.3rem; letter-spacing: 3px; cursor: pointer; transition: all 0.2s;
-    margin-top: 8px;
-  }
-  .btn-start:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-start:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-  /* ── SESSION EN COURS ── */
-  .session-header {
-    background: var(--dark3); border: 1px solid var(--border);
-    border-radius: 14px; padding: 16px 20px; margin-bottom: 20px;
-  }
-
-  .session-header-top {
-    display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;
-  }
-
-  .session-format-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; color: var(--gold); }
-  .session-format-detail { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
-
-  .btn-end-session {
-    background: transparent; border: 1px solid var(--red);
-    color: var(--red); padding: 8px 16px; border-radius: 8px;
-    font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
-    letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .btn-end-session:hover { background: var(--red); color: white; }
-
-  .stats-row { display: flex; gap: 0; }
-
-  .stat-cell {
-    flex: 1; text-align: center;
-    padding: 8px 0; border-right: 1px solid var(--border);
-  }
-  .stat-cell:last-child { border-right: none; }
-  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--gold); line-height: 1; }
-  .stat-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
-
-  /* Barre objectif */
-  .objectif-bar-wrap {
-    display: none; margin-top: 12px;
-    padding-top: 12px; border-top: 1px solid var(--border);
-  }
-  .objectif-bar-wrap.visible { display: block; }
-
-  .objectif-bar-labels {
-    display: flex; justify-content: space-between;
-    font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px;
-  }
-
-  .objectif-bar-track {
-    height: 6px; background: var(--dark2); border-radius: 3px; overflow: hidden;
-  }
-
-  .objectif-bar-fill {
-    height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light));
-    border-radius: 3px; transition: width 0.6s ease; width: 0%;
-  }
-
-  .objectif-bar-fill.on-track { background: linear-gradient(90deg, var(--green), #2ECC71); }
-  .objectif-bar-fill.off-track { background: linear-gradient(90deg, var(--red), #E74C3C); }
-
-  .objectif-deadline {
-    font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; text-align: right;
-  }
-
-  /* Mode toggle */
-  .mode-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
-  .mode-btn {
-    flex: 1; padding: 11px; border-radius: 10px;
-    border: 1px solid var(--border); background: var(--dark3);
-    color: var(--text-muted); font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.95rem; letter-spacing: 2px; cursor: pointer; transition: all 0.2s;
-  }
-  .mode-btn.active { background: var(--gold); color: var(--dark); border-color: var(--gold); }
-
-  /* Config archers */
-  .archers-config { display: none; gap: 12px; margin-bottom: 20px; }
-  .archers-config.visible { display: flex; flex-direction: column; }
-
-  .archer-card { background: var(--dark3); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; }
-  .archer-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 10px; }
-
-  .archer-name-input {
-    width: 100%; background: var(--dark2); border: 1px solid var(--border);
-    border-radius: 8px; padding: 10px 14px; color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; margin-bottom: 12px; outline: none;
-  }
-  .archer-name-input:focus { border-color: var(--gold); }
-
-  .colors-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-
-  .colors-grid { display: flex; gap: 8px; flex-wrap: wrap; }
-  .color-chip {
-    display: flex; align-items: center; gap: 6px; padding: 6px 12px;
-    border-radius: 20px; border: 2px solid transparent; cursor: pointer;
-    font-size: 0.8rem; font-weight: 500; transition: all 0.2s;
-    background: var(--dark2); color: var(--text-muted);
-  }
-  .color-chip.selected { border-color: var(--gold); color: var(--text); }
-  .color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-
-  .selected-colors-preview { display: flex; gap: 6px; margin-top: 10px; align-items: center; min-height: 24px; }
-  .preview-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
-  .preview-label { font-size: 0.75rem; color: var(--text-muted); font-style: italic; }
-
-  /* Upload zone */
-  .upload-section { margin-bottom: 20px; }
-
-  .upload-zone {
-    border: 2px dashed var(--border); border-radius: 16px;
-    padding: 40px 24px; text-align: center; cursor: pointer;
-    transition: all 0.3s; background: var(--dark2); position: relative; overflow: hidden;
-  }
-  .upload-zone::before {
-    content: ''; position: absolute; inset: 0;
-    background: radial-gradient(circle at center, rgba(201,168,76,0.06) 0%, transparent 70%);
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .upload-zone:hover, .upload-zone.dragover { border-color: var(--gold); }
-  .upload-zone:hover::before, .upload-zone.dragover::before { opacity: 1; }
-  .upload-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
-  .upload-zone h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 6px; }
-  .upload-zone p { color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
-  #file-input { display: none; }
-
-  /* Analyze section */
-  .analyze-section { display: none; animation: fadeUp 0.4s ease; margin-bottom: 20px; }
-  .analyze-section.visible { display: block; }
-
-  .preview-wrapper {
-    position: relative; background: var(--dark3); border: 1px solid var(--border);
-    border-radius: 16px; overflow: hidden; margin-bottom: 14px;
-  }
-  .preview-img { width: 100%; max-height: 380px; object-fit: contain; display: block; }
-
-  .preview-overlay {
-    position: absolute; inset: 0; background: rgba(0,0,0,0.6);
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .preview-overlay.analyzing { opacity: 1; }
-  .spinner {
-    width: 44px; height: 44px; border: 3px solid rgba(201,168,76,0.2);
-    border-top-color: var(--gold); border-radius: 50%;
-    animation: spin 0.8s linear infinite; margin: 0 auto 14px;
-  }
-  .analyzing-text { text-align: center; }
-  .analyzing-text p { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; color: var(--gold); }
-
-  .btn-analyze {
-    width: 100%; background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
-    color: var(--dark); border: none; padding: 16px; border-radius: 12px;
-    font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 3px;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-  /* Result card */
-  .result-card {
-    display: none; background: var(--dark3); border: 1px solid var(--border);
-    border-radius: 16px; padding: 24px; margin-bottom: 20px; animation: fadeUp 0.4s ease;
-  }
-  .result-card.visible { display: block; }
-
-  .result-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
-  }
-  .result-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: var(--text-muted); }
-  .volley-number { background: var(--gold); color: var(--dark); font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; padding: 3px 12px; border-radius: 20px; letter-spacing: 1px; }
-
-  /* Duo result */
-  .result-duo { display: none; gap: 12px; margin-bottom: 20px; animation: fadeUp 0.4s ease; }
-  .result-duo.visible { display: flex; flex-direction: column; }
-  .duo-card { background: var(--dark3); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
-  .duo-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-  .duo-archer-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; }
-  .duo-colors { display: flex; gap: 5px; }
-  .duo-color-dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
-
-  /* Arrows grid */
-  .arrows-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
-  .arrow-score { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .arrow-badge {
-    width: 46px; height: 46px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; font-weight: bold;
-  }
-  .badge-x    { background: #FFD700; color: #000; border: 2px solid #FFD700; }
-  .badge-10   { background: #FFD700; color: #000; }
-  .badge-9    { background: #FFD700; color: #000; }
-  .badge-8    { background: #E74C3C; color: #fff; }
-  .badge-7    { background: #E74C3C; color: #fff; }
-  .badge-6    { background: #3498DB; color: #fff; }
-  .badge-5    { background: #3498DB; color: #fff; }
-  .badge-4    { background: #2ECC71; color: #fff; }
-  .badge-3    { background: #2ECC71; color: #fff; }
-  .badge-low  { background: #555; color: #fff; }
-  .badge-miss { background: transparent; color: #555; border: 2px solid #333; }
-  .arrow-label { font-size: 0.62rem; color: var(--text-muted); letter-spacing: 1px; }
-
-  .result-total {
-    display: flex; align-items: center; justify-content: space-between;
-    background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 10px; padding: 14px 18px; margin-bottom: 14px;
-  }
-  .total-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
-  .total-value { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; color: var(--gold); line-height: 1; }
-
-  .result-analysis { font-size: 0.88rem; color: var(--text-muted); font-style: italic; line-height: 1.6; padding: 10px 0; border-top: 1px solid var(--border); }
-
-  /* History */
-  .history-section { margin-top: 8px; }
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 3px;
-    color: var(--text-muted); text-transform: uppercase; margin-bottom: 14px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  .history-empty {
-    text-align: center; padding: 28px; color: var(--text-muted);
-    font-style: italic; font-size: 0.88rem; background: var(--dark2);
-    border-radius: 12px; border: 1px dashed var(--border);
-  }
-
-  .history-list { display: flex; flex-direction: column; gap: 8px; }
-
-  .history-item {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--dark2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 18px; transition: border-color 0.2s;
-  }
-  .history-item:hover { border-color: rgba(201,168,76,0.4); }
-  .history-left { display: flex; align-items: center; gap: 12px; }
-  .history-volley { font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; color: var(--text-muted); letter-spacing: 1px; min-width: 56px; }
-  .history-arrows { display: flex; gap: 5px; }
-  .mini-badge { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; }
-  .history-score { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--gold); }
-
-  /* ── HISTORIQUE SCREEN ── */
-  .history-screen-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
-  }
-  .history-screen-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; color: var(--gold); }
-
-  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-  .filter-chip {
-    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
-    background: var(--dark3); color: var(--text-muted); font-size: 0.8rem;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .filter-chip.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
-
-  .session-card {
-    background: var(--dark3); border: 1px solid var(--border);
-    border-radius: 14px; padding: 18px 20px; margin-bottom: 12px;
-    transition: border-color 0.2s;
-  }
-  .session-card:hover { border-color: rgba(201,168,76,0.4); }
-
-  .session-card-header {
-    display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;
-  }
-
-  .session-card-format { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; color: var(--text); }
-  .session-card-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; }
-
-  .session-card-score-wrap { text-align: right; }
-  .session-card-score { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--gold); line-height: 1; }
-  .session-card-max { font-size: 0.72rem; color: var(--text-muted); }
-
-  .session-card-stats {
-    display: flex; gap: 16px; padding-top: 12px; border-top: 1px solid var(--border);
-    flex-wrap: wrap;
-  }
-
-  .mini-stat { font-size: 0.78rem; color: var(--text-muted); }
-  .mini-stat span { color: var(--text); font-weight: 500; }
-
-  .objectif-tag {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 10px; border-radius: 20px;
-    font-size: 0.72rem; margin-top: 8px;
-  }
-  .objectif-tag.achieved { background: rgba(39,174,96,0.15); border: 1px solid rgba(39,174,96,0.3); color: #2ECC71; }
-  .objectif-tag.missed   { background: rgba(192,57,43,0.15);  border: 1px solid rgba(192,57,43,0.3);  color: #E74C3C; }
-  .objectif-tag.pending  { background: rgba(201,168,76,0.1);  border: 1px solid rgba(201,168,76,0.2); color: var(--gold); }
-
-  .progress-mini { margin-top: 10px; }
-  .progress-mini-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; }
-  .progress-mini-track { height: 4px; background: var(--dark2); border-radius: 2px; overflow: hidden; }
-  .progress-mini-fill { height: 100%; border-radius: 2px; background: var(--gold); }
-
-  .btn-delete-session {
-    background: transparent; border: none; color: var(--text-muted);
-    font-size: 1rem; cursor: pointer; padding: 4px 8px; border-radius: 6px;
-    transition: all 0.2s; margin-top: 4px;
-  }
-  .btn-delete-session:hover { color: var(--red); }
-
-  /* ── MODAL SESSION END ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    z-index: 100; align-items: center; justify-content: center;
-    padding: 20px; backdrop-filter: blur(4px);
-  }
-  .modal-overlay.visible { display: flex; animation: fadeIn 0.3s ease; }
-  .modal {
-    background: var(--dark2); border: 1px solid var(--border);
-    border-radius: 20px; padding: 36px; max-width: 460px; width: 100%;
-    text-align: center; animation: scaleIn 0.3s ease;
-  }
-  .modal-icon { font-size: 2.8rem; margin-bottom: 14px; }
-  .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 6px; }
-  .modal-result { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; color: white; line-height: 1; margin: 14px 0; }
-  .modal-comparison { font-size: 0.95rem; padding: 10px 18px; border-radius: 8px; margin: 14px 0 20px; font-weight: 500; }
-  .comparison-better { background: rgba(46,204,113,0.15); border: 1px solid rgba(46,204,113,0.3); color: #2ECC71; }
-  .comparison-worse  { background: rgba(231,76,60,0.15);  border: 1px solid rgba(231,76,60,0.3);  color: #E74C3C; }
-  .comparison-first  { background: rgba(201,168,76,0.1);  border: 1px solid rgba(201,168,76,0.2); color: var(--gold); }
-  .modal-details { display: flex; justify-content: center; gap: 28px; margin-bottom: 24px; }
-  .modal-stat { text-align: center; }
-  .modal-stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--text); }
-  .modal-stat-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-  .modal-objectif {
-    padding: 12px 16px; border-radius: 10px; margin-bottom: 20px;
-    font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px;
-  }
-  .modal-objectif.ok  { background: rgba(39,174,96,0.15); border: 1px solid rgba(39,174,96,0.3); color: #2ECC71; }
-  .modal-objectif.nok { background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.3); color: #E74C3C; }
-  .btn-modal-row { display: flex; gap: 10px; }
-  .btn-new-session {
-    flex: 1; background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
-    color: var(--dark); border: none; padding: 14px;
-    border-radius: 12px; font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem; letter-spacing: 2px; cursor: pointer; transition: all 0.2s;
-  }
-  .btn-new-session:hover { opacity: 0.9; }
-  .btn-home {
-    flex: 1; background: var(--dark3); color: var(--text);
-    border: 1px solid var(--border); padding: 14px; border-radius: 12px;
-    font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-home:hover { border-color: var(--gold); color: var(--gold); }
-
-  /* Queue banner */
-  #queue-banner {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    background: var(--gold); color: var(--dark); padding: 12px 20px; border-radius: 12px;
-    font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px;
-    z-index: 999; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.4);
-    white-space: nowrap;
-  }
-
-  /* Animations */
-  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes fadeUp   { from { opacity: 0; transform: translateY(20px);  } to { opacity: 1; transform: translateY(0); } }
-  @keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes scaleIn  { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-  @keyframes spin     { to { transform: rotate(360deg); } }
-
-  @media (max-width: 600px) {
-    .stats-row { gap: 0; }
-    .stat-value { font-size: 1.5rem; }
-    .modal { padding: 24px; }
-    .modal-result { font-size: 2.8rem; }
-    .btn-modal-row { flex-direction: column; }
+  .format-section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+  .format-section-label.recommended { color:var(--gold); }
+
+  .formats-grid { display:flex; flex-direction:column; gap:7px; }
+  .format-card { background:var(--dark3); border:1px solid var(--border); border-radius:11px;
+    padding:13px 16px; cursor:pointer; transition:all 0.2s;
+    display:flex; align-items:center; justify-content:space-between; }
+  .format-card:hover { border-color:rgba(201,168,76,0.5); }
+  .format-card.selected { border-color:var(--gold); background:rgba(201,168,76,0.08); }
+  .format-card.recommended-card { border-color:rgba(201,168,76,0.35); }
+  .format-card-left { display:flex; flex-direction:column; gap:2px; }
+  .format-name { font-family:'Bebas Neue',sans-serif; font-size:0.97rem; letter-spacing:1px; color:var(--text); }
+  .format-detail { font-size:0.76rem; color:var(--text-muted); }
+  .format-right { display:flex; align-items:center; gap:8px; }
+  .format-score-max { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:var(--text-muted); }
+  .format-card.selected .format-score-max { color:var(--gold); }
+  .badge-recommended { background:rgba(201,168,76,0.15); color:var(--gold);
+    font-size:0.62rem; padding:2px 7px; border-radius:10px; letter-spacing:1px; white-space:nowrap; }
+
+  .custom-fields { display:none; flex-direction:column; gap:10px; margin-top:8px;
+    background:var(--dark3); border:1px solid var(--border); border-radius:11px; padding:14px; }
+  .custom-fields.visible { display:flex; }
+  .custom-row { display:flex; gap:10px; }
+  .input-group { flex:1; display:flex; flex-direction:column; gap:5px; }
+  .input-label { font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; }
+  .field-input { background:var(--dark2); border:1px solid var(--border); border-radius:8px; padding:10px 13px;
+    color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.93rem; outline:none; width:100%; -webkit-appearance:none; }
+  .field-input:focus { border-color:var(--gold); }
+  .field-input::placeholder { color:var(--text-muted); }
+  select.field-input { cursor:pointer; }
+  select.field-input option { background:var(--dark2); }
+
+  .chips { display:flex; gap:7px; flex-wrap:wrap; }
+  .chip { padding:7px 14px; border-radius:20px; border:1px solid var(--border); background:var(--dark3);
+    color:var(--text-muted); font-size:0.82rem; cursor:pointer; transition:all 0.2s; }
+  .chip.selected { border-color:var(--gold); color:var(--gold); background:rgba(201,168,76,0.08); }
+
+  .objectif-section { background:var(--dark3); border:1px solid var(--border); border-radius:11px; padding:14px 16px; }
+  .objectif-toggle { display:flex; align-items:center; justify-content:space-between; cursor:pointer; }
+  .objectif-toggle-label { font-family:'Bebas Neue',sans-serif; font-size:0.92rem; letter-spacing:2px; color:var(--text-muted); }
+  .toggle-switch { width:42px; height:23px; background:var(--dark2); border:1px solid var(--border); border-radius:12px; position:relative; transition:all 0.2s; }
+  .toggle-switch::after { content:''; position:absolute; width:17px; height:17px; background:var(--text-muted); border-radius:50%; top:2px; left:2px; transition:all 0.2s; }
+  .toggle-switch.on { background:rgba(201,168,76,0.2); border-color:var(--gold); }
+  .toggle-switch.on::after { background:var(--gold); left:21px; }
+  .objectif-fields { display:none; margin-top:13px; flex-direction:column; gap:10px; }
+  .objectif-fields.visible { display:flex; }
+
+  .btn-start { width:100%; background:linear-gradient(135deg,var(--gold) 0%,#A07830 100%);
+    color:var(--dark); border:none; padding:17px; border-radius:14px;
+    font-family:'Bebas Neue',sans-serif; font-size:1.25rem; letter-spacing:3px; cursor:pointer; transition:all 0.2s; margin-top:8px; }
+  .btn-start:hover { opacity:0.9; transform:translateY(-1px); }
+  .btn-start:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+  /* SESSION */
+  .session-header { background:var(--dark3); border:1px solid var(--border); border-radius:14px; padding:15px 18px; margin-bottom:18px; }
+  .session-header-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+  .session-format-name { font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:2px; color:var(--gold); }
+  .session-format-detail { font-size:0.76rem; color:var(--text-muted); margin-top:2px; }
+  .btn-end-session { background:transparent; border:1px solid var(--red); color:var(--red); padding:7px 14px;
+    border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.76rem; letter-spacing:1px;
+    text-transform:uppercase; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+  .btn-end-session:hover { background:var(--red); color:white; }
+  .stats-row { display:flex; }
+  .stat-cell { flex:1; text-align:center; padding:8px 0; border-right:1px solid var(--border); }
+  .stat-cell:last-child { border-right:none; }
+  .stat-value { font-family:'Bebas Neue',sans-serif; font-size:1.7rem; color:var(--gold); line-height:1; }
+  .stat-label { font-size:0.66rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-top:2px; }
+  .objectif-bar-wrap { display:none; margin-top:11px; padding-top:11px; border-top:1px solid var(--border); }
+  .objectif-bar-wrap.visible { display:block; }
+  .objectif-bar-labels { display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-bottom:5px; }
+  .objectif-bar-track { height:5px; background:var(--dark2); border-radius:3px; overflow:hidden; }
+  .objectif-bar-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:3px; transition:width 0.6s ease; width:0%; }
+  .objectif-bar-fill.on-track { background:linear-gradient(90deg,var(--green),#2ECC71); }
+  .objectif-bar-fill.off-track { background:linear-gradient(90deg,var(--red),#E74C3C); }
+  .objectif-deadline { font-size:0.7rem; color:var(--text-muted); margin-top:5px; text-align:right; }
+
+  .mode-toggle { display:flex; gap:10px; margin-bottom:18px; }
+  .mode-btn { flex:1; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--dark3);
+    color:var(--text-muted); font-family:'Bebas Neue',sans-serif; font-size:0.92rem; letter-spacing:2px; cursor:pointer; transition:all 0.2s; }
+  .mode-btn.active { background:var(--gold); color:var(--dark); border-color:var(--gold); }
+
+  /* Archers config */
+  .archers-config { display:none; gap:12px; margin-bottom:18px; }
+  .archers-config.visible { display:flex; flex-direction:column; }
+  .archer-card { background:var(--dark3); border:1px solid var(--border); border-radius:14px; padding:15px 18px; }
+  .archer-card-title { font-family:'Bebas Neue',sans-serif; font-size:0.97rem; letter-spacing:2px; color:var(--gold); margin-bottom:10px; }
+  .archer-name-input { width:100%; background:var(--dark2); border:1px solid var(--border); border-radius:8px;
+    padding:9px 13px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.93rem; margin-bottom:11px; outline:none; }
+  .archer-name-input:focus { border-color:var(--gold); }
+  .colors-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; }
+  .colors-grid { display:flex; gap:7px; flex-wrap:wrap; }
+  .color-chip { display:flex; align-items:center; gap:5px; padding:5px 11px; border-radius:20px;
+    border:2px solid transparent; cursor:pointer; font-size:0.78rem; font-weight:500; transition:all 0.2s;
+    background:var(--dark2); color:var(--text-muted); }
+  .color-chip.selected { border-color:var(--gold); color:var(--text); }
+  .color-dot { width:13px; height:13px; border-radius:50%; flex-shrink:0; }
+  .selected-colors-preview { display:flex; gap:5px; margin-top:9px; align-items:center; min-height:22px; }
+  .preview-dot { width:17px; height:17px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); }
+  .preview-label { font-size:0.72rem; color:var(--text-muted); font-style:italic; }
+
+  /* Upload */
+  .upload-section { margin-bottom:18px; }
+  .upload-zone { border:2px dashed var(--border); border-radius:16px; padding:38px 20px; text-align:center;
+    cursor:pointer; transition:all 0.3s; background:var(--dark2); position:relative; overflow:hidden; }
+  .upload-zone::before { content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at center,rgba(201,168,76,0.06) 0%,transparent 70%); opacity:0; transition:opacity 0.3s; }
+  .upload-zone:hover,.upload-zone.dragover { border-color:var(--gold); }
+  .upload-zone:hover::before,.upload-zone.dragover::before { opacity:1; }
+  .upload-icon { font-size:2.4rem; margin-bottom:11px; display:block; }
+  .upload-zone h3 { font-family:'Bebas Neue',sans-serif; font-size:1.25rem; letter-spacing:2px; color:var(--gold); margin-bottom:5px; }
+  .upload-zone p { color:var(--text-muted); font-size:0.83rem; font-style:italic; }
+  #file-input { display:none; }
+
+  /* Analyze */
+  .analyze-section { display:none; animation:fadeUp 0.4s ease; margin-bottom:18px; }
+  .analyze-section.visible { display:block; }
+  .preview-wrapper { position:relative; background:var(--dark3); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:13px; }
+  .preview-img { width:100%; max-height:370px; object-fit:contain; display:block; }
+  .preview-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s; }
+  .preview-overlay.analyzing { opacity:1; }
+  .spinner { width:42px; height:42px; border:3px solid rgba(201,168,76,0.2); border-top-color:var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 13px; }
+  .analyzing-text { text-align:center; }
+  .analyzing-text p { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:2px; color:var(--gold); }
+  .btn-analyze { width:100%; background:linear-gradient(135deg,var(--gold) 0%,#A07830 100%); color:var(--dark); border:none;
+    padding:15px; border-radius:12px; font-family:'Bebas Neue',sans-serif; font-size:1.15rem; letter-spacing:3px; cursor:pointer; transition:all 0.2s; }
+  .btn-analyze:hover { opacity:0.9; transform:translateY(-1px); }
+  .btn-analyze:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+  /* Result */
+  .result-card { display:none; background:var(--dark3); border:1px solid var(--border); border-radius:16px; padding:22px; margin-bottom:18px; animation:fadeUp 0.4s ease; }
+  .result-card.visible { display:block; }
+  .result-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:13px; border-bottom:1px solid var(--border); }
+  .result-header h3 { font-family:'Bebas Neue',sans-serif; font-size:0.97rem; letter-spacing:2px; color:var(--text-muted); }
+  .volley-number { background:var(--gold); color:var(--dark); font-family:'Bebas Neue',sans-serif; font-size:0.83rem; padding:3px 11px; border-radius:20px; letter-spacing:1px; }
+  .result-duo { display:none; gap:12px; margin-bottom:18px; animation:fadeUp 0.4s ease; }
+  .result-duo.visible { display:flex; flex-direction:column; }
+  .duo-card { background:var(--dark3); border:1px solid var(--border); border-radius:14px; padding:18px; }
+  .duo-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:11px; border-bottom:1px solid var(--border); }
+  .duo-archer-name { font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:2px; }
+  .duo-colors { display:flex; gap:5px; }
+  .duo-color-dot { width:15px; height:15px; border-radius:50%; border:1px solid rgba(255,255,255,0.2); }
+
+  .arrows-grid { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:16px; }
+  .arrow-score { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .arrow-badge { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:1.15rem; font-weight:bold; }
+  .badge-x  { background:#FFD700; color:#000; border:2px solid #FFD700; }
+  .badge-10 { background:#FFD700; color:#000; }
+  .badge-9  { background:#FFD700; color:#000; }
+  .badge-8  { background:#E74C3C; color:#fff; }
+  .badge-7  { background:#E74C3C; color:#fff; }
+  .badge-6  { background:#3498DB; color:#fff; }
+  .badge-5  { background:#3498DB; color:#fff; }
+  .badge-4  { background:#2ECC71; color:#fff; }
+  .badge-3  { background:#2ECC71; color:#fff; }
+  .badge-low  { background:#555; color:#fff; }
+  .badge-miss { background:transparent; color:#555; border:2px solid #333; }
+  .arrow-label { font-size:0.6rem; color:var(--text-muted); letter-spacing:1px; }
+
+  .result-total { display:flex; align-items:center; justify-content:space-between; background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.2); border-radius:10px; padding:13px 17px; margin-bottom:13px; }
+  .total-label { font-size:0.76rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; }
+  .total-value { font-family:'Bebas Neue',sans-serif; font-size:2.3rem; color:var(--gold); line-height:1; }
+  .result-analysis { font-size:0.86rem; color:var(--text-muted); font-style:italic; line-height:1.6; padding:9px 0; border-top:1px solid var(--border); }
+
+  /* History in-session */
+  .history-section { margin-top:6px; }
+  .section-title { font-family:'Bebas Neue',sans-serif; font-size:0.92rem; letter-spacing:3px; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:12px; }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+  .history-empty { text-align:center; padding:26px; color:var(--text-muted); font-style:italic; font-size:0.86rem; background:var(--dark2); border-radius:12px; border:1px dashed var(--border); }
+  .history-list { display:flex; flex-direction:column; gap:7px; }
+  .history-item { display:flex; align-items:center; justify-content:space-between; background:var(--dark2); border:1px solid var(--border); border-radius:10px; padding:11px 16px; transition:border-color 0.2s; }
+  .history-item:hover { border-color:rgba(201,168,76,0.4); }
+  .history-left { display:flex; align-items:center; gap:11px; }
+  .history-volley { font-family:'Bebas Neue',sans-serif; font-size:0.8rem; color:var(--text-muted); letter-spacing:1px; min-width:54px; }
+  .history-arrows { display:flex; gap:5px; }
+  .mini-badge { width:25px; height:25px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:600; }
+  .history-score { font-family:'Bebas Neue',sans-serif; font-size:1.45rem; color:var(--gold); }
+
+  /* HISTORIQUE SCREEN */
+  .history-screen-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+  .history-screen-title { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:3px; color:var(--gold); }
+  .filters { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:18px; }
+  .filter-chip { padding:5px 13px; border-radius:20px; border:1px solid var(--border); background:var(--dark3); color:var(--text-muted); font-size:0.78rem; cursor:pointer; transition:all 0.2s; }
+  .filter-chip.active { border-color:var(--gold); color:var(--gold); background:rgba(201,168,76,0.08); }
+  .session-card { background:var(--dark3); border:1px solid var(--border); border-radius:14px; padding:16px 18px; margin-bottom:10px; transition:border-color 0.2s; }
+  .session-card:hover { border-color:rgba(201,168,76,0.4); }
+  .session-card-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:11px; }
+  .session-card-format { font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:1px; color:var(--text); }
+  .session-card-meta { font-size:0.76rem; color:var(--text-muted); margin-top:3px; }
+  .session-card-score { font-family:'Bebas Neue',sans-serif; font-size:1.9rem; color:var(--gold); line-height:1; }
+  .session-card-max { font-size:0.7rem; color:var(--text-muted); }
+  .session-card-stats { display:flex; gap:14px; padding-top:11px; border-top:1px solid var(--border); flex-wrap:wrap; }
+  .mini-stat { font-size:0.76rem; color:var(--text-muted); }
+  .mini-stat span { color:var(--text); font-weight:500; }
+  .objectif-tag { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:0.7rem; margin-top:7px; }
+  .objectif-tag.achieved { background:rgba(39,174,96,0.15); border:1px solid rgba(39,174,96,0.3); color:#2ECC71; }
+  .objectif-tag.missed   { background:rgba(192,57,43,0.15);  border:1px solid rgba(192,57,43,0.3);  color:#E74C3C; }
+  .progress-mini { margin-top:9px; }
+  .progress-mini-labels { display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-muted); margin-bottom:4px; }
+  .progress-mini-track { height:4px; background:var(--dark2); border-radius:2px; overflow:hidden; }
+  .progress-mini-fill { height:100%; border-radius:2px; background:var(--gold); }
+  .btn-delete-session { background:transparent; border:none; color:var(--text-muted); font-size:0.95rem; cursor:pointer; padding:4px 7px; border-radius:6px; transition:all 0.2s; margin-top:3px; }
+  .btn-delete-session:hover { color:var(--red); }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:100; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px); }
+  .modal-overlay.visible { display:flex; animation:fadeIn 0.3s ease; }
+  .modal { background:var(--dark2); border:1px solid var(--border); border-radius:20px; padding:34px; max-width:450px; width:100%; text-align:center; animation:scaleIn 0.3s ease; }
+  .modal-icon { font-size:2.6rem; margin-bottom:13px; }
+  .modal h2 { font-family:'Bebas Neue',sans-serif; font-size:1.7rem; letter-spacing:3px; color:var(--gold); margin-bottom:5px; }
+  .modal-result { font-family:'Bebas Neue',sans-serif; font-size:3.3rem; color:white; line-height:1; margin:13px 0; }
+  .modal-comparison { font-size:0.92rem; padding:9px 16px; border-radius:8px; margin:13px 0 18px; font-weight:500; }
+  .comparison-better { background:rgba(46,204,113,0.15); border:1px solid rgba(46,204,113,0.3); color:#2ECC71; }
+  .comparison-worse  { background:rgba(231,76,60,0.15);  border:1px solid rgba(231,76,60,0.3);  color:#E74C3C; }
+  .comparison-first  { background:rgba(201,168,76,0.1);  border:1px solid rgba(201,168,76,0.2); color:var(--gold); }
+  .modal-details { display:flex; justify-content:center; gap:26px; margin-bottom:22px; }
+  .modal-stat { text-align:center; }
+  .modal-stat-value { font-family:'Bebas Neue',sans-serif; font-size:1.45rem; color:var(--text); }
+  .modal-stat-label { font-size:0.66rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+  .modal-objectif { padding:11px 15px; border-radius:10px; margin-bottom:18px; font-family:'Bebas Neue',sans-serif; font-size:0.95rem; letter-spacing:1px; }
+  .modal-objectif.ok  { background:rgba(39,174,96,0.15); border:1px solid rgba(39,174,96,0.3); color:#2ECC71; }
+  .modal-objectif.nok { background:rgba(192,57,43,0.15); border:1px solid rgba(192,57,43,0.3); color:#E74C3C; }
+  .btn-modal-row { display:flex; gap:9px; }
+  .btn-new-session { flex:1; background:linear-gradient(135deg,var(--gold) 0%,#A07830 100%); color:var(--dark); border:none; padding:13px; border-radius:12px; font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:2px; cursor:pointer; transition:all 0.2s; }
+  .btn-new-session:hover { opacity:0.9; }
+  .btn-home { flex:1; background:var(--dark3); color:var(--text); border:1px solid var(--border); padding:13px; border-radius:12px; font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:2px; cursor:pointer; transition:all 0.2s; }
+  .btn-home:hover { border-color:var(--gold); color:var(--gold); }
+
+  #queue-banner { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--gold); color:var(--dark); padding:11px 18px; border-radius:12px; font-family:'Bebas Neue',sans-serif; font-size:0.95rem; letter-spacing:2px; z-index:999; cursor:pointer; box-shadow:0 4px 20px rgba(201,168,76,0.4); white-space:nowrap; }
+
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+  @keyframes scaleIn  { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+  @keyframes spin     { to{transform:rotate(360deg)} }
+
+  @media(max-width:600px) {
+    .stat-value{font-size:1.45rem} .modal{padding:22px} .modal-result{font-size:2.7rem} .btn-modal-row{flex-direction:column}
   }
 </style>
 </head>
 <body>
 <div class="container">
 
-  <!-- Header -->
+  <!-- HEADER -->
   <div class="header">
     <div class="logo">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -568,90 +342,101 @@
         <line x1="25" y1="6" x2="24" y2="2" stroke="#C0392B" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
     </div>
-    <div class="header-text">
-      <h1>ArcherAI</h1>
-      <p>Score par intelligence artificielle</p>
-    </div>
+    <div class="header-text"><h1>ArcherAI</h1><p>Score par intelligence artificielle</p></div>
     <div class="header-actions">
-      <button class="btn-icon" onclick="showScreen('history')">📋 Historique</button>
+      <button class="btn-icon" onclick="showScreen('history')">📋</button>
       <a href="guide-scoring.html" class="btn-icon">? Guide</a>
     </div>
   </div>
 
-  <!-- ═══════════════════ SCREEN : HOME ═══════════════════ -->
+  <!-- ══════════ HOME ══════════ -->
   <div class="screen active" id="screen-home">
+
+    <!-- Profil card -->
+    <div class="profil-card" onclick="showScreen('profil')" id="profil-card-home">
+      <div class="profil-card-left">
+        <div class="profil-avatar" id="profil-avatar">🏹</div>
+        <div class="profil-info">
+          <div class="profil-name" id="profil-name-display">Mon profil</div>
+          <div class="profil-meta">
+            <span id="profil-arc-display" style="color:var(--gold)"></span>
+            <div class="profil-colors" id="profil-colors-display"></div>
+          </div>
+        </div>
+      </div>
+      <div class="profil-edit-hint">✏️ Modifier</div>
+    </div>
+
     <div class="home-actions">
       <button class="btn-primary" onclick="showScreen('setup')">🏹 Nouvelle session</button>
-      <button class="btn-secondary" onclick="showScreen('history')">📋 Voir l'historique</button>
+      <button class="btn-secondary" onclick="showScreen('history')">📋 Historique</button>
     </div>
+
     <div class="last-session-recap" id="last-session-recap" style="display:none">
       <div class="recap-label">Dernière session</div>
       <div class="recap-row">
-        <div>
-          <div class="recap-format" id="recap-format">—</div>
-          <div class="recap-date" id="recap-date">—</div>
-        </div>
+        <div><div class="recap-format" id="recap-format">—</div><div class="recap-date" id="recap-date">—</div></div>
         <div class="recap-score" id="recap-score">—</div>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════════════ SCREEN : SETUP ═══════════════════ -->
+  <!-- ══════════ PROFIL ══════════ -->
+  <div class="screen" id="screen-profil">
+    <div class="profil-screen-title">👤 Mon profil</div>
+
+    <div class="form-section">
+      <label class="form-label">Prénom</label>
+      <input type="text" class="field-input" id="profil-prenom" placeholder="Ton prénom" oninput="saveProfil()">
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">Type d'arc</label>
+      <div class="chips" id="profil-arc-chips">
+        <div class="chip" onclick="selectProfilArc('Recurve')">Recurve</div>
+        <div class="chip" onclick="selectProfilArc('Classique')">Classique</div>
+        <div class="chip" onclick="selectProfilArc('Compound')">Compound</div>
+        <div class="chip" onclick="selectProfilArc('Barebow')">Barebow</div>
+        <div class="chip" onclick="selectProfilArc('Longbow')">Longbow</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">Couleur(s) de mes plumes <span style="color:var(--text-muted);font-size:0.7rem;font-style:italic">(utilisées en mode Duo)</span></label>
+      <div class="colors-grid" id="profil-colors-grid"></div>
+      <div class="selected-colors-preview" id="profil-colors-preview"><span class="preview-label">Sélectionnez 1 à 3 couleurs</span></div>
+    </div>
+
+    <button class="btn-primary" onclick="showScreen('home')">✅ Enregistrer</button>
+    <button class="btn-secondary" style="margin-top:10px" onclick="showScreen('home')">← Retour</button>
+  </div>
+
+  <!-- ══════════ SETUP ══════════ -->
   <div class="screen" id="screen-setup">
     <div class="setup-title">⚙️ Configurer la session</div>
 
-    <!-- Format -->
     <div class="form-section">
       <label class="form-label">Format de tir</label>
       <div class="formats-grid" id="formats-grid"></div>
     </div>
 
-    <!-- Format libre -->
     <div class="custom-fields" id="custom-fields">
       <div class="custom-row">
-        <div class="input-group">
-          <div class="input-label">Distance (m)</div>
-          <input type="number" class="field-input" id="custom-distance" placeholder="ex: 50" min="1" max="90">
-        </div>
-        <div class="input-group">
-          <div class="input-label">Blason (cm)</div>
+        <div class="input-group"><div class="input-label">Distance (m)</div><input type="number" class="field-input" id="custom-distance" placeholder="ex: 50" min="1" max="90"></div>
+        <div class="input-group"><div class="input-label">Blason</div>
           <select class="field-input" id="custom-blason">
             <option value="">— choisir —</option>
-            <option value="40cm">40 cm</option>
-            <option value="60cm">60 cm</option>
-            <option value="80cm">80 cm</option>
-            <option value="122cm">122 cm</option>
-            <option value="Vegas trispot">Vegas trispot</option>
-            <option value="Beursault">Beursault</option>
-            <option value="GEF">GEF débutants</option>
+            <option>40cm</option><option>60cm</option><option>80cm</option><option>122cm</option>
+            <option>Vegas trispot</option><option>Beursault</option><option>GEF</option>
           </select>
         </div>
       </div>
       <div class="custom-row">
-        <div class="input-group">
-          <div class="input-label">Nb volées</div>
-          <input type="number" class="field-input" id="custom-volleys" placeholder="ex: 12" min="1" max="50">
-        </div>
-        <div class="input-group">
-          <div class="input-label">Flèches / volée</div>
-          <input type="number" class="field-input" id="custom-arrows" placeholder="ex: 6" min="1" max="12">
-        </div>
+        <div class="input-group"><div class="input-label">Nb volées</div><input type="number" class="field-input" id="custom-volleys" placeholder="ex: 12" min="1" max="50"></div>
+        <div class="input-group"><div class="input-label">Flèches/volée</div><input type="number" class="field-input" id="custom-arrows" placeholder="ex: 6" min="1" max="12"></div>
       </div>
     </div>
 
-    <!-- Type d'arc -->
-    <div class="form-section">
-      <label class="form-label">Type d'arc <span style="color:var(--text-muted);font-size:0.7rem;font-style:italic">(étiquette)</span></label>
-      <div class="chips" id="arc-chips">
-        <div class="chip" onclick="selectArc('Recurve')">Recurve</div>
-        <div class="chip" onclick="selectArc('Classique')">Classique</div>
-        <div class="chip" onclick="selectArc('Compound')">Compound</div>
-        <div class="chip" onclick="selectArc('Barebow')">Barebow</div>
-        <div class="chip" onclick="selectArc('Longbow')">Longbow</div>
-      </div>
-    </div>
-
-    <!-- Objectif -->
     <div class="form-section">
       <div class="objectif-section">
         <div class="objectif-toggle" onclick="toggleObjectif()">
@@ -659,28 +444,20 @@
           <div class="toggle-switch" id="objectif-switch"></div>
         </div>
         <div class="objectif-fields" id="objectif-fields">
-          <div class="custom-row">
-            <div class="input-group">
-              <div class="input-label">Score cible</div>
-              <input type="number" class="field-input" id="obj-score" placeholder="ex: 480" min="1">
-            </div>
-            <div class="input-group">
-              <div class="input-label">Date butée (optionnel)</div>
-              <input type="date" class="field-input" id="obj-date">
-            </div>
+          <div class="custom-row" style="margin-top:13px">
+            <div class="input-group"><div class="input-label">Score cible</div><input type="number" class="field-input" id="obj-score" placeholder="ex: 480" min="1"></div>
+            <div class="input-group"><div class="input-label">Date butée (optionnel)</div><input type="date" class="field-input" id="obj-date"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <button class="btn-start" id="btn-start" onclick="startSession()">🏹 Commencer</button>
+    <button class="btn-start" onclick="startSession()">🏹 Commencer</button>
     <button class="btn-secondary" style="margin-top:10px" onclick="showScreen('home')">← Retour</button>
   </div>
 
-  <!-- ═══════════════════ SCREEN : SESSION ═══════════════════ -->
+  <!-- ══════════ SESSION ══════════ -->
   <div class="screen" id="screen-session">
-
-    <!-- Header session -->
     <div class="session-header">
       <div class="session-header-top">
         <div>
@@ -690,64 +467,42 @@
         <button class="btn-end-session" onclick="endSession()">Terminer</button>
       </div>
       <div class="stats-row">
-        <div class="stat-cell">
-          <div class="stat-value" id="total-score">0</div>
-          <div class="stat-label">Points</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-value" id="volley-count">0</div>
-          <div class="stat-label" id="volley-label">Volées</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-value" id="arrow-count">0</div>
-          <div class="stat-label">Flèches</div>
-        </div>
-        <div class="stat-cell">
-          <div class="stat-value" id="avg-per-arrow">—</div>
-          <div class="stat-label">Moy/flèche</div>
-        </div>
+        <div class="stat-cell"><div class="stat-value" id="total-score">0</div><div class="stat-label">Points</div></div>
+        <div class="stat-cell"><div class="stat-value" id="volley-count">0</div><div class="stat-label" id="volley-label">Volées</div></div>
+        <div class="stat-cell"><div class="stat-value" id="arrow-count">0</div><div class="stat-label">Flèches</div></div>
+        <div class="stat-cell"><div class="stat-value" id="avg-per-arrow">—</div><div class="stat-label">Moy/fl.</div></div>
       </div>
-      <!-- Barre objectif -->
       <div class="objectif-bar-wrap" id="objectif-bar-wrap">
-        <div class="objectif-bar-labels">
-          <span id="obj-bar-label">Objectif</span>
-          <span id="obj-bar-pct">0%</span>
-        </div>
-        <div class="objectif-bar-track">
-          <div class="objectif-bar-fill" id="objectif-bar-fill"></div>
-        </div>
+        <div class="objectif-bar-labels"><span id="obj-bar-label">Objectif</span><span id="obj-bar-pct">0%</span></div>
+        <div class="objectif-bar-track"><div class="objectif-bar-fill" id="objectif-bar-fill"></div></div>
         <div class="objectif-deadline" id="objectif-deadline"></div>
       </div>
     </div>
 
-    <!-- Mode Solo / Duo -->
     <div class="mode-toggle">
       <button class="mode-btn active" onclick="setMode('solo')" id="btn-mode-solo">🏹 Solo</button>
       <button class="mode-btn" onclick="setMode('duo')" id="btn-mode-duo">🏹🏹 Duo</button>
     </div>
 
-    <!-- Config archers (duo) -->
     <div class="archers-config" id="archers-config">
       <div class="archer-card">
-        <div class="archer-card-title">🏹 Archer 1</div>
-        <input type="text" class="archer-name-input" id="archer1-name" placeholder="Prénom" oninput="saveProfiles()">
+        <div class="archer-card-title">🏹 Archer 1 (moi)</div>
+        <input type="text" class="archer-name-input" id="archer1-name" placeholder="Prénom" oninput="saveDuoProfiles()">
         <div class="colors-label">Couleur(s) des plumes</div>
         <div class="colors-grid" id="colors1"></div>
         <div class="selected-colors-preview" id="preview1"><span class="preview-label">Sélectionnez 1 à 3 couleurs</span></div>
       </div>
       <div class="archer-card">
         <div class="archer-card-title">🏹 Archer 2</div>
-        <input type="text" class="archer-name-input" id="archer2-name" placeholder="Prénom" oninput="saveProfiles()">
+        <input type="text" class="archer-name-input" id="archer2-name" placeholder="Prénom" oninput="saveDuoProfiles()">
         <div class="colors-label">Couleur(s) des plumes</div>
         <div class="colors-grid" id="colors2"></div>
         <div class="selected-colors-preview" id="preview2"><span class="preview-label">Sélectionnez 1 à 3 couleurs</span></div>
       </div>
     </div>
 
-    <!-- Upload -->
     <div class="upload-section">
-      <div class="upload-zone" id="upload-zone"
-           onclick="document.getElementById('file-input').click()"
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
            ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
         <span class="upload-icon">🎯</span>
         <h3>Photographier la cible</h3>
@@ -756,7 +511,6 @@
       <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
     </div>
 
-    <!-- Analyze -->
     <div class="analyze-section" id="analyze-section">
       <div class="preview-wrapper">
         <img class="preview-img" id="preview-img" src="" alt="Cible">
@@ -767,51 +521,38 @@
       <button class="btn-analyze" id="btn-analyze" onclick="analyzeImage()">🏹 Analyser les points</button>
     </div>
 
-    <!-- Result solo -->
     <div class="result-card" id="result-card">
       <div class="result-header">
         <h3>Résultat de la volée</h3>
         <span class="volley-number" id="result-volley-label">Volée 1</span>
       </div>
       <div class="arrows-grid" id="arrows-grid"></div>
-      <div class="result-total">
-        <div class="total-label">Score volée</div>
-        <div class="total-value" id="result-total-value">0</div>
-      </div>
+      <div class="result-total"><div class="total-label">Score volée</div><div class="total-value" id="result-total-value">0</div></div>
       <div class="result-analysis" id="result-analysis"></div>
     </div>
 
-    <!-- Result duo -->
     <div class="result-duo" id="result-duo">
-      <div class="duo-card" id="duo-card-1">
-        <div class="duo-header">
-          <div class="duo-archer-name" id="duo-name-1">Archer 1</div>
-          <div class="duo-colors" id="duo-colors-1"></div>
-        </div>
+      <div class="duo-card">
+        <div class="duo-header"><div class="duo-archer-name" id="duo-name-1">Archer 1</div><div class="duo-colors" id="duo-colors-1"></div></div>
         <div class="arrows-grid" id="arrows-grid-1"></div>
         <div class="result-total"><div class="total-label">Score volée</div><div class="total-value" id="total-value-1">0</div></div>
         <div class="result-analysis" id="analysis-1"></div>
       </div>
-      <div class="duo-card" id="duo-card-2">
-        <div class="duo-header">
-          <div class="duo-archer-name" id="duo-name-2">Archer 2</div>
-          <div class="duo-colors" id="duo-colors-2"></div>
-        </div>
+      <div class="duo-card">
+        <div class="duo-header"><div class="duo-archer-name" id="duo-name-2">Archer 2</div><div class="duo-colors" id="duo-colors-2"></div></div>
         <div class="arrows-grid" id="arrows-grid-2"></div>
         <div class="result-total"><div class="total-label">Score volée</div><div class="total-value" id="total-value-2">0</div></div>
         <div class="result-analysis" id="analysis-2"></div>
       </div>
     </div>
 
-    <!-- Feuille de score -->
     <div class="history-section">
       <div class="section-title">Feuille de score</div>
       <div id="history-container"><div class="history-empty">Aucune volée encore — prenez votre première photo !</div></div>
     </div>
-
   </div>
 
-  <!-- ═══════════════════ SCREEN : HISTORIQUE ═══════════════════ -->
+  <!-- ══════════ HISTORIQUE ══════════ -->
   <div class="screen" id="screen-history">
     <div class="history-screen-header">
       <div class="history-screen-title">📋 Historique</div>
@@ -823,7 +564,7 @@
 
 </div>
 
-<!-- Modal fin session -->
+<!-- MODAL FIN SESSION -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-icon" id="modal-icon">🏆</div>
@@ -844,98 +585,186 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 // FORMATS FFTA
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 const FFTA_FORMATS = [
-  { id: 'salle-40',    name: 'Salle 18m',         detail: '18m · Blason 40cm · 20×3 = 60 flèches',  distance: 18, blason: '40cm',        volleys: 20, arrowsPerVolley: 3,  maxScore: 600 },
-  { id: 'salle-vegas', name: 'Salle Vegas',        detail: '18m · Trispot · 20×3 = 60 flèches',      distance: 18, blason: 'Vegas trispot', volleys: 20, arrowsPerVolley: 3,  maxScore: 600 },
-  { id: 'salle-60',    name: 'Salle 18m (U13/U15)',detail: '18m · Blason 60cm · 20×3 = 60 flèches',  distance: 18, blason: '60cm',        volleys: 20, arrowsPerVolley: 3,  maxScore: 600 },
-  { id: 'ext-70',      name: 'Extérieur 70m',      detail: '70m · Blason 122cm · 12×6 = 72 flèches', distance: 70, blason: '122cm',       volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
-  { id: 'ext-60',      name: 'Extérieur 60m',      detail: '60m · Blason 122cm · 12×6 = 72 flèches', distance: 60, blason: '122cm',       volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
-  { id: 'ext-50',      name: 'Extérieur 50m',      detail: '50m · Blason 80cm · 12×6 = 72 flèches',  distance: 50, blason: '80cm',        volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
-  { id: 'ext-40',      name: 'Extérieur 40m',      detail: '40m · Blason 80cm · 12×6 = 72 flèches',  distance: 40, blason: '80cm',        volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
-  { id: 'ext-30',      name: 'Extérieur 30m',      detail: '30m · Blason 80cm · 12×6 = 72 flèches',  distance: 30, blason: '80cm',        volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
-  { id: 'beursault',   name: 'Beursault',           detail: 'Blason Beursault · libre',               distance: null, blason: 'Beursault', volleys: 12, arrowsPerVolley: 6, maxScore: null },
-  { id: 'libre',       name: '⚙️ Format libre',    detail: 'Personnalisez votre session',             distance: null, blason: null,         volleys: null, arrowsPerVolley: null, maxScore: null },
+  { id:'salle-40',    name:'Salle 18m',          detail:'18m · 40cm · 20×3 = 60 flèches',  distance:18,  blason:'40cm',         volleys:20, apv:3, maxScore:600,  arcs:['Recurve','Classique','Barebow','Longbow'] },
+  { id:'salle-vegas', name:'Salle Vegas',         detail:'18m · Trispot · 20×3 = 60 flèches', distance:18, blason:'Vegas trispot', volleys:20, apv:3, maxScore:600, arcs:['Compound'] },
+  { id:'salle-60',    name:'Salle 18m U13/U15',   detail:'18m · 60cm · 20×3 = 60 flèches',  distance:18,  blason:'60cm',         volleys:20, apv:3, maxScore:600,  arcs:[] },
+  { id:'ext-70',      name:'Extérieur 70m',       detail:'70m · 122cm · 12×6 = 72 flèches', distance:70,  blason:'122cm',        volleys:12, apv:6, maxScore:720,  arcs:['Recurve','Classique'] },
+  { id:'ext-60',      name:'Extérieur 60m',       detail:'60m · 122cm · 12×6 = 72 flèches', distance:60,  blason:'122cm',        volleys:12, apv:6, maxScore:720,  arcs:['Recurve','Classique'] },
+  { id:'ext-50-comp', name:'Extérieur 50m',       detail:'50m · 80cm · 12×6 = 72 flèches',  distance:50,  blason:'80cm',         volleys:12, apv:6, maxScore:720,  arcs:['Compound'] },
+  { id:'ext-50',      name:'Extérieur 50m',       detail:'50m · 122cm · 12×6 = 72 flèches', distance:50,  blason:'122cm',        volleys:12, apv:6, maxScore:720,  arcs:['Barebow'] },
+  { id:'ext-40',      name:'Extérieur 40m',       detail:'40m · 80cm · 12×6 = 72 flèches',  distance:40,  blason:'80cm',         volleys:12, apv:6, maxScore:720,  arcs:['Recurve','Classique','Compound','Barebow'] },
+  { id:'ext-30',      name:'Extérieur 30m',       detail:'30m · 80cm · 12×6 = 72 flèches',  distance:30,  blason:'80cm',         volleys:12, apv:6, maxScore:720,  arcs:['Recurve','Classique','Compound','Barebow'] },
+  { id:'beursault',   name:'Beursault',            detail:'Blason Beursault · 12×6',          distance:null,blason:'Beursault',    volleys:12, apv:6, maxScore:null, arcs:[] },
+  { id:'libre',       name:'⚙️ Format libre',     detail:'Personnalisez votre session',       distance:null,blason:null,           volleys:null,apv:null,maxScore:null,arcs:[] },
 ];
 
 const COLORS = [
-  { name: 'Blanc',  hex: '#FFFFFF' }, { name: 'Noir',   hex: '#222222' },
-  { name: 'Rouge',  hex: '#E74C3C' }, { name: 'Bleu',   hex: '#3498DB' },
-  { name: 'Vert',   hex: '#2ECC71' }, { name: 'Orange', hex: '#E67E22' },
-  { name: 'Jaune',  hex: '#F1C40F' }, { name: 'Violet', hex: '#9B59B6' },
-  { name: 'Rose',   hex: '#FF69B4' }, { name: 'Gris',   hex: '#95A5A6' },
+  {name:'Blanc',hex:'#FFFFFF'},{name:'Noir',hex:'#222222'},{name:'Rouge',hex:'#E74C3C'},
+  {name:'Bleu',hex:'#3498DB'},{name:'Vert',hex:'#2ECC71'},{name:'Orange',hex:'#E67E22'},
+  {name:'Jaune',hex:'#F1C40F'},{name:'Violet',hex:'#9B59B6'},{name:'Rose',hex:'#FF69B4'},{name:'Gris',hex:'#95A5A6'},
 ];
 
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════
-let currentScreen = 'home';
+// ══════════════════════════════════════════
 let selectedFormatId = null;
-let selectedArc = null;
 let objectifEnabled = false;
 let mode = 'solo';
-
-let currentSession = null; // { format, arc, objectif, volleys, totalScore, arrowCount, startDate }
+let currentSession = null;
 let currentImageBase64 = null;
-
 let archer1Colors = JSON.parse(localStorage.getItem('archer1Colors') || '[]');
 let archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
 
-// ═══════════════════════════════════════════════
+// Profil archer
+let profil = JSON.parse(localStorage.getItem('archerProfil') || '{}');
+// { prenom, arc, colors[] }
+
+// ══════════════════════════════════════════
 // NAVIGATION
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
-  currentScreen = name;
   if (name === 'history') renderHistoryScreen();
-  if (name === 'home') renderHomeRecap();
+  if (name === 'home')    { renderHomeRecap(); renderProfilCard(); }
+  if (name === 'setup')   buildFormatsGrid();
+  if (name === 'profil')  loadProfilScreen();
 }
 
-// ═══════════════════════════════════════════════
-// HOME
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// PROFIL
+// ══════════════════════════════════════════
+function loadProfilScreen() {
+  document.getElementById('profil-prenom').value = profil.prenom || '';
+  // arc chips
+  document.querySelectorAll('#profil-arc-chips .chip').forEach(c => {
+    c.classList.toggle('selected', c.textContent === profil.arc);
+  });
+  // colors
+  buildProfilColorGrid();
+}
+
+function selectProfilArc(arc) {
+  profil.arc = profil.arc === arc ? null : arc;
+  document.querySelectorAll('#profil-arc-chips .chip').forEach(c => {
+    c.classList.toggle('selected', c.textContent === profil.arc);
+  });
+  saveProfil();
+}
+
+function buildProfilColorGrid() {
+  const grid = document.getElementById('profil-colors-grid');
+  const sel = profil.colors || [];
+  grid.innerHTML = COLORS.map(c => `
+    <div class="color-chip${sel.includes(c.name) ? ' selected' : ''}" onclick="toggleProfilColor('${c.name}')">
+      <div class="color-dot" style="background:${c.hex};border:1px solid rgba(255,255,255,0.2)"></div>${c.name}
+    </div>`).join('');
+  updateProfilColorPreview();
+}
+
+function toggleProfilColor(name) {
+  let arr = profil.colors || [];
+  if (arr.includes(name)) arr = arr.filter(c => c !== name);
+  else { if (arr.length >= 3) { alert('Maximum 3 couleurs !'); return; } arr.push(name); }
+  profil.colors = arr;
+  saveProfil();
+  buildProfilColorGrid();
+}
+
+function updateProfilColorPreview() {
+  const preview = document.getElementById('profil-colors-preview');
+  const arr = profil.colors || [];
+  if (!arr.length) { preview.innerHTML = '<span class="preview-label">Sélectionnez 1 à 3 couleurs</span>'; return; }
+  preview.innerHTML = arr.map(name => {
+    const c = COLORS.find(x => x.name === name);
+    return `<div class="preview-dot" style="background:${c.hex}"></div>`;
+  }).join('') + `<span class="preview-label">${arr.join(' + ')}</span>`;
+}
+
+function saveProfil() {
+  profil.prenom = document.getElementById('profil-prenom').value;
+  localStorage.setItem('archerProfil', JSON.stringify(profil));
+  renderProfilCard();
+}
+
+function renderProfilCard() {
+  const nameEl = document.getElementById('profil-name-display');
+  const arcEl  = document.getElementById('profil-arc-display');
+  const colEl  = document.getElementById('profil-colors-display');
+
+  nameEl.textContent = profil.prenom || 'Mon profil';
+  arcEl.textContent  = profil.arc || '';
+  colEl.innerHTML = (profil.colors || []).map(name => {
+    const c = COLORS.find(x => x.name === name);
+    return `<div class="profil-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// HOME RECAP
+// ══════════════════════════════════════════
 function renderHomeRecap() {
   const sessions = getSavedSessions();
-  if (sessions.length === 0) return;
+  const recap = document.getElementById('last-session-recap');
+  if (!sessions.length) { recap.style.display = 'none'; return; }
+  recap.style.display = 'block';
   const last = sessions[0];
-  document.getElementById('last-session-recap').style.display = 'block';
-  document.getElementById('recap-format').textContent = last.format.name;
-  document.getElementById('recap-date').textContent = formatDate(last.date);
+  document.getElementById('recap-format').textContent = last.format.name + (last.arc ? ' — ' + last.arc : '');
+  document.getElementById('recap-date').textContent = formatDate(last.endDate || last.startDate);
   document.getElementById('recap-score').textContent = last.totalScore + (last.format.maxScore ? ' / ' + last.format.maxScore : '');
 }
 
-// ═══════════════════════════════════════════════
-// SETUP
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// SETUP — FORMATS
+// ══════════════════════════════════════════
 function buildFormatsGrid() {
   const grid = document.getElementById('formats-grid');
-  grid.innerHTML = FFTA_FORMATS.map(f => `
-    <div class="format-card" id="fc-${f.id}" onclick="selectFormat('${f.id}')">
-      <div class="format-card-left">
-        <div class="format-name">${f.name}</div>
-        <div class="format-detail">${f.detail}</div>
-      </div>
-      <div class="format-score-max">${f.maxScore ? f.maxScore : '—'}</div>
+  const arcType = profil.arc || null;
+
+  const recommended = arcType ? FFTA_FORMATS.filter(f => f.arcs.includes(arcType)) : [];
+  const others = FFTA_FORMATS.filter(f => !recommended.includes(f));
+
+  let html = '';
+
+  if (recommended.length) {
+    html += `<div class="format-section-label recommended">⭐ Recommandés pour ${arcType}</div>`;
+    html += recommended.map(f => formatCardHtml(f, true)).join('');
+    if (others.length) html += `<div class="format-section-label" style="margin-top:6px">Autres formats</div>`;
+  }
+
+  html += others.map(f => formatCardHtml(f, false)).join('');
+  grid.innerHTML = html;
+
+  // Re-sélectionner si déjà choisi
+  if (selectedFormatId) {
+    const el = document.getElementById('fc-' + selectedFormatId);
+    if (el) el.classList.add('selected');
+    document.getElementById('custom-fields').classList.toggle('visible', selectedFormatId === 'libre');
+  }
+}
+
+function formatCardHtml(f, isRecommended) {
+  return `<div class="format-card${isRecommended ? ' recommended-card' : ''}" id="fc-${f.id}" onclick="selectFormat('${f.id}')">
+    <div class="format-card-left">
+      <div class="format-name">${f.name}</div>
+      <div class="format-detail">${f.detail}</div>
     </div>
-  `).join('');
+    <div class="format-right">
+      ${isRecommended ? '<span class="badge-recommended">⭐</span>' : ''}
+      <div class="format-score-max">${f.maxScore || '—'}</div>
+    </div>
+  </div>`;
 }
 
 function selectFormat(id) {
   selectedFormatId = id;
   document.querySelectorAll('.format-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('fc-' + id).classList.add('selected');
-  const customFields = document.getElementById('custom-fields');
-  customFields.classList.toggle('visible', id === 'libre');
-}
-
-function selectArc(type) {
-  selectedArc = selectedArc === type ? null : type;
-  document.querySelectorAll('#arc-chips .chip').forEach(c => {
-    c.classList.toggle('selected', c.textContent === selectedArc);
-  });
+  document.getElementById('custom-fields').classList.toggle('visible', id === 'libre');
 }
 
 function toggleObjectif() {
@@ -947,60 +776,51 @@ function toggleObjectif() {
 function getSelectedFormat() {
   if (!selectedFormatId) return null;
   if (selectedFormatId === 'libre') {
-    const dist = document.getElementById('custom-distance').value;
+    const dist   = document.getElementById('custom-distance').value;
     const blason = document.getElementById('custom-blason').value;
-    const volleys = parseInt(document.getElementById('custom-volleys').value);
-    const arrows = parseInt(document.getElementById('custom-arrows').value);
-    if (!dist || !blason || !volleys || !arrows) return null;
-    const total = volleys * arrows;
-    return {
-      id: 'libre', name: 'Session libre',
-      detail: `${dist}m · ${blason} · ${volleys}×${arrows} = ${total} flèches`,
-      distance: parseInt(dist), blason, volleys, arrowsPerVolley: arrows,
-      maxScore: total * 10
-    };
+    const vol    = parseInt(document.getElementById('custom-volleys').value);
+    const apv    = parseInt(document.getElementById('custom-arrows').value);
+    if (!dist || !blason || !vol || !apv) return null;
+    return { id:'libre', name:'Session libre', detail:`${dist}m · ${blason} · ${vol}×${apv} = ${vol*apv} flèches`,
+      distance:parseInt(dist), blason, volleys:vol, apv, maxScore:vol*apv*10 };
   }
-  return FFTA_FORMATS.find(f => f.id === selectedFormatId);
+  const f = FFTA_FORMATS.find(x => x.id === selectedFormatId);
+  return f ? { ...f, apv: f.apv } : null;
 }
 
+// ══════════════════════════════════════════
+// START SESSION
+// ══════════════════════════════════════════
 function startSession() {
   const format = getSelectedFormat();
   if (!format) { alert('Veuillez sélectionner un format de tir.'); return; }
 
   const objectif = objectifEnabled ? {
     score: parseInt(document.getElementById('obj-score').value) || null,
-    date: document.getElementById('obj-date').value || null
+    date:  document.getElementById('obj-date').value || null
   } : null;
 
-  currentSession = {
-    format,
-    arc: selectedArc,
-    objectif,
-    volleys: [],
-    totalScore: 0,
-    arrowCount: 0,
-    startDate: new Date().toISOString()
-  };
+  currentSession = { format, arc: profil.arc || null, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString() };
 
-  // Update session header
-  document.getElementById('session-format-name').textContent = format.name + (selectedArc ? ' — ' + selectedArc : '');
+  document.getElementById('session-format-name').textContent = format.name + (profil.arc ? ' — ' + profil.arc : '');
   document.getElementById('session-format-detail').textContent = format.detail;
 
-  // Objectif bar
   const barWrap = document.getElementById('objectif-bar-wrap');
   if (objectif && objectif.score) {
     barWrap.classList.add('visible');
-    document.getElementById('obj-bar-label').textContent = `Objectif ${objectif.score}${format.maxScore ? ' / ' + format.maxScore : ''}`;
+    document.getElementById('obj-bar-label').textContent = `Objectif ${objectif.score}${format.maxScore ? ' / '+format.maxScore : ''}`;
     if (objectif.date) {
-      const d = new Date(objectif.date);
-      const diff = Math.ceil((d - new Date()) / (1000*60*60*24));
-      document.getElementById('objectif-deadline').textContent = diff > 0 ? `⏳ ${diff} jour${diff > 1 ? 's' : ''} avant l'échéance` : '📅 Échéance atteinte';
-    } else {
-      document.getElementById('objectif-deadline').textContent = '';
-    }
-  } else {
-    barWrap.classList.remove('visible');
-  }
+      const diff = Math.ceil((new Date(objectif.date) - new Date()) / 86400000);
+      document.getElementById('objectif-deadline').textContent = diff > 0 ? `⏳ ${diff} jour${diff>1?'s':''} avant l'échéance` : '📅 Échéance atteinte';
+    } else document.getElementById('objectif-deadline').textContent = '';
+  } else barWrap.classList.remove('visible');
+
+  // Pré-remplir Archer 1 depuis profil
+  document.getElementById('archer1-name').value = profil.prenom || '';
+  archer1Colors = [...(profil.colors || [])];
+  archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
+  buildColorGrid('colors1', 1);
+  buildColorGrid('colors2', 2);
 
   updateVolleyLabel();
   showScreen('session');
@@ -1008,17 +828,13 @@ function startSession() {
 
 function updateVolleyLabel() {
   if (!currentSession) return;
-  const f = currentSession.format;
-  const done = currentSession.volleys.length;
-  const total = f.volleys;
-  if (total) {
-    document.getElementById('volley-label').textContent = `/ ${total} Volées`;
-  }
+  const total = currentSession.format.volleys;
+  document.getElementById('volley-label').textContent = total ? `/ ${total} Vol.` : 'Volées';
 }
 
-// ═══════════════════════════════════════════════
-// COULEURS / DUO
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// COULEURS DUO
+// ══════════════════════════════════════════
 function buildColorGrid(containerId, archerIdx) {
   const container = document.getElementById(containerId);
   const sel = archerIdx === 1 ? archer1Colors : archer2Colors;
@@ -1034,7 +850,7 @@ function toggleColor(colorName, archerIdx) {
   if (arr.includes(colorName)) arr = arr.filter(c => c !== colorName);
   else { if (arr.length >= 3) { alert('Maximum 3 couleurs !'); return; } arr.push(colorName); }
   if (archerIdx === 1) archer1Colors = arr; else archer2Colors = arr;
-  saveProfiles();
+  saveDuoProfiles();
   buildColorGrid(archerIdx === 1 ? 'colors1' : 'colors2', archerIdx);
 }
 
@@ -1048,20 +864,9 @@ function updateColorPreview(archerIdx) {
   }).join('') + `<span class="preview-label">${arr.join(' + ')}</span>`;
 }
 
-function saveProfiles() {
-  localStorage.setItem('archer1Name', document.getElementById('archer1-name').value);
-  localStorage.setItem('archer2Name', document.getElementById('archer2-name').value);
-  localStorage.setItem('archer1Colors', JSON.stringify(archer1Colors));
+function saveDuoProfiles() {
   localStorage.setItem('archer2Colors', JSON.stringify(archer2Colors));
-}
-
-function loadProfiles() {
-  document.getElementById('archer1-name').value = localStorage.getItem('archer1Name') || '';
-  document.getElementById('archer2-name').value = localStorage.getItem('archer2Name') || '';
-  archer1Colors = JSON.parse(localStorage.getItem('archer1Colors') || '[]');
-  archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
-  buildColorGrid('colors1', 1);
-  buildColorGrid('colors2', 2);
+  localStorage.setItem('archer2Name', document.getElementById('archer2-name').value);
 }
 
 function setMode(m) {
@@ -1073,11 +878,11 @@ function setMode(m) {
   document.getElementById('result-duo').classList.remove('visible');
 }
 
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 // FILE / DRAG
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('dragover'); }
-function handleDragLeave(e) { document.getElementById('upload-zone').classList.remove('dragover'); }
+function handleDragLeave()  { document.getElementById('upload-zone').classList.remove('dragover'); }
 function handleDrop(e) {
   e.preventDefault(); document.getElementById('upload-zone').classList.remove('dragover');
   const file = e.dataTransfer.files[0];
@@ -1087,7 +892,7 @@ function handleFile(e) { const file = e.target.files[0]; if (file) processFile(f
 
 function processFile(file) {
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = e => {
     const dataUrl = e.target.result;
     currentImageBase64 = dataUrl.split(',')[1];
     document.getElementById('preview-img').src = dataUrl;
@@ -1095,34 +900,31 @@ function processFile(file) {
     document.getElementById('result-card').classList.remove('visible');
     document.getElementById('result-duo').classList.remove('visible');
     document.getElementById('btn-analyze').disabled = false;
-    document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document.getElementById('analyze-section').scrollIntoView({behavior:'smooth',block:'nearest'});
   };
   reader.readAsDataURL(file);
 }
 
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 // OFFLINE QUEUE
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 const QUEUE_KEY = 'archerAI_queue';
-function getQueue() { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch { return []; } }
+function getQueue() { try { return JSON.parse(localStorage.getItem(QUEUE_KEY)||'[]'); } catch { return []; } }
 function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
 
 function addToQueue(imageBase64) {
   const q = getQueue();
   q.push({ imageBase64, mode, archer1Colors, archer2Colors,
     archer1Name: document.getElementById('archer1-name').value,
-    archer2Name: document.getElementById('archer2-name').value, timestamp: Date.now() });
+    archer2Name: document.getElementById('archer2-name').value, timestamp:Date.now() });
   saveQueue(q); updateQueueBanner();
 }
 
 function updateQueueBanner() {
   const q = getQueue();
   let banner = document.getElementById('queue-banner');
-  if (q.length === 0) { if (banner) banner.remove(); return; }
-  if (!banner) {
-    banner = document.createElement('div'); banner.id = 'queue-banner';
-    banner.onclick = processQueue; document.body.appendChild(banner);
-  }
+  if (!q.length) { if (banner) banner.remove(); return; }
+  if (!banner) { banner = document.createElement('div'); banner.id = 'queue-banner'; banner.onclick = processQueue; document.body.appendChild(banner); }
   banner.innerHTML = `📶 ${q.length} photo(s) en attente — Analyser`;
 }
 
@@ -1130,275 +932,198 @@ async function processQueue() {
   const q = getQueue(); if (!q.length) return;
   const banner = document.getElementById('queue-banner');
   if (banner) banner.innerHTML = '⏳ Analyse en cours...';
-  let processed = 0;
+  let done = 0;
   for (const item of q) {
-    try {
-      const result = await callAPI(item.imageBase64, item.mode, item.archer1Colors, item.archer2Colors, item.archer1Name, item.archer2Name);
-      if (result) processed++;
-    } catch(e) { break; }
+    try { const r = await callAPI(item.imageBase64, item.mode, item.archer1Colors, item.archer2Colors, item.archer1Name, item.archer2Name); if (r) done++; }
+    catch { break; }
   }
-  saveQueue(processed === q.length ? [] : q.slice(processed));
+  saveQueue(done === q.length ? [] : q.slice(done));
   updateQueueBanner();
 }
 
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 // API
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 async function callAPI(imageBase64, currentMode, a1colors, a2colors, a1name, a2name) {
   const isDuo = currentMode === 'duo';
-  const a1 = a1name || 'Archer 1';
-  const a2 = a2name || 'Archer 2';
+  const a1 = a1name || 'Archer 1', a2 = a2name || 'Archer 2';
   const c1 = a1colors.length ? a1colors.join(' + ') : 'inconnue';
   const c2 = a2colors.length ? a2colors.join(' + ') : 'inconnue';
-
   const prompt = isDuo
-    ? `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible avec des flèches de 2 archers.
-${a1} a des plumes : ${c1}. ${a2} a des plumes : ${c2}.
-ÉTAPE 1 — Identifie le type de cible (WA, VEGAS, BEURSAULT, GEF).
-ÉTAPE 2 — Pour chaque flèche, identifie l'archer selon la couleur des plumes et estime le score.
-Barèmes : WA : jaune=X/10/9, rouge=8/7, bleu=6/5, noir=4/3, blanc=2/1, hors=M | VEGAS : jaune=X/10/9, rouge=8/7, bleu=6, hors=M | BEURSAULT/GEF : centre=3, milieu=2, ext=1, hors=M
-Réponds UNIQUEMENT en JSON :
-{"type":"WA","archer1":{"name":"${a1}","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."},"archer2":{"name":"${a2}","arrows":[10,9,8],"total":27,"count":3,"analysis":"..."}}
-Si pas de cible : {"error":"Pas de cible détectée"}`
-    : `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible avec des flèches.
-ÉTAPE 1 — Identifie le type de cible (WA, VEGAS, BEURSAULT, GEF).
-ÉTAPE 2 — Applique le bon barème.
-Barèmes : WA : jaune=X/10/9, rouge=8/7, bleu=6/5, noir=4/3, blanc=2/1, hors=M | VEGAS : jaune=X/10/9, rouge=8/7, bleu=6, hors=M | BEURSAULT/GEF : centre=3, milieu=2, ext=1, hors=M
-Réponds UNIQUEMENT en JSON :
-{"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."}
-Si pas de cible : {"error":"Pas de cible détectée"}`;
+    ? `Tu es un expert en tir à l'arc. Analyse cette cible, 2 archers.\n${a1} plumes: ${c1}. ${a2} plumes: ${c2}.\nIdentifie le type (WA/VEGAS/BEURSAULT/GEF), attribue chaque flèche selon couleur plumes et score.\nBarèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M\nRéponds UNIQUEMENT JSON:\n{"type":"WA","archer1":{"name":"${a1}","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."},"archer2":{"name":"${a2}","arrows":[10,9,8],"total":27,"count":3,"analysis":"..."}}\nSi pas de cible: {"error":"Pas de cible détectée"}`
+    : `Tu es un expert en tir à l'arc. Analyse cette cible.\nIdentifie le type (WA/VEGAS/BEURSAULT/GEF) et applique le barème.\nBarèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M\nRéponds UNIQUEMENT JSON:\n{"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."}\nSi pas de cible: {"error":"Pas de cible détectée"}`;
 
   const response = await fetch("/api/analyze", {
-    method: "POST", headers: { "Content-Type": "application/json" },
+    method:"POST", headers:{"Content-Type":"application/json"},
     body: JSON.stringify({ imageBase64, prompt })
   });
-
   const result = await response.json();
   if (result.error) return null;
 
   if (isDuo && result.archer1) {
     displayDuoResult(result);
-    currentSession.volleys.push({ duo: true, archer1: result.archer1, archer2: result.archer2 });
-    currentSession.totalScore += (result.archer1.total || 0) + (result.archer2.total || 0);
-    currentSession.arrowCount += (result.archer1.count || 0) + (result.archer2.count || 0);
+    currentSession.volleys.push({ duo:true, archer1:result.archer1, archer2:result.archer2 });
+    currentSession.totalScore += (result.archer1.total||0) + (result.archer2.total||0);
+    currentSession.arrowCount += (result.archer1.count||0) + (result.archer2.count||0);
   } else if (result.arrows) {
     displayResult(result);
     currentSession.volleys.push(result);
     currentSession.totalScore += result.total || 0;
     currentSession.arrowCount += result.count || 0;
   }
-  updateSessionBar();
-  updateHistory();
+  updateSessionBar(); updateHistory();
   return result;
 }
 
 async function analyzeImage() {
   if (!currentImageBase64) return;
-  if (mode === 'duo' && (archer1Colors.length === 0 || archer2Colors.length === 0)) {
-    alert('⚠️ Configurez les couleurs des 2 archers !'); return;
-  }
-
+  if (mode === 'duo' && (!archer1Colors.length || !archer2Colors.length)) { alert('⚠️ Configurez les couleurs des 2 archers !'); return; }
   const btn = document.getElementById('btn-analyze');
   const overlay = document.getElementById('preview-overlay');
   btn.disabled = true; overlay.classList.add('analyzing');
-
   if (!navigator.onLine) {
     overlay.classList.remove('analyzing'); btn.disabled = false;
     addToQueue(currentImageBase64);
     document.getElementById('analyze-section').classList.remove('visible');
-    document.getElementById('file-input').value = '';
-    currentImageBase64 = null;
+    document.getElementById('file-input').value = ''; currentImageBase64 = null;
     alert('📶 Pas de connexion — photo mise en file d\'attente !'); return;
   }
-
   try {
-    const a1name = document.getElementById('archer1-name').value;
-    const a2name = document.getElementById('archer2-name').value;
-    await callAPI(currentImageBase64, mode, archer1Colors, archer2Colors, a1name, a2name);
+    const a1 = document.getElementById('archer1-name').value;
+    const a2 = document.getElementById('archer2-name').value;
+    await callAPI(currentImageBase64, mode, archer1Colors, archer2Colors, a1, a2);
     overlay.classList.remove('analyzing');
-  } catch (err) {
+  } catch(err) {
     overlay.classList.remove('analyzing'); btn.disabled = false;
     if (!navigator.onLine) { addToQueue(currentImageBase64); alert('📶 Connexion perdue — photo mise en file d\'attente !'); }
-    else alert('Erreur lors de l\'analyse. Vérifiez votre connexion.');
+    else alert('Erreur lors de l\'analyse.');
   }
   document.getElementById('analyze-section').classList.remove('visible');
   document.getElementById('preview-overlay').classList.remove('analyzing');
-  currentImageBase64 = null;
-  document.getElementById('file-input').value = '';
+  currentImageBase64 = null; document.getElementById('file-input').value = '';
 }
 
-// ═══════════════════════════════════════════════
-// BADGES
-// ═══════════════════════════════════════════════
-function getBadgeClass(score) {
-  if (score === 'X' || score === 10) return 'badge-x';
-  if (score === 9) return 'badge-10';
-  if (score === 8 || score === 7) return 'badge-8';
-  if (score === 6 || score === 5) return 'badge-6';
-  if (score === 4 || score === 3) return 'badge-4';
-  if (score === 2 || score === 1) return 'badge-low';
-  return 'badge-miss';
+// ══════════════════════════════════════════
+// BADGES + DISPLAY
+// ══════════════════════════════════════════
+function getBadgeClass(s) {
+  if (s === 'X' || s === 10) return 'badge-x';
+  if (s === 9) return 'badge-10'; if (s === 8||s === 7) return 'badge-8';
+  if (s === 6||s === 5) return 'badge-6'; if (s === 4||s === 3) return 'badge-4';
+  if (s === 2||s === 1) return 'badge-low'; return 'badge-miss';
 }
 
 function arrowsHtml(arrows, prefix) {
-  return (arrows || []).map((score, i) => `
-    <div class="arrow-score">
-      <div class="arrow-badge ${getBadgeClass(score)}">${score}</div>
-      <div class="arrow-label">${prefix}${i+1}</div>
-    </div>`).join('');
+  return (arrows||[]).map((s,i) => `<div class="arrow-score"><div class="arrow-badge ${getBadgeClass(s)}">${s}</div><div class="arrow-label">${prefix}${i+1}</div></div>`).join('');
 }
 
-// ═══════════════════════════════════════════════
-// DISPLAY RESULTS
-// ═══════════════════════════════════════════════
 function displayResult(result) {
-  const card = document.getElementById('result-card');
   document.getElementById('result-volley-label').textContent = `Volée ${currentSession.volleys.length + 1}`;
   document.getElementById('arrows-grid').innerHTML = arrowsHtml(result.arrows, 'F');
   document.getElementById('result-total-value').textContent = result.total;
   document.getElementById('result-analysis').textContent = result.analysis || '';
+  const card = document.getElementById('result-card');
   card.classList.add('visible');
-  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  card.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function displayDuoResult(result) {
-  const duo = document.getElementById('result-duo');
   document.getElementById('duo-name-1').textContent = result.archer1.name || 'Archer 1';
   document.getElementById('arrows-grid-1').innerHTML = arrowsHtml(result.archer1.arrows, 'F');
   document.getElementById('total-value-1').textContent = result.archer1.total || 0;
   document.getElementById('analysis-1').textContent = result.archer1.analysis || '';
   document.getElementById('duo-colors-1').innerHTML = archer1Colors.map(name => {
     const c = COLORS.find(x => x.name === name);
-    return `<div class="duo-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
+    return `<div class="duo-color-dot" style="background:${c?c.hex:'#888'}"></div>`;
   }).join('');
-
   document.getElementById('duo-name-2').textContent = result.archer2.name || 'Archer 2';
   document.getElementById('arrows-grid-2').innerHTML = arrowsHtml(result.archer2.arrows, 'F');
   document.getElementById('total-value-2').textContent = result.archer2.total || 0;
   document.getElementById('analysis-2').textContent = result.archer2.analysis || '';
   document.getElementById('duo-colors-2').innerHTML = archer2Colors.map(name => {
     const c = COLORS.find(x => x.name === name);
-    return `<div class="duo-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
+    return `<div class="duo-color-dot" style="background:${c?c.hex:'#888'}"></div>`;
   }).join('');
-
+  const duo = document.getElementById('result-duo');
   duo.classList.add('visible');
-  duo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  duo.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// ═══════════════════════════════════════════════
-// SESSION BAR + HISTORY
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// SESSION BAR
+// ══════════════════════════════════════════
 function updateSessionBar() {
   if (!currentSession) return;
   const s = currentSession;
   document.getElementById('total-score').textContent = s.totalScore;
   document.getElementById('volley-count').textContent = s.volleys.length;
   document.getElementById('arrow-count').textContent = s.arrowCount;
-  const avg = s.arrowCount > 0 ? (s.totalScore / s.arrowCount).toFixed(1) : '—';
-  document.getElementById('avg-per-arrow').textContent = avg;
-
-  // Objectif bar
+  document.getElementById('avg-per-arrow').textContent = s.arrowCount > 0 ? (s.totalScore/s.arrowCount).toFixed(1) : '—';
   if (s.objectif && s.objectif.score) {
     const pct = Math.min(100, Math.round((s.totalScore / s.objectif.score) * 100));
     const fill = document.getElementById('objectif-bar-fill');
     fill.style.width = pct + '%';
     document.getElementById('obj-bar-pct').textContent = pct + '%';
-    // Couleur selon rythme
-    const volleys = s.volleys.length;
-    const totalVolleys = s.format.volleys;
-    if (totalVolleys && volleys > 0) {
-      const expectedPct = Math.round((volleys / totalVolleys) * 100);
-      fill.classList.toggle('on-track', pct >= expectedPct);
-      fill.classList.toggle('off-track', pct < expectedPct - 10);
+    const vol = s.volleys.length, tot = s.format.volleys;
+    if (tot && vol > 0) {
+      const exp = Math.round((vol/tot)*100);
+      fill.classList.toggle('on-track', pct >= exp);
+      fill.classList.toggle('off-track', pct < exp - 10);
     }
   }
-
   updateVolleyLabel();
 }
 
 function updateHistory() {
   const container = document.getElementById('history-container');
-  if (!currentSession || currentSession.volleys.length === 0) {
+  if (!currentSession || !currentSession.volleys.length) {
     container.innerHTML = '<div class="history-empty">Aucune volée encore — prenez votre première photo !</div>'; return;
   }
-  container.innerHTML = `<div class="history-list">` +
-    [...currentSession.volleys].reverse().map((v, ri) => {
+  container.innerHTML = '<div class="history-list">' +
+    [...currentSession.volleys].reverse().map((v,ri) => {
       const i = currentSession.volleys.length - ri;
-      if (v.duo) {
-        return `<div class="history-item">
-          <div class="history-left">
-            <div class="history-volley">VOLÉE ${i}</div>
-            <div style="font-size:0.78rem;color:var(--text-muted)">${v.archer1.name}: ${v.archer1.total}pts &nbsp;|&nbsp; ${v.archer2.name}: ${v.archer2.total}pts</div>
-          </div>
-          <div class="history-score">${(v.archer1.total||0)+(v.archer2.total||0)}</div>
-        </div>`;
-      }
-      return `<div class="history-item">
-        <div class="history-left">
-          <div class="history-volley">VOLÉE ${i}</div>
-          <div class="history-arrows">${(v.arrows||[]).map(s => `<div class="mini-badge ${getBadgeClass(s)}">${s}</div>`).join('')}</div>
-        </div>
-        <div class="history-score">${v.total}</div>
-      </div>`;
-    }).join('') + `</div>`;
+      if (v.duo) return `<div class="history-item"><div class="history-left"><div class="history-volley">VOLÉE ${i}</div><div style="font-size:0.76rem;color:var(--text-muted)">${v.archer1.name}: ${v.archer1.total}pts &nbsp;|&nbsp; ${v.archer2.name}: ${v.archer2.total}pts</div></div><div class="history-score">${(v.archer1.total||0)+(v.archer2.total||0)}</div></div>`;
+      return `<div class="history-item"><div class="history-left"><div class="history-volley">VOLÉE ${i}</div><div class="history-arrows">${(v.arrows||[]).map(s=>`<div class="mini-badge ${getBadgeClass(s)}">${s}</div>`).join('')}</div></div><div class="history-score">${v.total}</div></div>`;
+    }).join('') + '</div>';
 }
 
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 // END SESSION
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 function endSession() {
-  if (!currentSession || currentSession.volleys.length === 0) { alert('Aucune volée enregistrée !'); return; }
+  if (!currentSession || !currentSession.volleys.length) { alert('Aucune volée enregistrée !'); return; }
   const s = currentSession;
   const total = s.totalScore;
-  const avg = s.arrowCount > 0 ? (total / s.arrowCount).toFixed(1) : 0;
-
-  document.getElementById('modal-total').textContent = total + (s.format.maxScore ? ' / ' + s.format.maxScore : '');
+  const avg = s.arrowCount > 0 ? (total/s.arrowCount).toFixed(1) : 0;
+  document.getElementById('modal-total').textContent = total + (s.format.maxScore ? ' / '+s.format.maxScore : '');
   document.getElementById('modal-volleys').textContent = s.volleys.length;
   document.getElementById('modal-arrows').textContent = s.arrowCount;
   document.getElementById('modal-avg').textContent = avg;
   document.getElementById('modal-icon').textContent = '🏆';
-
-  // Comparaison avec même format
   const sessions = getSavedSessions();
-  const sameFormat = sessions.filter(ss => ss.format.id === s.format.id);
+  const same = sessions.filter(ss => ss.format.id === s.format.id);
   const compEl = document.getElementById('modal-comparison');
-  if (sameFormat.length === 0) {
-    compEl.textContent = '🏹 Première session sur ce format !';
-    compEl.className = 'modal-comparison comparison-first';
-  } else {
-    const lastScore = sameFormat[0].totalScore;
-    const diff = total - lastScore;
+  if (!same.length) { compEl.textContent = '🏹 Première session sur ce format !'; compEl.className = 'modal-comparison comparison-first'; }
+  else {
+    const diff = total - same[0].totalScore;
     if (diff > 0)      { compEl.textContent = `🎉 +${diff} pts vs dernière session !`; compEl.className = 'modal-comparison comparison-better'; document.getElementById('modal-icon').textContent = '🏆'; }
     else if (diff < 0) { compEl.textContent = `💪 ${Math.abs(diff)} pts de moins — la prochaine sera meilleure !`; compEl.className = 'modal-comparison comparison-worse'; document.getElementById('modal-icon').textContent = '🎯'; }
     else               { compEl.textContent = '👌 Même score — régularité parfaite !'; compEl.className = 'modal-comparison comparison-first'; }
   }
-
-  // Objectif
   const objEl = document.getElementById('modal-objectif');
   if (s.objectif && s.objectif.score) {
     objEl.style.display = 'block';
-    if (total >= s.objectif.score) {
-      objEl.textContent = `✅ Objectif ${s.objectif.score} atteint !`;
-      objEl.className = 'modal-objectif ok';
-    } else {
-      objEl.textContent = `❌ Objectif ${s.objectif.score} — il manque ${s.objectif.score - total} pts`;
-      objEl.className = 'modal-objectif nok';
-    }
-  } else { objEl.style.display = 'none'; }
-
-  // Sauvegarder
-  saveSession({ ...s, totalScore: total, endDate: new Date().toISOString() });
+    if (total >= s.objectif.score) { objEl.textContent = `✅ Objectif ${s.objectif.score} atteint !`; objEl.className = 'modal-objectif ok'; }
+    else { objEl.textContent = `❌ Objectif ${s.objectif.score} — il manque ${s.objectif.score - total} pts`; objEl.className = 'modal-objectif nok'; }
+  } else objEl.style.display = 'none';
+  saveSession({ ...s, totalScore:total, endDate:new Date().toISOString() });
   document.getElementById('modal-overlay').classList.add('visible');
 }
 
 function restartSession() {
-  // Même format, nouvelle session
-  const format = currentSession.format;
-  const arc = currentSession.arc;
-  const objectif = currentSession.objectif;
-  currentSession = { format, arc, objectif, volleys: [], totalScore: 0, arrowCount: 0, startDate: new Date().toISOString() };
-  updateSessionBar();
-  updateHistory();
+  const { format, arc, objectif } = currentSession;
+  currentSession = { format, arc, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString() };
+  updateSessionBar(); updateHistory();
   document.getElementById('result-card').classList.remove('visible');
   document.getElementById('result-duo').classList.remove('visible');
   document.getElementById('analyze-section').classList.remove('visible');
@@ -1411,123 +1136,84 @@ function goHome() {
   showScreen('home');
 }
 
-// ═══════════════════════════════════════════════
-// PERSISTENCE (localStorage)
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════
 const SESSIONS_KEY = 'archerAI_sessions';
-
-function getSavedSessions() {
-  try { return JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]'); } catch { return []; }
-}
-
-function saveSession(session) {
-  const sessions = getSavedSessions();
-  sessions.unshift(session); // plus récent en premier
-  localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
-}
-
-function deleteSession(index) {
+function getSavedSessions() { try { return JSON.parse(localStorage.getItem(SESSIONS_KEY)||'[]'); } catch { return []; } }
+function saveSession(s) { const all = getSavedSessions(); all.unshift(s); localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); }
+function deleteSession(i) {
   if (!confirm('Supprimer cette session ?')) return;
-  const sessions = getSavedSessions();
-  sessions.splice(index, 1);
-  localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
-  renderHistoryScreen();
+  const all = getSavedSessions(); all.splice(i,1); localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); renderHistoryScreen();
 }
 
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 // HISTORIQUE SCREEN
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 function renderHistoryScreen() {
   const sessions = getSavedSessions();
   const container = document.getElementById('history-sessions-list');
   const filtersEl = document.getElementById('history-filters');
-
-  if (sessions.length === 0) {
-    filtersEl.innerHTML = '';
-    container.innerHTML = '<div class="history-empty">Aucune session sauvegardée pour l\'instant.</div>';
-    return;
-  }
-
-  // Filtres dynamiques (formats présents)
+  if (!sessions.length) { filtersEl.innerHTML = ''; container.innerHTML = '<div class="history-empty">Aucune session sauvegardée.</div>'; return; }
   const formatIds = [...new Set(sessions.map(s => s.format.id))];
-  const activeFilter = filtersEl.dataset.active || 'all';
-  filtersEl.innerHTML = `<div class="filter-chip ${activeFilter === 'all' ? 'active' : ''}" onclick="setHistoryFilter('all')">Tout</div>` +
-    formatIds.map(id => {
-      const f = sessions.find(s => s.format.id === id).format;
-      return `<div class="filter-chip ${activeFilter === id ? 'active' : ''}" onclick="setHistoryFilter('${id}')">${f.name}</div>`;
-    }).join('');
-
-  const filtered = activeFilter === 'all' ? sessions : sessions.filter(s => s.format.id === activeFilter);
-
-  if (filtered.length === 0) { container.innerHTML = '<div class="history-empty">Aucune session pour ce format.</div>'; return; }
-
-  container.innerHTML = filtered.map((s, i) => {
-    const pct = s.format.maxScore ? Math.round((s.totalScore / s.format.maxScore) * 100) : null;
+  const active = filtersEl.dataset.active || 'all';
+  filtersEl.innerHTML = `<div class="filter-chip ${active==='all'?'active':''}" onclick="setHistoryFilter('all')">Tout</div>` +
+    formatIds.map(id => { const f = sessions.find(s => s.format.id===id).format; return `<div class="filter-chip ${active===id?'active':''}" onclick="setHistoryFilter('${id}')">${f.name}</div>`; }).join('');
+  const filtered = active === 'all' ? sessions : sessions.filter(s => s.format.id === active);
+  if (!filtered.length) { container.innerHTML = '<div class="history-empty">Aucune session pour ce format.</div>'; return; }
+  container.innerHTML = filtered.map((s,i) => {
+    const pct = s.format.maxScore ? Math.round((s.totalScore/s.format.maxScore)*100) : null;
     const objTag = s.objectif && s.objectif.score
       ? s.totalScore >= s.objectif.score
         ? `<div class="objectif-tag achieved">✅ Objectif ${s.objectif.score} atteint</div>`
-        : `<div class="objectif-tag missed">❌ Objectif ${s.objectif.score} — manque ${s.objectif.score - s.totalScore} pts</div>`
+        : `<div class="objectif-tag missed">❌ Objectif ${s.objectif.score} — manque ${s.objectif.score-s.totalScore} pts</div>`
       : '';
-
-    const progressBar = pct !== null ? `
-      <div class="progress-mini">
-        <div class="progress-mini-labels">
-          <span>${s.totalScore} pts</span><span>${s.format.maxScore} max</span>
-        </div>
-        <div class="progress-mini-track">
-          <div class="progress-mini-fill" style="width:${pct}%"></div>
-        </div>
-      </div>` : '';
-
-    const avg = s.arrowCount > 0 ? (s.totalScore / s.arrowCount).toFixed(1) : '—';
-
+    const bar = pct !== null ? `<div class="progress-mini"><div class="progress-mini-labels"><span>${s.totalScore} pts</span><span>${s.format.maxScore} max</span></div><div class="progress-mini-track"><div class="progress-mini-fill" style="width:${pct}%"></div></div></div>` : '';
+    const avg = s.arrowCount > 0 ? (s.totalScore/s.arrowCount).toFixed(1) : '—';
     return `<div class="session-card">
       <div class="session-card-header">
         <div>
-          <div class="session-card-format">${s.format.name}${s.arc ? ' — ' + s.arc : ''}</div>
-          <div class="session-card-meta">${formatDate(s.endDate || s.startDate)} · ${s.format.detail}</div>
+          <div class="session-card-format">${s.format.name}${s.arc?' — '+s.arc:''}</div>
+          <div class="session-card-meta">${formatDate(s.endDate||s.startDate)} · ${s.format.detail}</div>
           ${objTag}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end">
           <div class="session-card-score">${s.totalScore}</div>
-          <div class="session-card-max">${s.format.maxScore ? '/ ' + s.format.maxScore : ''}</div>
+          <div class="session-card-max">${s.format.maxScore?'/ '+s.format.maxScore:''}</div>
           <button class="btn-delete-session" onclick="deleteSession(${i})">🗑</button>
         </div>
       </div>
-      ${progressBar}
+      ${bar}
       <div class="session-card-stats">
-        <div class="mini-stat">Volées : <span>${s.volleys.length}</span></div>
-        <div class="mini-stat">Flèches : <span>${s.arrowCount}</span></div>
-        <div class="mini-stat">Moy./flèche : <span>${avg}</span></div>
-        ${pct !== null ? `<div class="mini-stat">Score : <span>${pct}%</span></div>` : ''}
+        <div class="mini-stat">Volées: <span>${s.volleys.length}</span></div>
+        <div class="mini-stat">Flèches: <span>${s.arrowCount}</span></div>
+        <div class="mini-stat">Moy.: <span>${avg}</span></div>
+        ${pct!==null?`<div class="mini-stat">Score: <span>${pct}%</span></div>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-function setHistoryFilter(id) {
-  document.getElementById('history-filters').dataset.active = id;
-  renderHistoryScreen();
-}
+function setHistoryFilter(id) { document.getElementById('history-filters').dataset.active = id; renderHistoryScreen(); }
 
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 // UTILS
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 function formatDate(iso) {
   if (!iso) return '—';
-  const d = new Date(iso);
-  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+  return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
 }
 
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
 window.addEventListener('load', () => {
-  buildFormatsGrid();
-  loadProfiles();
-  updateQueueBanner();
+  profil = JSON.parse(localStorage.getItem('archerProfil') || '{}');
+  archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
+  renderProfilCard();
   renderHomeRecap();
-  window.addEventListener('online', () => { if (getQueue().length > 0) processQueue(); });
+  updateQueueBanner();
+  window.addEventListener('online', () => { if (getQueue().length) processQueue(); });
 });
 </script>
 </body>
