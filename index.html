@@ -4,18 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ArcherAI — Score par photo</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#C9A84C">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="ArcherAI">
-<link rel="apple-touch-icon" href="icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
     --gold: #C9A84C;
     --gold-light: #F0D080;
     --red: #C0392B;
+    --green: #27AE60;
     --dark: #0D0D0D;
     --dark2: #161616;
     --dark3: #1E1E1E;
@@ -39,507 +34,341 @@
     position: fixed; inset: 0;
     background-image: radial-gradient(circle at 20% 50%, rgba(201,168,76,0.04) 0%, transparent 50%),
                       radial-gradient(circle at 80% 20%, rgba(192,57,43,0.04) 0%, transparent 40%);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
 
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 24px;
-    position: relative;
-    z-index: 1;
-  }
+  .container { max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; position: relative; z-index: 1; }
 
   /* ── HEADER ── */
-  .header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 32px;
-    animation: fadeDown 0.6s ease;
-  }
-
-  .logo { width: 48px; height: 48px; flex-shrink: 0; }
+  .header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; animation: fadeDown 0.6s ease; }
+  .logo { width: 44px; height: 44px; flex-shrink: 0; }
   .logo svg { width: 100%; height: 100%; }
+  .header-text h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 3px; color: var(--gold); line-height: 1; }
+  .header-text p { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+  .header-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+  .btn-icon {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-muted); padding: 8px 14px; border-radius: 8px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 2px;
+    cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-icon:hover { border-color: var(--gold); color: var(--gold); }
 
-  .header-text { flex: 1; }
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp 0.4s ease; }
 
-  .header-text h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.4rem;
-    letter-spacing: 3px;
-    color: var(--gold);
-    line-height: 1;
+  /* ── HOME ── */
+  .home-actions { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+
+  .btn-primary {
+    width: 100%; background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
+    color: var(--dark); border: none; padding: 18px;
+    border-radius: 14px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem; letter-spacing: 3px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .btn-secondary {
+    width: 100%; background: var(--dark3); color: var(--text);
+    border: 1px solid var(--border); padding: 16px;
+    border-radius: 14px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem; letter-spacing: 3px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  .last-session-recap {
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px 24px;
   }
 
-  .header-text p {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-top: 2px;
+  .recap-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+
+  .recap-row { display: flex; align-items: center; justify-content: space-between; }
+  .recap-format { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; color: var(--text); }
+  .recap-score { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--gold); line-height: 1; }
+  .recap-date { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+  /* ── SETUP SESSION ── */
+  .setup-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 24px; }
+
+  .form-section { margin-bottom: 24px; }
+  .form-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; }
+
+  /* Formats FFTA */
+  .formats-grid { display: flex; flex-direction: column; gap: 8px; }
+
+  .format-card {
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 18px; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; justify-content: space-between;
+  }
+  .format-card:hover { border-color: rgba(201,168,76,0.5); }
+  .format-card.selected { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+
+  .format-card-left { display: flex; flex-direction: column; gap: 3px; }
+  .format-name { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; color: var(--text); }
+  .format-detail { font-size: 0.78rem; color: var(--text-muted); }
+  .format-score-max { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--text-muted); }
+  .format-card.selected .format-score-max { color: var(--gold); }
+
+  /* Custom format */
+  .custom-fields {
+    display: none; flex-direction: column; gap: 10px; margin-top: 10px;
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+  }
+  .custom-fields.visible { display: flex; }
+
+  .custom-row { display: flex; gap: 10px; }
+
+  .input-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .input-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
+
+  .field-input {
+    background: var(--dark2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px;
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; outline: none; width: 100%;
+    -webkit-appearance: none;
+  }
+  .field-input:focus { border-color: var(--gold); }
+  .field-input::placeholder { color: var(--text-muted); }
+
+  select.field-input { cursor: pointer; }
+  select.field-input option { background: var(--dark2); }
+
+  /* Arc type chips */
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border);
+    background: var(--dark3); color: var(--text-muted);
+    font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
+  }
+  .chip.selected { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+
+  /* Objectif */
+  .objectif-section {
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
   }
 
-  .btn-profile {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .btn-profile:hover { border-color: var(--gold); color: var(--gold); }
-
-  /* ── MODE TOGGLE ── */
-  .mode-toggle {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 24px;
-    animation: fadeUp 0.6s ease 0.05s both;
+  .objectif-toggle {
+    display: flex; align-items: center; justify-content: space-between; cursor: pointer;
   }
 
-  .mode-btn {
-    flex: 1;
-    padding: 12px 8px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--dark3);
-    color: var(--text-muted);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
+  .objectif-toggle-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 2px; color: var(--text-muted); }
+
+  .toggle-switch {
+    width: 44px; height: 24px; background: var(--dark2);
+    border: 1px solid var(--border); border-radius: 12px;
+    position: relative; transition: all 0.2s;
   }
-  .mode-btn.active { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+  .toggle-switch::after {
+    content: ''; position: absolute; width: 18px; height: 18px;
+    background: var(--text-muted); border-radius: 50%;
+    top: 2px; left: 2px; transition: all 0.2s;
+  }
+  .toggle-switch.on { background: rgba(201,168,76,0.2); border-color: var(--gold); }
+  .toggle-switch.on::after { background: var(--gold); left: 22px; }
 
-  /* Beursault mode badge on active */
-  #btn-mode-beursault.active { background: var(--red); border-color: var(--red); }
+  .objectif-fields { display: none; margin-top: 14px; flex-direction: column; gap: 10px; }
+  .objectif-fields.visible { display: flex; }
 
-  /* ── SESSION BAR ── */
-  .session-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--dark3);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 24px;
-    margin-bottom: 24px;
-    animation: fadeUp 0.6s ease 0.1s both;
+  .btn-start {
+    width: 100%; background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
+    color: var(--dark); border: none; padding: 18px;
+    border-radius: 14px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem; letter-spacing: 3px; cursor: pointer; transition: all 0.2s;
+    margin-top: 8px;
+  }
+  .btn-start:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-start:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ── SESSION EN COURS ── */
+  .session-header {
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 20px; margin-bottom: 20px;
   }
 
-  .session-info { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .session-header-top {
+    display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;
+  }
 
-  .stat { text-align: center; }
-  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--gold); line-height: 1; }
-  .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
-  .stat-divider { width: 1px; height: 40px; background: var(--border); }
+  .session-format-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; color: var(--gold); }
+  .session-format-detail { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
 
   .btn-end-session {
-    background: transparent;
-    border: 1px solid var(--red);
-    color: var(--red);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
+    background: transparent; border: 1px solid var(--red);
+    color: var(--red); padding: 8px 16px; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
+    letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+    white-space: nowrap;
   }
   .btn-end-session:hover { background: var(--red); color: white; }
 
-  /* ── ARCHERS CONFIG ── */
-  .archers-config {
-    display: none;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 24px;
-    animation: fadeUp 0.4s ease;
-  }
-  .archers-config.visible { display: flex; }
+  .stats-row { display: flex; gap: 0; }
 
-  /* Beursault mode badge on section */
-  .archers-config.beursault-mode .archer-card {
-    border-color: rgba(192,57,43,0.3);
+  .stat-cell {
+    flex: 1; text-align: center;
+    padding: 8px 0; border-right: 1px solid var(--border);
   }
-  .archers-config.beursault-mode .archer-card-title { color: #E07070; }
+  .stat-cell:last-child { border-right: none; }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--gold); line-height: 1; }
+  .stat-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
 
-  .archer-card {
-    background: var(--dark3);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px 20px;
+  /* Barre objectif */
+  .objectif-bar-wrap {
+    display: none; margin-top: 12px;
+    padding-top: 12px; border-top: 1px solid var(--border);
   }
+  .objectif-bar-wrap.visible { display: block; }
 
-  .archer-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
+  .objectif-bar-labels {
+    display: flex; justify-content: space-between;
+    font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px;
   }
 
-  .archer-card-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    color: var(--gold);
+  .objectif-bar-track {
+    height: 6px; background: var(--dark2); border-radius: 3px; overflow: hidden;
   }
 
-  .btn-remove-archer {
-    background: transparent;
-    border: 1px solid rgba(192,57,43,0.4);
-    color: var(--red);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s;
+  .objectif-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 3px; transition: width 0.6s ease; width: 0%;
   }
-  .btn-remove-archer:hover { background: var(--red); color: white; }
 
-  .btn-add-archer {
-    width: 100%;
-    background: transparent;
-    border: 1px dashed rgba(192,57,43,0.4);
-    color: #E07070;
-    padding: 12px;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 1px;
+  .objectif-bar-fill.on-track { background: linear-gradient(90deg, var(--green), #2ECC71); }
+  .objectif-bar-fill.off-track { background: linear-gradient(90deg, var(--red), #E74C3C); }
+
+  .objectif-deadline {
+    font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; text-align: right;
   }
-  .btn-add-archer:hover { background: rgba(192,57,43,0.06); border-style: solid; }
-  .btn-add-archer:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* Mode toggle */
+  .mode-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+  .mode-btn {
+    flex: 1; padding: 11px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--dark3);
+    color: var(--text-muted); font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem; letter-spacing: 2px; cursor: pointer; transition: all 0.2s;
+  }
+  .mode-btn.active { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+
+  /* Config archers */
+  .archers-config { display: none; gap: 12px; margin-bottom: 20px; }
+  .archers-config.visible { display: flex; flex-direction: column; }
+
+  .archer-card { background: var(--dark3); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; }
+  .archer-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 10px; }
 
   .archer-name-input {
-    width: 100%;
-    background: var(--dark2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    margin-bottom: 12px;
-    outline: none;
+    width: 100%; background: var(--dark2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; margin-bottom: 12px; outline: none;
   }
   .archer-name-input:focus { border-color: var(--gold); }
 
-  .colors-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 8px;
-  }
+  .colors-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
 
   .colors-grid { display: flex; gap: 8px; flex-wrap: wrap; }
-
   .color-chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 500;
-    transition: all 0.2s;
-    background: var(--dark2);
-    color: var(--text-muted);
+    display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+    border-radius: 20px; border: 2px solid transparent; cursor: pointer;
+    font-size: 0.8rem; font-weight: 500; transition: all 0.2s;
+    background: var(--dark2); color: var(--text-muted);
   }
   .color-chip.selected { border-color: var(--gold); color: var(--text); }
-
   .color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
 
-  .selected-colors-preview {
-    display: flex;
-    gap: 6px;
-    margin-top: 10px;
-    align-items: center;
-    min-height: 24px;
-  }
-
-  .preview-dot {
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.2);
-  }
+  .selected-colors-preview { display: flex; gap: 6px; margin-top: 10px; align-items: center; min-height: 24px; }
+  .preview-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
   .preview-label { font-size: 0.75rem; color: var(--text-muted); font-style: italic; }
 
-  /* ── COUNTER COLOR UI ── */
-  .color-counter-list { display: flex; flex-direction: column; gap: 6px; }
-
-  .color-counter-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    background: var(--dark2);
-    border: 1px solid transparent;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .color-counter-row.active {
-    border-color: rgba(201,168,76,0.4);
-    background: rgba(201,168,76,0.04);
-  }
-
-  .color-counter-dot {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    border: 1px solid rgba(255,255,255,0.2);
-  }
-
-  .color-counter-name {
-    flex: 1;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    transition: color 0.2s;
-  }
-  .color-counter-row.active .color-counter-name { color: var(--text); }
-
-  .color-counter-controls { display: flex; align-items: center; gap: 8px; }
-
-  .btn-counter {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--dark3);
-    color: var(--text);
-    font-size: 1rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex; align-items: center; justify-content: center;
-    padding: 0;
-    flex-shrink: 0;
-  }
-  .btn-counter:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
-  .btn-counter:disabled { opacity: 0.2; cursor: not-allowed; }
-
-  .counter-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    min-width: 18px;
-    text-align: center;
-    line-height: 1;
-    color: var(--gold);
-  }
-  .counter-value.zero { color: var(--text-muted); }
-
-  .colors-summary {
-    margin-top: 10px;
-    font-size: 0.85rem;
-    color: var(--gold);
-    font-weight: 500;
-    min-height: 20px;
-  }
-  .colors-summary.empty { color: var(--text-muted); font-style: italic; font-weight: 400; }
-
-  /* Beursault info banner */
-  .beursault-info {
-    display: none;
-    background: rgba(192,57,43,0.08);
-    border: 1px solid rgba(192,57,43,0.25);
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 0.85rem;
-    color: #E07070;
-    letter-spacing: 0.5px;
-    line-height: 1.5;
-  }
-  .beursault-info.visible { display: block; }
-
-  /* ── UPLOAD ZONE ── */
-  .upload-section { margin-bottom: 24px; animation: fadeUp 0.6s ease 0.2s both; }
+  /* Upload zone */
+  .upload-section { margin-bottom: 20px; }
 
   .upload-zone {
-    border: 2px dashed var(--border);
-    border-radius: 16px;
-    padding: 48px 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    background: var(--dark2);
-    position: relative;
-    overflow: hidden;
+    border: 2px dashed var(--border); border-radius: 16px;
+    padding: 40px 24px; text-align: center; cursor: pointer;
+    transition: all 0.3s; background: var(--dark2); position: relative; overflow: hidden;
   }
-
   .upload-zone::before {
-    content: '';
-    position: absolute; inset: 0;
+    content: ''; position: absolute; inset: 0;
     background: radial-gradient(circle at center, rgba(201,168,76,0.06) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
+    opacity: 0; transition: opacity 0.3s;
   }
-
   .upload-zone:hover, .upload-zone.dragover { border-color: var(--gold); }
   .upload-zone:hover::before, .upload-zone.dragover::before { opacity: 1; }
-  .upload-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
-  .upload-zone h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 8px; }
-  .upload-zone p { color: var(--text-muted); font-size: 0.9rem; font-style: italic; }
+  .upload-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+  .upload-zone h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 6px; }
+  .upload-zone p { color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
   #file-input { display: none; }
 
-  /* ── ANALYZE SECTION ── */
-  .analyze-section { display: none; animation: fadeUp 0.4s ease; margin-bottom: 24px; }
+  /* Analyze section */
+  .analyze-section { display: none; animation: fadeUp 0.4s ease; margin-bottom: 20px; }
   .analyze-section.visible { display: block; }
 
   .preview-wrapper {
-    position: relative;
-    background: var(--dark3);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 16px;
+    position: relative; background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 14px;
   }
-
-  .preview-img { width: 100%; max-height: 400px; object-fit: contain; display: block; }
+  .preview-img { width: 100%; max-height: 380px; object-fit: contain; display: block; }
 
   .preview-overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.6);
+    position: absolute; inset: 0; background: rgba(0,0,0,0.6);
     display: flex; align-items: center; justify-content: center;
     opacity: 0; transition: opacity 0.3s;
   }
   .preview-overlay.analyzing { opacity: 1; }
-
   .spinner {
-    width: 48px; height: 48px;
-    border: 3px solid rgba(201,168,76,0.2);
-    border-top-color: var(--gold);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 16px;
+    width: 44px; height: 44px; border: 3px solid rgba(201,168,76,0.2);
+    border-top-color: var(--gold); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 14px;
   }
-
   .analyzing-text { text-align: center; }
-  .analyzing-text p { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--gold); }
+  .analyzing-text p { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; color: var(--gold); }
 
   .btn-analyze {
-    width: 100%;
-    background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
-    color: var(--dark);
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
-    letter-spacing: 3px;
-    cursor: pointer;
-    transition: all 0.2s;
+    width: 100%; background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
+    color: var(--dark); border: none; padding: 16px; border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 3px;
+    cursor: pointer; transition: all 0.2s;
   }
   .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
   .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-  /* ── RESULT CARD SOLO ── */
+  /* Result card */
   .result-card {
-    display: none;
-    background: var(--dark3);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 24px;
-    animation: fadeUp 0.4s ease;
+    display: none; background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; margin-bottom: 20px; animation: fadeUp 0.4s ease;
   }
   .result-card.visible { display: block; }
 
   .result-header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 24px; padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
   }
+  .result-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: var(--text-muted); }
+  .volley-number { background: var(--gold); color: var(--dark); font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; padding: 3px 12px; border-radius: 20px; letter-spacing: 1px; }
 
-  .result-header h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem; letter-spacing: 2px;
-    color: var(--text-muted); text-transform: uppercase;
-  }
+  /* Duo result */
+  .result-duo { display: none; gap: 12px; margin-bottom: 20px; animation: fadeUp 0.4s ease; }
+  .result-duo.visible { display: flex; flex-direction: column; }
+  .duo-card { background: var(--dark3); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .duo-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .duo-archer-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; }
+  .duo-colors { display: flex; gap: 5px; }
+  .duo-color-dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
 
-  .volley-number {
-    background: var(--gold); color: var(--dark);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.9rem; padding: 4px 12px;
-    border-radius: 20px; letter-spacing: 1px;
-  }
-
-  .volley-number.beursault { background: var(--red); }
-
-  /* ── RESULT MULTI (duo + beursault) ── */
-  .result-multi {
-    display: none;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 24px;
-    animation: fadeUp 0.4s ease;
-  }
-  .result-multi.visible { display: flex; }
-
-  .result-multi-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 4px;
-  }
-
-  .result-multi-label {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem; letter-spacing: 2px;
-    color: var(--text-muted); text-transform: uppercase;
-  }
-
-  .multi-card {
-    background: var(--dark3);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-  }
-
-  .multi-card-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px; padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .multi-archer-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem; letter-spacing: 2px; color: var(--text);
-  }
-
-  .multi-colors { display: flex; gap: 5px; align-items: center; }
-
-  .multi-color-dot {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2);
-  }
-
-  /* ── ARROWS GRID ── */
-  .arrows-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-
+  /* Arrows grid */
+  .arrows-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
   .arrow-score { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-
   .arrow-badge {
-    width: 48px; height: 48px;
-    border-radius: 50%;
+    width: 46px; height: 46px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.3rem; font-weight: bold;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; font-weight: bold;
   }
-
   .badge-x    { background: #FFD700; color: #000; border: 2px solid #FFD700; }
   .badge-10   { background: #FFD700; color: #000; }
   .badge-9    { background: #FFD700; color: #000; }
@@ -551,231 +380,163 @@
   .badge-3    { background: #2ECC71; color: #fff; }
   .badge-low  { background: #555; color: #fff; }
   .badge-miss { background: transparent; color: #555; border: 2px solid #333; }
-
-  .arrow-label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; }
+  .arrow-label { font-size: 0.62rem; color: var(--text-muted); letter-spacing: 1px; }
 
   .result-total {
     display: flex; align-items: center; justify-content: space-between;
-    background: rgba(201,168,76,0.08);
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 10px;
-    padding: 16px 20px; margin-bottom: 16px;
+    background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px; padding: 14px 18px; margin-bottom: 14px;
   }
+  .total-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+  .total-value { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; color: var(--gold); line-height: 1; }
 
-  .total-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
-  .total-value { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold); line-height: 1; }
+  .result-analysis { font-size: 0.88rem; color: var(--text-muted); font-style: italic; line-height: 1.6; padding: 10px 0; border-top: 1px solid var(--border); }
 
-  .result-analysis {
-    font-size: 0.9rem; color: var(--text-muted);
-    font-style: italic; line-height: 1.6;
-    padding: 12px 0; border-top: 1px solid var(--border);
-  }
-
-  /* ── HISTORY ── */
-  .history-section { animation: fadeUp 0.6s ease 0.3s both; }
-
+  /* History */
+  .history-section { margin-top: 8px; }
   .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem; letter-spacing: 3px;
-    color: var(--text-muted); text-transform: uppercase;
-    margin-bottom: 16px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 3px;
+    color: var(--text-muted); text-transform: uppercase; margin-bottom: 14px;
     display: flex; align-items: center; gap: 12px;
   }
   .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
   .history-empty {
-    text-align: center; padding: 32px;
-    color: var(--text-muted); font-style: italic; font-size: 0.9rem;
-    background: var(--dark2); border-radius: 12px;
-    border: 1px dashed var(--border);
+    text-align: center; padding: 28px; color: var(--text-muted);
+    font-style: italic; font-size: 0.88rem; background: var(--dark2);
+    border-radius: 12px; border: 1px dashed var(--border);
   }
 
-  .history-list { display: flex; flex-direction: column; gap: 10px; }
+  .history-list { display: flex; flex-direction: column; gap: 8px; }
 
   .history-item {
     display: flex; align-items: center; justify-content: space-between;
     background: var(--dark2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 20px;
-    transition: border-color 0.2s;
+    border-radius: 10px; padding: 12px 18px; transition: border-color 0.2s;
   }
   .history-item:hover { border-color: rgba(201,168,76,0.4); }
-  .history-item.beursault-item { border-color: rgba(192,57,43,0.2); }
-  .history-item.beursault-item:hover { border-color: rgba(192,57,43,0.5); }
+  .history-left { display: flex; align-items: center; gap: 12px; }
+  .history-volley { font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; color: var(--text-muted); letter-spacing: 1px; min-width: 56px; }
+  .history-arrows { display: flex; gap: 5px; }
+  .mini-badge { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; }
+  .history-score { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--gold); }
 
-  .history-left { display: flex; align-items: center; gap: 14px; }
+  /* ── HISTORIQUE SCREEN ── */
+  .history-screen-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
+  }
+  .history-screen-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; color: var(--gold); }
 
-  .history-volley {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.85rem; color: var(--text-muted);
-    letter-spacing: 1px; min-width: 60px;
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-chip {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+    background: var(--dark3); color: var(--text-muted); font-size: 0.8rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .filter-chip.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+
+  .session-card {
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 20px; margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .session-card:hover { border-color: rgba(201,168,76,0.4); }
+
+  .session-card-header {
+    display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px;
   }
 
-  .history-arrows { display: flex; gap: 6px; }
+  .session-card-format { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; color: var(--text); }
+  .session-card-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; }
 
-  .mini-badge {
-    width: 28px; height: 28px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.75rem; font-weight: 600;
+  .session-card-score-wrap { text-align: right; }
+  .session-card-score { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--gold); line-height: 1; }
+  .session-card-max { font-size: 0.72rem; color: var(--text-muted); }
+
+  .session-card-stats {
+    display: flex; gap: 16px; padding-top: 12px; border-top: 1px solid var(--border);
+    flex-wrap: wrap;
   }
 
-  .history-score { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--gold); }
-  .history-item.beursault-item .history-score { color: #E07070; }
+  .mini-stat { font-size: 0.78rem; color: var(--text-muted); }
+  .mini-stat span { color: var(--text); font-weight: 500; }
 
-  /* ── MODAL (session end) ── */
+  .objectif-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 0.72rem; margin-top: 8px;
+  }
+  .objectif-tag.achieved { background: rgba(39,174,96,0.15); border: 1px solid rgba(39,174,96,0.3); color: #2ECC71; }
+  .objectif-tag.missed   { background: rgba(192,57,43,0.15);  border: 1px solid rgba(192,57,43,0.3);  color: #E74C3C; }
+  .objectif-tag.pending  { background: rgba(201,168,76,0.1);  border: 1px solid rgba(201,168,76,0.2); color: var(--gold); }
+
+  .progress-mini { margin-top: 10px; }
+  .progress-mini-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; }
+  .progress-mini-track { height: 4px; background: var(--dark2); border-radius: 2px; overflow: hidden; }
+  .progress-mini-fill { height: 100%; border-radius: 2px; background: var(--gold); }
+
+  .btn-delete-session {
+    background: transparent; border: none; color: var(--text-muted);
+    font-size: 1rem; cursor: pointer; padding: 4px 8px; border-radius: 6px;
+    transition: all 0.2s; margin-top: 4px;
+  }
+  .btn-delete-session:hover { color: var(--red); }
+
+  /* ── MODAL SESSION END ── */
   .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85);
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
     z-index: 100; align-items: center; justify-content: center;
-    padding: 24px; backdrop-filter: blur(4px);
+    padding: 20px; backdrop-filter: blur(4px);
   }
   .modal-overlay.visible { display: flex; animation: fadeIn 0.3s ease; }
-
   .modal {
     background: var(--dark2); border: 1px solid var(--border);
-    border-radius: 20px; padding: 40px;
-    max-width: 480px; width: 100%;
+    border-radius: 20px; padding: 36px; max-width: 460px; width: 100%;
     text-align: center; animation: scaleIn 0.3s ease;
   }
-
-  .modal-icon { font-size: 3rem; margin-bottom: 16px; }
-
-  .modal h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem; letter-spacing: 3px;
-    color: var(--gold); margin-bottom: 8px;
-  }
-
-  .modal-result { font-family: 'Bebas Neue', sans-serif; font-size: 4rem; color: white; line-height: 1; margin: 16px 0; }
-
-  .modal-comparison {
-    font-size: 1rem; padding: 12px 20px;
-    border-radius: 8px; margin: 16px 0 24px; font-weight: 500;
-  }
-
+  .modal-icon { font-size: 2.8rem; margin-bottom: 14px; }
+  .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 6px; }
+  .modal-result { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; color: white; line-height: 1; margin: 14px 0; }
+  .modal-comparison { font-size: 0.95rem; padding: 10px 18px; border-radius: 8px; margin: 14px 0 20px; font-weight: 500; }
   .comparison-better { background: rgba(46,204,113,0.15); border: 1px solid rgba(46,204,113,0.3); color: #2ECC71; }
   .comparison-worse  { background: rgba(231,76,60,0.15);  border: 1px solid rgba(231,76,60,0.3);  color: #E74C3C; }
   .comparison-first  { background: rgba(201,168,76,0.1);  border: 1px solid rgba(201,168,76,0.2); color: var(--gold); }
-
-  .modal-details { display: flex; justify-content: center; gap: 32px; margin-bottom: 28px; }
+  .modal-details { display: flex; justify-content: center; gap: 28px; margin-bottom: 24px; }
   .modal-stat { text-align: center; }
-  .modal-stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--text); }
-  .modal-stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-
+  .modal-stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--text); }
+  .modal-stat-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+  .modal-objectif {
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 20px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px;
+  }
+  .modal-objectif.ok  { background: rgba(39,174,96,0.15); border: 1px solid rgba(39,174,96,0.3); color: #2ECC71; }
+  .modal-objectif.nok { background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.3); color: #E74C3C; }
+  .btn-modal-row { display: flex; gap: 10px; }
   .btn-new-session {
-    width: 100%;
-    background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
-    color: var(--dark); border: none; padding: 16px;
+    flex: 1; background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
+    color: var(--dark); border: none; padding: 14px;
     border-radius: 12px; font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem; letter-spacing: 3px;
-    cursor: pointer; transition: all 0.2s;
+    font-size: 1.1rem; letter-spacing: 2px; cursor: pointer; transition: all 0.2s;
   }
   .btn-new-session:hover { opacity: 0.9; }
-
-  /* ── WELCOME / PROFILE OVERLAY ── */
-  .welcome-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.95);
-    z-index: 200;
-    overflow-y: auto;
-    padding: 24px;
-    backdrop-filter: blur(8px);
-    justify-content: center;
-    align-items: flex-start;
-  }
-  .welcome-overlay.visible { display: flex; animation: fadeIn 0.4s ease; }
-
-  .welcome-card {
-    background: var(--dark2);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 40px;
-    max-width: 520px;
-    width: 100%;
-    margin: auto;
-    animation: scaleIn 0.4s ease;
-  }
-
-  .welcome-icon { font-size: 3rem; text-align: center; margin-bottom: 12px; display: block; }
-
-  .welcome-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.2rem; letter-spacing: 3px;
-    color: var(--gold); text-align: center; margin-bottom: 8px;
-  }
-
-  .welcome-subtitle {
-    font-size: 0.85rem; color: var(--text-muted);
-    text-align: center; margin-bottom: 32px; font-style: italic;
-  }
-
-  .form-row { display: flex; gap: 12px; margin-bottom: 20px; }
-  .form-group { flex: 1; }
-
-  .form-label {
-    display: block;
-    font-size: 0.75rem; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 1.5px;
-    margin-bottom: 8px;
-  }
-
-  .form-input {
-    width: 100%;
-    background: var(--dark3);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-input:focus { border-color: var(--gold); }
-
-  .form-section { margin-bottom: 20px; }
-
-  .arc-types-grid { display: flex; gap: 8px; flex-wrap: wrap; }
-
-  .arc-btn {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 2px solid var(--border);
-    background: var(--dark3);
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .arc-btn.selected { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.1); }
-
-  .welcome-actions { display: flex; gap: 12px; margin-top: 28px; }
-
-  .btn-start {
-    flex: 1;
-    background: linear-gradient(135deg, var(--gold) 0%, #A07830 100%);
-    color: var(--dark); border: none; padding: 16px;
-    border-radius: 12px; font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem; letter-spacing: 3px;
+  .btn-home {
+    flex: 1; background: var(--dark3); color: var(--text);
+    border: 1px solid var(--border); padding: 14px; border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px;
     cursor: pointer; transition: all 0.2s;
   }
-  .btn-start:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-home:hover { border-color: var(--gold); color: var(--gold); }
 
-  .btn-cancel {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 16px 24px;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s;
+  /* Queue banner */
+  #queue-banner {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--gold); color: var(--dark); padding: 12px 20px; border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px;
+    z-index: 999; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.4);
+    white-space: nowrap;
   }
-  .btn-cancel:hover { border-color: var(--text-muted); color: var(--text); }
 
-  /* ── ANIMATIONS ── */
+  /* Animations */
   @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeUp   { from { opacity: 0; transform: translateY(20px);  } to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
@@ -783,62 +544,15 @@
   @keyframes spin     { to { transform: rotate(360deg); } }
 
   @media (max-width: 600px) {
-    .session-info { gap: 16px; }
+    .stats-row { gap: 0; }
     .stat-value { font-size: 1.5rem; }
     .modal { padding: 24px; }
-    .modal-result { font-size: 3rem; }
-    .welcome-card { padding: 24px; }
-    .form-row { flex-direction: column; }
-    .welcome-actions { flex-direction: column; }
-    .mode-btn { font-size: 0.85rem; letter-spacing: 1px; padding: 10px 4px; }
+    .modal-result { font-size: 2.8rem; }
+    .btn-modal-row { flex-direction: column; }
   }
 </style>
 </head>
 <body>
-
-<!-- Welcome / Profile Overlay -->
-<div class="welcome-overlay" id="welcome-overlay">
-  <div class="welcome-card">
-    <span class="welcome-icon">🎯</span>
-    <h1 class="welcome-title" id="welcome-title">Bienvenue sur ArcherAI</h1>
-    <p class="welcome-subtitle" id="welcome-subtitle">Configurez votre profil pour commencer</p>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Prénom</label>
-        <input type="text" id="w-prenom" class="form-input" placeholder="Votre prénom">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Nom</label>
-        <input type="text" id="w-nom" class="form-input" placeholder="Votre nom">
-      </div>
-    </div>
-
-    <div class="form-section">
-      <label class="form-label">Type d'arc</label>
-      <div class="arc-types-grid" id="welcome-arc-types"></div>
-    </div>
-
-    <div class="form-section">
-      <label class="form-label">Couleurs des plumes (1 à 3)</label>
-      <div class="colors-grid" id="welcome-plumes-grid"></div>
-      <div class="selected-colors-preview" id="welcome-plumes-preview">
-        <span class="preview-label">Sélectionnez 1 à 3 couleurs</span>
-      </div>
-    </div>
-
-    <div class="form-section">
-      <label class="form-label">Couleur de l'encoche</label>
-      <div class="colors-grid" id="welcome-encoche-grid"></div>
-    </div>
-
-    <div class="welcome-actions">
-      <button class="btn-cancel" id="welcome-cancel-btn" onclick="closeWelcome()" style="display:none">Annuler</button>
-      <button class="btn-start" id="welcome-save-btn" onclick="saveWelcomeProfile()">🏹 Commencer</button>
-    </div>
-  </div>
-</div>
-
 <div class="container">
 
   <!-- Header -->
@@ -858,1036 +572,963 @@
       <h1>ArcherAI</h1>
       <p>Score par intelligence artificielle</p>
     </div>
-    <a href="guide-scoring.html" style="margin-left:auto;background:transparent;border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:8px 16px;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:2px;text-decoration:none;flex-shrink:0;">
-      ? Guide
-    </a>
-    <button class="btn-profile" onclick="openProfileModal()">👤 Mon profil</button>
+    <div class="header-actions">
+      <button class="btn-icon" onclick="showScreen('history')">📋 Historique</button>
+      <a href="guide-scoring.html" class="btn-icon">? Guide</a>
+    </div>
   </div>
 
-  <!-- Mode toggle -->
-  <div class="mode-toggle">
-    <button class="mode-btn active" onclick="setMode('solo')"      id="btn-mode-solo">🏹 Solo</button>
-    <button class="mode-btn"        onclick="setMode('duo')"       id="btn-mode-duo">🏹🏹 Duo</button>
-    <button class="mode-btn"        onclick="setMode('beursault')" id="btn-mode-beursault">🎯 Beursault</button>
-  </div>
-
-  <!-- Session Bar -->
-  <div class="session-bar">
-    <div class="session-info">
-      <div class="stat">
-        <div class="stat-value" id="total-score">0</div>
-        <div class="stat-label">Points total</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-value" id="volley-count">0</div>
-        <div class="stat-label">Volées</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-value" id="arrow-count">0</div>
-        <div class="stat-label">Flèches</div>
+  <!-- ═══════════════════ SCREEN : HOME ═══════════════════ -->
+  <div class="screen active" id="screen-home">
+    <div class="home-actions">
+      <button class="btn-primary" onclick="showScreen('setup')">🏹 Nouvelle session</button>
+      <button class="btn-secondary" onclick="showScreen('history')">📋 Voir l'historique</button>
+    </div>
+    <div class="last-session-recap" id="last-session-recap" style="display:none">
+      <div class="recap-label">Dernière session</div>
+      <div class="recap-row">
+        <div>
+          <div class="recap-format" id="recap-format">—</div>
+          <div class="recap-date" id="recap-date">—</div>
+        </div>
+        <div class="recap-score" id="recap-score">—</div>
       </div>
     </div>
-    <button class="btn-end-session" onclick="endSession()">Terminer</button>
   </div>
 
-  <!-- Config archers (duo + beursault) -->
-  <div class="archers-config" id="archers-config">
-    <!-- Beursault info banner -->
-    <div class="beursault-info" id="beursault-info">
-      🎯 Mode Beursault — 1 flèche par archer — Score 1 (extérieur), 2 (milieu), 3 (centre)
+  <!-- ═══════════════════ SCREEN : SETUP ═══════════════════ -->
+  <div class="screen" id="screen-setup">
+    <div class="setup-title">⚙️ Configurer la session</div>
+
+    <!-- Format -->
+    <div class="form-section">
+      <label class="form-label">Format de tir</label>
+      <div class="formats-grid" id="formats-grid"></div>
     </div>
-    <div id="archers-list"></div>
-    <button class="btn-add-archer" id="btn-add-archer" onclick="addBeursaultArcher()">+ Ajouter un archer</button>
-  </div>
 
-  <!-- Upload Zone -->
-  <div class="upload-section">
-    <div class="upload-zone" id="upload-zone"
-         onclick="document.getElementById('file-input').click()"
-         ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
-      <span class="upload-icon">🎯</span>
-      <h3>Photographier la cible</h3>
-      <p>Cliquez ou déposez une photo ici — avant de retirer les flèches !</p>
-    </div>
-    <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
-  </div>
-
-  <!-- Analyze Section -->
-  <div class="analyze-section" id="analyze-section">
-    <div class="preview-wrapper">
-      <img class="preview-img" id="preview-img" src="" alt="Cible">
-      <div class="preview-overlay" id="preview-overlay">
-        <div class="analyzing-text">
-          <div class="spinner"></div>
-          <p>Analyse en cours...</p>
+    <!-- Format libre -->
+    <div class="custom-fields" id="custom-fields">
+      <div class="custom-row">
+        <div class="input-group">
+          <div class="input-label">Distance (m)</div>
+          <input type="number" class="field-input" id="custom-distance" placeholder="ex: 50" min="1" max="90">
+        </div>
+        <div class="input-group">
+          <div class="input-label">Blason (cm)</div>
+          <select class="field-input" id="custom-blason">
+            <option value="">— choisir —</option>
+            <option value="40cm">40 cm</option>
+            <option value="60cm">60 cm</option>
+            <option value="80cm">80 cm</option>
+            <option value="122cm">122 cm</option>
+            <option value="Vegas trispot">Vegas trispot</option>
+            <option value="Beursault">Beursault</option>
+            <option value="GEF">GEF débutants</option>
+          </select>
+        </div>
+      </div>
+      <div class="custom-row">
+        <div class="input-group">
+          <div class="input-label">Nb volées</div>
+          <input type="number" class="field-input" id="custom-volleys" placeholder="ex: 12" min="1" max="50">
+        </div>
+        <div class="input-group">
+          <div class="input-label">Flèches / volée</div>
+          <input type="number" class="field-input" id="custom-arrows" placeholder="ex: 6" min="1" max="12">
         </div>
       </div>
     </div>
-    <button class="btn-analyze" id="btn-analyze" onclick="analyzeImage()">
-      🏹 Analyser les points
-    </button>
+
+    <!-- Type d'arc -->
+    <div class="form-section">
+      <label class="form-label">Type d'arc <span style="color:var(--text-muted);font-size:0.7rem;font-style:italic">(étiquette)</span></label>
+      <div class="chips" id="arc-chips">
+        <div class="chip" onclick="selectArc('Recurve')">Recurve</div>
+        <div class="chip" onclick="selectArc('Classique')">Classique</div>
+        <div class="chip" onclick="selectArc('Compound')">Compound</div>
+        <div class="chip" onclick="selectArc('Barebow')">Barebow</div>
+        <div class="chip" onclick="selectArc('Longbow')">Longbow</div>
+      </div>
+    </div>
+
+    <!-- Objectif -->
+    <div class="form-section">
+      <div class="objectif-section">
+        <div class="objectif-toggle" onclick="toggleObjectif()">
+          <div class="objectif-toggle-label">🎯 Ajouter un objectif</div>
+          <div class="toggle-switch" id="objectif-switch"></div>
+        </div>
+        <div class="objectif-fields" id="objectif-fields">
+          <div class="custom-row">
+            <div class="input-group">
+              <div class="input-label">Score cible</div>
+              <input type="number" class="field-input" id="obj-score" placeholder="ex: 480" min="1">
+            </div>
+            <div class="input-group">
+              <div class="input-label">Date butée (optionnel)</div>
+              <input type="date" class="field-input" id="obj-date">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-start" id="btn-start" onclick="startSession()">🏹 Commencer</button>
+    <button class="btn-secondary" style="margin-top:10px" onclick="showScreen('home')">← Retour</button>
   </div>
 
-  <!-- Result Card solo -->
-  <div class="result-card" id="result-card">
-    <div class="result-header">
-      <h3>Résultat de la volée</h3>
-      <span class="volley-number" id="result-volley-label">Volée 1</span>
+  <!-- ═══════════════════ SCREEN : SESSION ═══════════════════ -->
+  <div class="screen" id="screen-session">
+
+    <!-- Header session -->
+    <div class="session-header">
+      <div class="session-header-top">
+        <div>
+          <div class="session-format-name" id="session-format-name">—</div>
+          <div class="session-format-detail" id="session-format-detail">—</div>
+        </div>
+        <button class="btn-end-session" onclick="endSession()">Terminer</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-cell">
+          <div class="stat-value" id="total-score">0</div>
+          <div class="stat-label">Points</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value" id="volley-count">0</div>
+          <div class="stat-label" id="volley-label">Volées</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value" id="arrow-count">0</div>
+          <div class="stat-label">Flèches</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value" id="avg-per-arrow">—</div>
+          <div class="stat-label">Moy/flèche</div>
+        </div>
+      </div>
+      <!-- Barre objectif -->
+      <div class="objectif-bar-wrap" id="objectif-bar-wrap">
+        <div class="objectif-bar-labels">
+          <span id="obj-bar-label">Objectif</span>
+          <span id="obj-bar-pct">0%</span>
+        </div>
+        <div class="objectif-bar-track">
+          <div class="objectif-bar-fill" id="objectif-bar-fill"></div>
+        </div>
+        <div class="objectif-deadline" id="objectif-deadline"></div>
+      </div>
     </div>
-    <div class="arrows-grid" id="arrows-grid"></div>
-    <div class="result-total">
-      <div class="total-label">Score volée</div>
-      <div class="total-value" id="result-total-value">0</div>
+
+    <!-- Mode Solo / Duo -->
+    <div class="mode-toggle">
+      <button class="mode-btn active" onclick="setMode('solo')" id="btn-mode-solo">🏹 Solo</button>
+      <button class="mode-btn" onclick="setMode('duo')" id="btn-mode-duo">🏹🏹 Duo</button>
     </div>
-    <div class="result-analysis" id="result-analysis"></div>
+
+    <!-- Config archers (duo) -->
+    <div class="archers-config" id="archers-config">
+      <div class="archer-card">
+        <div class="archer-card-title">🏹 Archer 1</div>
+        <input type="text" class="archer-name-input" id="archer1-name" placeholder="Prénom" oninput="saveProfiles()">
+        <div class="colors-label">Couleur(s) des plumes</div>
+        <div class="colors-grid" id="colors1"></div>
+        <div class="selected-colors-preview" id="preview1"><span class="preview-label">Sélectionnez 1 à 3 couleurs</span></div>
+      </div>
+      <div class="archer-card">
+        <div class="archer-card-title">🏹 Archer 2</div>
+        <input type="text" class="archer-name-input" id="archer2-name" placeholder="Prénom" oninput="saveProfiles()">
+        <div class="colors-label">Couleur(s) des plumes</div>
+        <div class="colors-grid" id="colors2"></div>
+        <div class="selected-colors-preview" id="preview2"><span class="preview-label">Sélectionnez 1 à 3 couleurs</span></div>
+      </div>
+    </div>
+
+    <!-- Upload -->
+    <div class="upload-section">
+      <div class="upload-zone" id="upload-zone"
+           onclick="document.getElementById('file-input').click()"
+           ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
+        <span class="upload-icon">🎯</span>
+        <h3>Photographier la cible</h3>
+        <p>Avant de retirer les flèches !</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
+    </div>
+
+    <!-- Analyze -->
+    <div class="analyze-section" id="analyze-section">
+      <div class="preview-wrapper">
+        <img class="preview-img" id="preview-img" src="" alt="Cible">
+        <div class="preview-overlay" id="preview-overlay">
+          <div class="analyzing-text"><div class="spinner"></div><p>Analyse en cours...</p></div>
+        </div>
+      </div>
+      <button class="btn-analyze" id="btn-analyze" onclick="analyzeImage()">🏹 Analyser les points</button>
+    </div>
+
+    <!-- Result solo -->
+    <div class="result-card" id="result-card">
+      <div class="result-header">
+        <h3>Résultat de la volée</h3>
+        <span class="volley-number" id="result-volley-label">Volée 1</span>
+      </div>
+      <div class="arrows-grid" id="arrows-grid"></div>
+      <div class="result-total">
+        <div class="total-label">Score volée</div>
+        <div class="total-value" id="result-total-value">0</div>
+      </div>
+      <div class="result-analysis" id="result-analysis"></div>
+    </div>
+
+    <!-- Result duo -->
+    <div class="result-duo" id="result-duo">
+      <div class="duo-card" id="duo-card-1">
+        <div class="duo-header">
+          <div class="duo-archer-name" id="duo-name-1">Archer 1</div>
+          <div class="duo-colors" id="duo-colors-1"></div>
+        </div>
+        <div class="arrows-grid" id="arrows-grid-1"></div>
+        <div class="result-total"><div class="total-label">Score volée</div><div class="total-value" id="total-value-1">0</div></div>
+        <div class="result-analysis" id="analysis-1"></div>
+      </div>
+      <div class="duo-card" id="duo-card-2">
+        <div class="duo-header">
+          <div class="duo-archer-name" id="duo-name-2">Archer 2</div>
+          <div class="duo-colors" id="duo-colors-2"></div>
+        </div>
+        <div class="arrows-grid" id="arrows-grid-2"></div>
+        <div class="result-total"><div class="total-label">Score volée</div><div class="total-value" id="total-value-2">0</div></div>
+        <div class="result-analysis" id="analysis-2"></div>
+      </div>
+    </div>
+
+    <!-- Feuille de score -->
+    <div class="history-section">
+      <div class="section-title">Feuille de score</div>
+      <div id="history-container"><div class="history-empty">Aucune volée encore — prenez votre première photo !</div></div>
+    </div>
+
   </div>
 
-  <!-- Result Multi (duo + beursault) -->
-  <div class="result-multi" id="result-multi"></div>
-
-  <!-- History -->
-  <div class="history-section">
-    <div class="section-title">Feuille de score</div>
-    <div id="history-container">
-      <div class="history-empty">Aucune volée encore — prenez votre première photo !</div>
+  <!-- ═══════════════════ SCREEN : HISTORIQUE ═══════════════════ -->
+  <div class="screen" id="screen-history">
+    <div class="history-screen-header">
+      <div class="history-screen-title">📋 Historique</div>
+      <button class="btn-icon" onclick="showScreen('home')">← Retour</button>
     </div>
+    <div class="filters" id="history-filters"></div>
+    <div id="history-sessions-list"></div>
   </div>
 
 </div>
 
-<!-- Modal fin de session -->
+<!-- Modal fin session -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-icon" id="modal-icon">🏆</div>
     <h2>Session terminée</h2>
     <div class="modal-result" id="modal-total">0</div>
     <div class="modal-comparison" id="modal-comparison"></div>
+    <div class="modal-objectif" id="modal-objectif" style="display:none"></div>
     <div class="modal-details">
-      <div class="modal-stat">
-        <div class="modal-stat-value" id="modal-volleys">0</div>
-        <div class="modal-stat-label">Volées</div>
-      </div>
-      <div class="modal-stat">
-        <div class="modal-stat-value" id="modal-arrows">0</div>
-        <div class="modal-stat-label">Flèches</div>
-      </div>
-      <div class="modal-stat">
-        <div class="modal-stat-value" id="modal-avg">0</div>
-        <div class="modal-stat-label">Moy./flèche</div>
-      </div>
+      <div class="modal-stat"><div class="modal-stat-value" id="modal-volleys">0</div><div class="modal-stat-label">Volées</div></div>
+      <div class="modal-stat"><div class="modal-stat-value" id="modal-arrows">0</div><div class="modal-stat-label">Flèches</div></div>
+      <div class="modal-stat"><div class="modal-stat-value" id="modal-avg">0</div><div class="modal-stat-label">Moy./flèche</div></div>
     </div>
-    <button class="btn-new-session" onclick="newSession()">Nouvelle session</button>
+    <div class="btn-modal-row">
+      <button class="btn-new-session" onclick="restartSession()">🔄 Rejouer</button>
+      <button class="btn-home" onclick="goHome()">🏠 Accueil</button>
+    </div>
   </div>
 </div>
 
 <script>
-  // ── CONSTANTES ──
-  const COLORS = [
-    { name: 'Blanc',  hex: '#FFFFFF' },
-    { name: 'Noir',   hex: '#222222' },
-    { name: 'Rouge',  hex: '#E74C3C' },
-    { name: 'Bleu',   hex: '#3498DB' },
-    { name: 'Vert',   hex: '#2ECC71' },
-    { name: 'Orange', hex: '#E67E22' },
-    { name: 'Jaune',  hex: '#F1C40F' },
-    { name: 'Violet', hex: '#9B59B6' },
-    { name: 'Rose',   hex: '#FF69B4' },
-    { name: 'Gris',   hex: '#95A5A6' },
-  ];
+// ═══════════════════════════════════════════════
+// FORMATS FFTA
+// ═══════════════════════════════════════════════
+const FFTA_FORMATS = [
+  { id: 'salle-40',    name: 'Salle 18m',         detail: '18m · Blason 40cm · 20×3 = 60 flèches',  distance: 18, blason: '40cm',        volleys: 20, arrowsPerVolley: 3,  maxScore: 600 },
+  { id: 'salle-vegas', name: 'Salle Vegas',        detail: '18m · Trispot · 20×3 = 60 flèches',      distance: 18, blason: 'Vegas trispot', volleys: 20, arrowsPerVolley: 3,  maxScore: 600 },
+  { id: 'salle-60',    name: 'Salle 18m (U13/U15)',detail: '18m · Blason 60cm · 20×3 = 60 flèches',  distance: 18, blason: '60cm',        volleys: 20, arrowsPerVolley: 3,  maxScore: 600 },
+  { id: 'ext-70',      name: 'Extérieur 70m',      detail: '70m · Blason 122cm · 12×6 = 72 flèches', distance: 70, blason: '122cm',       volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
+  { id: 'ext-60',      name: 'Extérieur 60m',      detail: '60m · Blason 122cm · 12×6 = 72 flèches', distance: 60, blason: '122cm',       volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
+  { id: 'ext-50',      name: 'Extérieur 50m',      detail: '50m · Blason 80cm · 12×6 = 72 flèches',  distance: 50, blason: '80cm',        volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
+  { id: 'ext-40',      name: 'Extérieur 40m',      detail: '40m · Blason 80cm · 12×6 = 72 flèches',  distance: 40, blason: '80cm',        volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
+  { id: 'ext-30',      name: 'Extérieur 30m',      detail: '30m · Blason 80cm · 12×6 = 72 flèches',  distance: 30, blason: '80cm',        volleys: 12, arrowsPerVolley: 6,  maxScore: 720 },
+  { id: 'beursault',   name: 'Beursault',           detail: 'Blason Beursault · libre',               distance: null, blason: 'Beursault', volleys: 12, arrowsPerVolley: 6, maxScore: null },
+  { id: 'libre',       name: '⚙️ Format libre',    detail: 'Personnalisez votre session',             distance: null, blason: null,         volleys: null, arrowsPerVolley: null, maxScore: null },
+];
 
-  const ARC_TYPES      = ['Recurve', 'Classique', 'Compound', 'Barebow'];
-  const PROFILE_KEY    = 'archerAI_profile';
-  const SESSION_KEY    = 'archerAI_session';
-  const DUO_KEY        = 'archerAI_duo_archers';
-  const BEURSAULT_KEY  = 'archerAI_beursault_archers';
-  const QUEUE_KEY      = 'archerAI_queue';
+const COLORS = [
+  { name: 'Blanc',  hex: '#FFFFFF' }, { name: 'Noir',   hex: '#222222' },
+  { name: 'Rouge',  hex: '#E74C3C' }, { name: 'Bleu',   hex: '#3498DB' },
+  { name: 'Vert',   hex: '#2ECC71' }, { name: 'Orange', hex: '#E67E22' },
+  { name: 'Jaune',  hex: '#F1C40F' }, { name: 'Violet', hex: '#9B59B6' },
+  { name: 'Rose',   hex: '#FF69B4' }, { name: 'Gris',   hex: '#95A5A6' },
+];
 
-  // ── COULEURS : helpers compteur ──
-  // colors est un objet { 'Noir': 2, 'Jaune': 1 }
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentScreen = 'home';
+let selectedFormatId = null;
+let selectedArc = null;
+let objectifEnabled = false;
+let mode = 'solo';
 
-  function totalColors(colors) {
-    if (!colors) return 0;
-    if (Array.isArray(colors)) return colors.length; // rétrocompat
-    return Object.values(colors).reduce((s, v) => s + v, 0);
-  }
+let currentSession = null; // { format, arc, objectif, volleys, totalScore, arrowCount, startDate }
+let currentImageBase64 = null;
 
-  function colorsToString(colors) {
-    if (!colors) return '';
-    if (Array.isArray(colors)) {
-      // rétrocompat : compte les doublons
-      const obj = {};
-      colors.forEach(c => { obj[c] = (obj[c] || 0) + 1; });
-      colors = obj;
-    }
-    const parts = Object.entries(colors)
-      .filter(([, v]) => v > 0)
-      .map(([k, v]) => v > 1 ? `${v} × ${k}` : k);
-    return parts.join(' + ');
-  }
+let archer1Colors = JSON.parse(localStorage.getItem('archer1Colors') || '[]');
+let archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
 
-  function migrateColors(colors) {
-    if (!colors) return {};
-    if (Array.isArray(colors)) {
-      const obj = {};
-      colors.forEach(c => { obj[c] = (obj[c] || 0) + 1; });
-      return obj;
-    }
-    return colors;
-  }
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  currentScreen = name;
+  if (name === 'history') renderHistoryScreen();
+  if (name === 'home') renderHomeRecap();
+}
 
-  // Génère le HTML d'une ligne compteur
-  function counterRowHtml(c, count, total, incCall, decCall) {
-    const canInc = total < 3;
-    const canDec = count > 0;
-    return `<div class="color-counter-row${count > 0 ? ' active' : ''}">
-      <div class="color-counter-dot" style="background:${c.hex}"></div>
-      <span class="color-counter-name">${c.name}</span>
-      <div class="color-counter-controls">
-        <button class="btn-counter" onclick="${decCall}" ${!canDec ? 'disabled' : ''}>&minus;</button>
-        <span class="counter-value${count === 0 ? ' zero' : ''}">${count}</span>
-        <button class="btn-counter" onclick="${incCall}" ${(!canInc && count === 0) ? 'disabled' : ''}>+</button>
+// ═══════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════
+function renderHomeRecap() {
+  const sessions = getSavedSessions();
+  if (sessions.length === 0) return;
+  const last = sessions[0];
+  document.getElementById('last-session-recap').style.display = 'block';
+  document.getElementById('recap-format').textContent = last.format.name;
+  document.getElementById('recap-date').textContent = formatDate(last.date);
+  document.getElementById('recap-score').textContent = last.totalScore + (last.format.maxScore ? ' / ' + last.format.maxScore : '');
+}
+
+// ═══════════════════════════════════════════════
+// SETUP
+// ═══════════════════════════════════════════════
+function buildFormatsGrid() {
+  const grid = document.getElementById('formats-grid');
+  grid.innerHTML = FFTA_FORMATS.map(f => `
+    <div class="format-card" id="fc-${f.id}" onclick="selectFormat('${f.id}')">
+      <div class="format-card-left">
+        <div class="format-name">${f.name}</div>
+        <div class="format-detail">${f.detail}</div>
       </div>
-    </div>`;
-  }
+      <div class="format-score-max">${f.maxScore ? f.maxScore : '—'}</div>
+    </div>
+  `).join('');
+}
 
-  // ── STATE ──
-  let mode = 'solo'; // 'solo' | 'duo' | 'beursault'
-  let session = { volleys: [], totalScore: 0, arrowCount: 0 };
-  let currentImageBase64 = null;
-  let lastSessionScore = parseInt(localStorage.getItem('lastSessionScore') || '0');
+function selectFormat(id) {
+  selectedFormatId = id;
+  document.querySelectorAll('.format-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('fc-' + id).classList.add('selected');
+  const customFields = document.getElementById('custom-fields');
+  customFields.classList.toggle('visible', id === 'libre');
+}
 
-  let userProfile = { prenom: '', nom: '', arcTypes: [], plumeColors: [], encocheColor: '' };
-
-  // Duo : toujours exactement 2 archers
-  let duoArchers = [
-    { name: '', colors: [] },
-    { name: '', colors: [] }
-  ];
-
-  // Beursault : 1 à 5 archers
-  let beursaultArchers = [
-    { name: '', colors: [] }
-  ];
-
-  // Temp state formulaire profil/welcome
-  let wPlumes   = {}; // { colorName: count }
-  let wEncoche  = '';
-  let wArcTypes = [];
-  let wIsEdit   = false;
-
-  // ── HELPERS ──
-  function getCurrentArchers() {
-    return mode === 'duo' ? duoArchers : beursaultArchers;
-  }
-
-  function hex(name) {
-    const c = COLORS.find(x => x.name === name);
-    return c ? c.hex : '#888';
-  }
-
-  // ── PROFIL ──
-  function loadProfile() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(PROFILE_KEY));
-      if (saved && saved.prenom !== undefined) {
-        saved.plumeColors = migrateColors(saved.plumeColors);
-        userProfile = saved;
-        return true;
-      }
-    } catch(e) {}
-    return false;
-  }
-
-  function saveProfile(p) {
-    userProfile = p;
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
-  }
-
-  // ── WELCOME / PROFIL OVERLAY ──
-  function checkAndShowWelcome() {
-    if (!loadProfile()) openWelcome(false);
-  }
-
-  function openWelcome(isEdit) {
-    wIsEdit   = isEdit;
-    wPlumes   = isEdit ? migrateColors(userProfile.plumeColors) : {};
-    wEncoche  = isEdit ? (userProfile.encocheColor || '') : '';
-    wArcTypes = isEdit ? [...(userProfile.arcTypes || [])] : [];
-
-    document.getElementById('welcome-arc-types').innerHTML = ARC_TYPES.map(t =>
-      `<button class="arc-btn${wArcTypes.includes(t) ? ' selected' : ''}"
-               onclick="toggleWArc('${t}')">${t}</button>`
-    ).join('');
-
-    document.getElementById('w-prenom').value = isEdit ? (userProfile.prenom || '') : '';
-    document.getElementById('w-nom').value    = isEdit ? (userProfile.nom || '') : '';
-
-    buildWPlumeGrid();
-    buildWEncoche();
-
-    document.getElementById('welcome-title').textContent    = isEdit ? 'Mon Profil' : 'Bienvenue sur ArcherAI';
-    document.getElementById('welcome-subtitle').textContent = isEdit ? 'Modifiez vos informations' : 'Configurez votre profil pour commencer';
-    document.getElementById('welcome-save-btn').textContent = isEdit ? '💾 Sauvegarder' : '🏹 Commencer';
-    document.getElementById('welcome-cancel-btn').style.display = isEdit ? '' : 'none';
-
-    document.getElementById('welcome-overlay').classList.add('visible');
-  }
-
-  function closeWelcome() {
-    document.getElementById('welcome-overlay').classList.remove('visible');
-  }
-
-  function openProfileModal() { openWelcome(true); }
-
-  function toggleWArc(t) {
-    wArcTypes = wArcTypes.includes(t) ? wArcTypes.filter(x => x !== t) : [...wArcTypes, t];
-    document.querySelectorAll('#welcome-arc-types .arc-btn').forEach(btn => {
-      btn.classList.toggle('selected', wArcTypes.includes(btn.textContent));
-    });
-  }
-
-  function buildWPlumeGrid() {
-    const total = totalColors(wPlumes);
-    document.getElementById('welcome-plumes-grid').innerHTML =
-      `<div class="color-counter-list">${
-        COLORS.map(c => counterRowHtml(
-          c,
-          wPlumes[c.name] || 0,
-          total,
-          `incWPlume('${c.name}')`,
-          `decWPlume('${c.name}')`
-        )).join('')
-      }</div>`;
-    updateWPlumePreview();
-  }
-
-  function incWPlume(name) {
-    if (totalColors(wPlumes) >= 3) return;
-    wPlumes[name] = (wPlumes[name] || 0) + 1;
-    buildWPlumeGrid();
-  }
-
-  function decWPlume(name) {
-    if (!wPlumes[name] || wPlumes[name] === 0) return;
-    wPlumes[name]--;
-    if (wPlumes[name] === 0) delete wPlumes[name];
-    buildWPlumeGrid();
-  }
-
-  function updateWPlumePreview() {
-    const p = document.getElementById('welcome-plumes-preview');
-    const s = colorsToString(wPlumes);
-    const empty = totalColors(wPlumes) === 0;
-    p.innerHTML = `<span class="colors-summary${empty ? ' empty' : ''}">${
-      empty ? 'Sélectionnez jusqu\'à 3 plumes' : s
-    }</span>`;
-  }
-
-  function buildWEncoche() {
-    document.getElementById('welcome-encoche-grid').innerHTML = COLORS.map(c =>
-      `<div class="color-chip${wEncoche === c.name ? ' selected' : ''}"
-            onclick="selectWEncoche('${c.name}')">
-        <div class="color-dot" style="background:${c.hex};border:1px solid rgba(255,255,255,0.2)"></div>${c.name}
-      </div>`
-    ).join('');
-  }
-
-  function selectWEncoche(name) {
-    wEncoche = (wEncoche === name) ? '' : name;
-    buildWEncoche();
-  }
-
-  function saveWelcomeProfile() {
-    const prenom = document.getElementById('w-prenom').value.trim();
-    if (!prenom) { alert('Veuillez saisir votre prénom.'); return; }
-
-    saveProfile({
-      prenom,
-      nom:         document.getElementById('w-nom').value.trim(),
-      arcTypes:    wArcTypes,
-      plumeColors: wPlumes,
-      encocheColor: wEncoche
-    });
-
-    closeWelcome();
-
-    // Première ouverture : pré-remplir archer 1 dans duo et beursault
-    if (!wIsEdit) {
-      duoArchers[0].name         = prenom;
-      duoArchers[0].colors       = { ...wPlumes };
-      beursaultArchers[0].name   = prenom;
-      beursaultArchers[0].colors = { ...wPlumes };
-      saveDuoArchers();
-      saveBeursaultArchers();
-      renderArchersConfig();
-    }
-  }
-
-  // ── ARCHERS DUO ──
-  function loadDuoArchers() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(DUO_KEY));
-      if (saved && Array.isArray(saved) && saved.length === 2) {
-        duoArchers = saved.map(a => ({ ...a, colors: migrateColors(a.colors) }));
-        return;
-      }
-    } catch(e) {}
-    duoArchers = [
-      { name: userProfile.prenom || '', colors: migrateColors(userProfile.plumeColors) },
-      { name: '', colors: {} }
-    ];
-  }
-
-  function saveDuoArchers() {
-    localStorage.setItem(DUO_KEY, JSON.stringify(duoArchers));
-  }
-
-  // ── ARCHERS BEURSAULT ──
-  function loadBeursaultArchers() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(BEURSAULT_KEY));
-      if (saved && Array.isArray(saved) && saved.length >= 1) {
-        beursaultArchers = saved.map(a => ({ ...a, colors: migrateColors(a.colors) }));
-        return;
-      }
-    } catch(e) {}
-    beursaultArchers = [
-      { name: userProfile.prenom || '', colors: migrateColors(userProfile.plumeColors) }
-    ];
-  }
-
-  function saveBeursaultArchers() {
-    localStorage.setItem(BEURSAULT_KEY, JSON.stringify(beursaultArchers));
-  }
-
-  function addBeursaultArcher() {
-    if (beursaultArchers.length >= 5) return;
-    beursaultArchers.push({ name: '', colors: [] });
-    saveBeursaultArchers();
-    renderArchersConfig();
-  }
-
-  function removeBeursaultArcher(idx) {
-    if (beursaultArchers.length <= 1) return;
-    beursaultArchers.splice(idx, 1);
-    saveBeursaultArchers();
-    renderArchersConfig();
-  }
-
-  // ── COLOR COUNTER PER ARCHER ──
-  function incArcherColor(archerIdx, colorName) {
-    const arr = getCurrentArchers();
-    if (totalColors(arr[archerIdx].colors) >= 3) return;
-    arr[archerIdx].colors[colorName] = (arr[archerIdx].colors[colorName] || 0) + 1;
-    if (mode === 'duo') saveDuoArchers(); else saveBeursaultArchers();
-    renderArcherColorGrid(archerIdx);
-  }
-
-  function decArcherColor(archerIdx, colorName) {
-    const arr = getCurrentArchers();
-    const colors = arr[archerIdx].colors;
-    if (!colors[colorName]) return;
-    colors[colorName]--;
-    if (colors[colorName] === 0) delete colors[colorName];
-    if (mode === 'duo') saveDuoArchers(); else saveBeursaultArchers();
-    renderArcherColorGrid(archerIdx);
-  }
-
-  function renderArcherColorGrid(idx) {
-    const grid    = document.getElementById(`archer-colors-${idx}`);
-    const preview = document.getElementById(`archer-preview-${idx}`);
-    if (!grid || !preview) return;
-    const colors = getCurrentArchers()[idx].colors;
-    const total  = totalColors(colors);
-
-    grid.innerHTML = `<div class="color-counter-list">${
-      COLORS.map(c => counterRowHtml(
-        c,
-        colors[c.name] || 0,
-        total,
-        `incArcherColor(${idx}, '${c.name}')`,
-        `decArcherColor(${idx}, '${c.name}')`
-      )).join('')
-    }</div>`;
-
-    const s = colorsToString(colors);
-    const empty = total === 0;
-    preview.innerHTML = `<span class="colors-summary${empty ? ' empty' : ''}">${
-      empty ? 'Sélectionnez jusqu\'à 3 plumes' : s
-    }</span>`;
-  }
-
-  function renderArchersConfig() {
-    const isBeursault = mode === 'beursault';
-    const archersList = getCurrentArchers();
-
-    // Beursault info banner
-    document.getElementById('beursault-info').classList.toggle('visible', isBeursault);
-
-    // Beursault style on container
-    document.getElementById('archers-config').classList.toggle('beursault-mode', isBeursault);
-
-    const list = document.getElementById('archers-list');
-    list.innerHTML = archersList.map((a, idx) => {
-      const safeName = (a.name || '').replace(/"/g, '&quot;');
-      const canRemove = isBeursault && archersList.length > 1;
-      const onInput = isBeursault
-        ? `beursaultArchers[${idx}].name = this.value; saveBeursaultArchers()`
-        : `duoArchers[${idx}].name = this.value; saveDuoArchers()`;
-
-      return `<div class="archer-card" id="archer-card-${idx}">
-        <div class="archer-card-header">
-          <div class="archer-card-title">${isBeursault ? '🎯' : '🏹'} Archer ${idx + 1}</div>
-          ${canRemove ? `<button class="btn-remove-archer" onclick="removeBeursaultArcher(${idx})">✕ Supprimer</button>` : ''}
-        </div>
-        <input type="text" class="archer-name-input" id="archer-name-${idx}"
-               placeholder="Prénom de l'archer ${idx + 1}" value="${safeName}"
-               oninput="${onInput}">
-        <div class="colors-label">Couleur(s) des plumes</div>
-        <div class="colors-grid" id="archer-colors-${idx}"></div>
-        <div class="selected-colors-preview" id="archer-preview-${idx}"></div>
-      </div>`;
-    }).join('');
-
-    archersList.forEach((_, idx) => renderArcherColorGrid(idx));
-
-    // Add button : beursault only
-    const addBtn = document.getElementById('btn-add-archer');
-    addBtn.style.display = isBeursault ? '' : 'none';
-    addBtn.disabled = beursaultArchers.length >= 5;
-  }
-
-  // ── MODE ──
-  function setMode(m) {
-    mode = m;
-    document.getElementById('btn-mode-solo').classList.toggle('active', m === 'solo');
-    document.getElementById('btn-mode-duo').classList.toggle('active', m === 'duo');
-    document.getElementById('btn-mode-beursault').classList.toggle('active', m === 'beursault');
-
-    const showConfig = m === 'duo' || m === 'beursault';
-    document.getElementById('archers-config').classList.toggle('visible', showConfig);
-
-    document.getElementById('result-card').classList.remove('visible');
-    document.getElementById('result-multi').classList.remove('visible');
-
-    if (showConfig) renderArchersConfig();
-    if (session.volleys.length > 0) saveSession();
-  }
-
-  // ── PERSISTANCE SESSION ──
-  function saveSession() {
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ session, mode }));
-  }
-
-  function restoreSession() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(SESSION_KEY));
-      if (!saved || !saved.session || saved.session.volleys.length === 0) return;
-      session = saved.session;
-      // Rétrocompat : 'multi' → 'duo'
-      const m = saved.mode === 'multi' ? 'duo' : (saved.mode || 'solo');
-      setMode(m);
-      updateSessionBar();
-      updateHistory();
-    } catch(e) {}
-  }
-
-  // ── FILE D'ATTENTE HORS LIGNE ──
-  function getQueue() {
-    try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }
-    catch { return []; }
-  }
-  function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
-
-  function addToQueue(imageBase64) {
-    const q = getQueue();
-    q.push({
-      imageBase64, mode,
-      archers: getCurrentArchers().map(a => ({ name: a.name, colors: a.colors })),
-      timestamp: Date.now()
-    });
-    saveQueue(q);
-    updateQueueBanner();
-  }
-
-  function updateQueueBanner() {
-    const q = getQueue();
-    let banner = document.getElementById('queue-banner');
-    if (q.length === 0) { if (banner) banner.remove(); return; }
-    if (!banner) {
-      banner = document.createElement('div');
-      banner.id = 'queue-banner';
-      banner.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-        background:#C9A84C;color:#0D0D0D;padding:12px 20px;border-radius:12px;
-        font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;
-        z-index:999;cursor:pointer;box-shadow:0 4px 20px rgba(201,168,76,0.4);`;
-      banner.onclick = processQueue;
-      document.body.appendChild(banner);
-    }
-    banner.innerHTML = `📶 ${q.length} photo(s) en attente — Analyser`;
-  }
-
-  async function processQueue() {
-    const q = getQueue();
-    if (q.length === 0) return;
-    const banner = document.getElementById('queue-banner');
-    if (banner) banner.innerHTML = '⏳ Analyse en cours...';
-    let processed = 0;
-    for (const item of q) {
-      try {
-        const res = await callAPI(item.imageBase64, item.mode, item.archers || []);
-        if (res) processed++;
-      } catch(e) { break; }
-    }
-    saveQueue(processed === q.length ? [] : q.slice(processed));
-    updateQueueBanner();
-  }
-
-  window.addEventListener('load', () => {
-    checkAndShowWelcome();
-    loadDuoArchers();
-    loadBeursaultArchers();
-    restoreSession();
-    updateQueueBanner();
-    window.addEventListener('online', () => { if (getQueue().length > 0) processQueue(); });
+function selectArc(type) {
+  selectedArc = selectedArc === type ? null : type;
+  document.querySelectorAll('#arc-chips .chip').forEach(c => {
+    c.classList.toggle('selected', c.textContent === selectedArc);
   });
+}
 
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden' && session.volleys.length > 0) saveSession();
-  });
-  window.addEventListener('pagehide', () => {
-    if (session.volleys.length > 0) saveSession();
-  });
+function toggleObjectif() {
+  objectifEnabled = !objectifEnabled;
+  document.getElementById('objectif-switch').classList.toggle('on', objectifEnabled);
+  document.getElementById('objectif-fields').classList.toggle('visible', objectifEnabled);
+}
 
-  // ── DRAG & DROP ──
-  function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('dragover'); }
-  function handleDragLeave(e) { document.getElementById('upload-zone').classList.remove('dragover'); }
-  function handleDrop(e) {
-    e.preventDefault();
-    document.getElementById('upload-zone').classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) processFile(file);
-  }
-  function handleFile(e) { const file = e.target.files[0]; if (file) processFile(file); }
-
-  function processFile(file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target.result;
-      currentImageBase64 = dataUrl.split(',')[1];
-      document.getElementById('preview-img').src = dataUrl;
-      document.getElementById('analyze-section').classList.add('visible');
-      document.getElementById('result-card').classList.remove('visible');
-      document.getElementById('result-multi').classList.remove('visible');
-      document.getElementById('btn-analyze').disabled = false;
-      document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+function getSelectedFormat() {
+  if (!selectedFormatId) return null;
+  if (selectedFormatId === 'libre') {
+    const dist = document.getElementById('custom-distance').value;
+    const blason = document.getElementById('custom-blason').value;
+    const volleys = parseInt(document.getElementById('custom-volleys').value);
+    const arrows = parseInt(document.getElementById('custom-arrows').value);
+    if (!dist || !blason || !volleys || !arrows) return null;
+    const total = volleys * arrows;
+    return {
+      id: 'libre', name: 'Session libre',
+      detail: `${dist}m · ${blason} · ${volleys}×${arrows} = ${total} flèches`,
+      distance: parseInt(dist), blason, volleys, arrowsPerVolley: arrows,
+      maxScore: total * 10
     };
-    reader.readAsDataURL(file);
+  }
+  return FFTA_FORMATS.find(f => f.id === selectedFormatId);
+}
+
+function startSession() {
+  const format = getSelectedFormat();
+  if (!format) { alert('Veuillez sélectionner un format de tir.'); return; }
+
+  const objectif = objectifEnabled ? {
+    score: parseInt(document.getElementById('obj-score').value) || null,
+    date: document.getElementById('obj-date').value || null
+  } : null;
+
+  currentSession = {
+    format,
+    arc: selectedArc,
+    objectif,
+    volleys: [],
+    totalScore: 0,
+    arrowCount: 0,
+    startDate: new Date().toISOString()
+  };
+
+  // Update session header
+  document.getElementById('session-format-name').textContent = format.name + (selectedArc ? ' — ' + selectedArc : '');
+  document.getElementById('session-format-detail').textContent = format.detail;
+
+  // Objectif bar
+  const barWrap = document.getElementById('objectif-bar-wrap');
+  if (objectif && objectif.score) {
+    barWrap.classList.add('visible');
+    document.getElementById('obj-bar-label').textContent = `Objectif ${objectif.score}${format.maxScore ? ' / ' + format.maxScore : ''}`;
+    if (objectif.date) {
+      const d = new Date(objectif.date);
+      const diff = Math.ceil((d - new Date()) / (1000*60*60*24));
+      document.getElementById('objectif-deadline').textContent = diff > 0 ? `⏳ ${diff} jour${diff > 1 ? 's' : ''} avant l'échéance` : '📅 Échéance atteinte';
+    } else {
+      document.getElementById('objectif-deadline').textContent = '';
+    }
+  } else {
+    barWrap.classList.remove('visible');
   }
 
-  // ── BUILD PROMPT ──
-  function buildPrompt(currentMode, currentArchers) {
-    if (currentMode === 'beursault') {
-      const list = currentArchers.map((a, i) => {
-        const nom  = a.name || `Archer ${i + 1}`;
-        const cols = colorsToString(a.colors) || 'inconnue';
-        return `- ${nom} : plumes ${cols}`;
-      }).join('\n');
-      const exArr = currentArchers.map((a, i) =>
-        `{"name":"${a.name || `Archer ${i+1}`}","arrows":[3],"total":3,"count":1,"analysis":"..."}`
-      ).join(',');
+  updateVolleyLabel();
+  showScreen('session');
+}
 
-      return `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible BEURSAULT avec ${currentArchers.length} archer(s).
+function updateVolleyLabel() {
+  if (!currentSession) return;
+  const f = currentSession.format;
+  const done = currentSession.volleys.length;
+  const total = f.volleys;
+  if (total) {
+    document.getElementById('volley-label').textContent = `/ ${total} Volées`;
+  }
+}
 
-Archers :
-${list}
+// ═══════════════════════════════════════════════
+// COULEURS / DUO
+// ═══════════════════════════════════════════════
+function buildColorGrid(containerId, archerIdx) {
+  const container = document.getElementById(containerId);
+  const sel = archerIdx === 1 ? archer1Colors : archer2Colors;
+  container.innerHTML = COLORS.map(c => `
+    <div class="color-chip${sel.includes(c.name) ? ' selected' : ''}" onclick="toggleColor('${c.name}',${archerIdx})">
+      <div class="color-dot" style="background:${c.hex};border:1px solid rgba(255,255,255,0.2)"></div>${c.name}
+    </div>`).join('');
+  updateColorPreview(archerIdx);
+}
 
-Règles Beursault :
-- Chaque archer tire exactement 1 seule flèche.
-- Barème : centre = 3 points, milieu = 2 points, extérieur = 1 point, hors cible = M.
-- Identifie chaque flèche selon la couleur des plumes.
+function toggleColor(colorName, archerIdx) {
+  let arr = archerIdx === 1 ? archer1Colors : archer2Colors;
+  if (arr.includes(colorName)) arr = arr.filter(c => c !== colorName);
+  else { if (arr.length >= 3) { alert('Maximum 3 couleurs !'); return; } arr.push(colorName); }
+  if (archerIdx === 1) archer1Colors = arr; else archer2Colors = arr;
+  saveProfiles();
+  buildColorGrid(archerIdx === 1 ? 'colors1' : 'colors2', archerIdx);
+}
 
+function updateColorPreview(archerIdx) {
+  const preview = document.getElementById(`preview${archerIdx}`);
+  const arr = archerIdx === 1 ? archer1Colors : archer2Colors;
+  if (!arr.length) { preview.innerHTML = '<span class="preview-label">Sélectionnez 1 à 3 couleurs</span>'; return; }
+  preview.innerHTML = arr.map(name => {
+    const c = COLORS.find(x => x.name === name);
+    return `<div class="preview-dot" style="background:${c.hex}"></div>`;
+  }).join('') + `<span class="preview-label">${arr.join(' + ')}</span>`;
+}
+
+function saveProfiles() {
+  localStorage.setItem('archer1Name', document.getElementById('archer1-name').value);
+  localStorage.setItem('archer2Name', document.getElementById('archer2-name').value);
+  localStorage.setItem('archer1Colors', JSON.stringify(archer1Colors));
+  localStorage.setItem('archer2Colors', JSON.stringify(archer2Colors));
+}
+
+function loadProfiles() {
+  document.getElementById('archer1-name').value = localStorage.getItem('archer1Name') || '';
+  document.getElementById('archer2-name').value = localStorage.getItem('archer2Name') || '';
+  archer1Colors = JSON.parse(localStorage.getItem('archer1Colors') || '[]');
+  archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
+  buildColorGrid('colors1', 1);
+  buildColorGrid('colors2', 2);
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btn-mode-solo').classList.toggle('active', m === 'solo');
+  document.getElementById('btn-mode-duo').classList.toggle('active', m === 'duo');
+  document.getElementById('archers-config').classList.toggle('visible', m === 'duo');
+  document.getElementById('result-card').classList.remove('visible');
+  document.getElementById('result-duo').classList.remove('visible');
+}
+
+// ═══════════════════════════════════════════════
+// FILE / DRAG
+// ═══════════════════════════════════════════════
+function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('dragover'); }
+function handleDragLeave(e) { document.getElementById('upload-zone').classList.remove('dragover'); }
+function handleDrop(e) {
+  e.preventDefault(); document.getElementById('upload-zone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) processFile(file);
+}
+function handleFile(e) { const file = e.target.files[0]; if (file) processFile(file); }
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    currentImageBase64 = dataUrl.split(',')[1];
+    document.getElementById('preview-img').src = dataUrl;
+    document.getElementById('analyze-section').classList.add('visible');
+    document.getElementById('result-card').classList.remove('visible');
+    document.getElementById('result-duo').classList.remove('visible');
+    document.getElementById('btn-analyze').disabled = false;
+    document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════
+// OFFLINE QUEUE
+// ═══════════════════════════════════════════════
+const QUEUE_KEY = 'archerAI_queue';
+function getQueue() { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch { return []; } }
+function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
+
+function addToQueue(imageBase64) {
+  const q = getQueue();
+  q.push({ imageBase64, mode, archer1Colors, archer2Colors,
+    archer1Name: document.getElementById('archer1-name').value,
+    archer2Name: document.getElementById('archer2-name').value, timestamp: Date.now() });
+  saveQueue(q); updateQueueBanner();
+}
+
+function updateQueueBanner() {
+  const q = getQueue();
+  let banner = document.getElementById('queue-banner');
+  if (q.length === 0) { if (banner) banner.remove(); return; }
+  if (!banner) {
+    banner = document.createElement('div'); banner.id = 'queue-banner';
+    banner.onclick = processQueue; document.body.appendChild(banner);
+  }
+  banner.innerHTML = `📶 ${q.length} photo(s) en attente — Analyser`;
+}
+
+async function processQueue() {
+  const q = getQueue(); if (!q.length) return;
+  const banner = document.getElementById('queue-banner');
+  if (banner) banner.innerHTML = '⏳ Analyse en cours...';
+  let processed = 0;
+  for (const item of q) {
+    try {
+      const result = await callAPI(item.imageBase64, item.mode, item.archer1Colors, item.archer2Colors, item.archer1Name, item.archer2Name);
+      if (result) processed++;
+    } catch(e) { break; }
+  }
+  saveQueue(processed === q.length ? [] : q.slice(processed));
+  updateQueueBanner();
+}
+
+// ═══════════════════════════════════════════════
+// API
+// ═══════════════════════════════════════════════
+async function callAPI(imageBase64, currentMode, a1colors, a2colors, a1name, a2name) {
+  const isDuo = currentMode === 'duo';
+  const a1 = a1name || 'Archer 1';
+  const a2 = a2name || 'Archer 2';
+  const c1 = a1colors.length ? a1colors.join(' + ') : 'inconnue';
+  const c2 = a2colors.length ? a2colors.join(' + ') : 'inconnue';
+
+  const prompt = isDuo
+    ? `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible avec des flèches de 2 archers.
+${a1} a des plumes : ${c1}. ${a2} a des plumes : ${c2}.
+ÉTAPE 1 — Identifie le type de cible (WA, VEGAS, BEURSAULT, GEF).
+ÉTAPE 2 — Pour chaque flèche, identifie l'archer selon la couleur des plumes et estime le score.
+Barèmes : WA : jaune=X/10/9, rouge=8/7, bleu=6/5, noir=4/3, blanc=2/1, hors=M | VEGAS : jaune=X/10/9, rouge=8/7, bleu=6, hors=M | BEURSAULT/GEF : centre=3, milieu=2, ext=1, hors=M
 Réponds UNIQUEMENT en JSON :
-{"archers":[${exArr}]}
-
-Si pas de cible Beursault : {"error":"Pas de cible Beursault détectée"}`;
-    }
-
-    if (currentMode === 'duo') {
-      const a0 = currentArchers[0] || {};
-      const a1 = currentArchers[1] || {};
-      const n0 = a0.name || 'Archer 1';
-      const n1 = a1.name || 'Archer 2';
-      const c0 = colorsToString(a0.colors) || 'inconnue';
-      const c1 = colorsToString(a1.colors) || 'inconnue';
-
-      return `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible avec des flèches de 2 archers.
-
-- ${n0} : plumes ${c0}
-- ${n1} : plumes ${c1}
-
-ÉTAPE 1 — Identifie le type de cible (WA ou VEGAS) et applique le bon barème.
-ÉTAPE 2 — Pour chaque flèche, identifie à qui elle appartient selon la couleur des plumes.
-
-Barèmes :
-- WA : jaune=X/10/9, rouge=8/7, bleu=6/5, noir=4/3, blanc=2/1, hors cible=M
-- VEGAS : jaune=X/10/9, rouge=8/7, bleu=6, hors blason=M
-
-Réponds UNIQUEMENT en JSON :
-{"type":"WA","archers":[{"name":"${n0}","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."},{"name":"${n1}","arrows":[10,9],"total":19,"count":2,"analysis":"..."}]}
-
-Si pas de cible : {"error":"Pas de cible détectée"}`;
-    }
-
-    // Solo
-    const c   = colorsToString(userProfile.plumeColors || {});
-    const enc = userProfile.encocheColor || '';
-    const colorInfo = c ? `\nLes plumes de l'archer : ${c}${enc ? ` — encoche : ${enc}` : ''}.` : '';
-
-    return `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible avec des flèches.${colorInfo}
-
+{"type":"WA","archer1":{"name":"${a1}","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."},"archer2":{"name":"${a2}","arrows":[10,9,8],"total":27,"count":3,"analysis":"..."}}
+Si pas de cible : {"error":"Pas de cible détectée"}`
+    : `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible avec des flèches.
 ÉTAPE 1 — Identifie le type de cible (WA, VEGAS, BEURSAULT, GEF).
 ÉTAPE 2 — Applique le bon barème.
-
-Barèmes :
-- WA : jaune=X/10/9, rouge=8/7, bleu=6/5, noir=4/3, blanc=2/1, hors cible=M
-- VEGAS : jaune=X/10/9, rouge=8/7, bleu=6, hors blason=M
-- BEURSAULT/GEF : centre=3, milieu=2, extérieur=1, hors cible=M
-
+Barèmes : WA : jaune=X/10/9, rouge=8/7, bleu=6/5, noir=4/3, blanc=2/1, hors=M | VEGAS : jaune=X/10/9, rouge=8/7, bleu=6, hors=M | BEURSAULT/GEF : centre=3, milieu=2, ext=1, hors=M
 Réponds UNIQUEMENT en JSON :
 {"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."}
-
 Si pas de cible : {"error":"Pas de cible détectée"}`;
+
+  const response = await fetch("/api/analyze", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ imageBase64, prompt })
+  });
+
+  const result = await response.json();
+  if (result.error) return null;
+
+  if (isDuo && result.archer1) {
+    displayDuoResult(result);
+    currentSession.volleys.push({ duo: true, archer1: result.archer1, archer2: result.archer2 });
+    currentSession.totalScore += (result.archer1.total || 0) + (result.archer2.total || 0);
+    currentSession.arrowCount += (result.archer1.count || 0) + (result.archer2.count || 0);
+  } else if (result.arrows) {
+    displayResult(result);
+    currentSession.volleys.push(result);
+    currentSession.totalScore += result.total || 0;
+    currentSession.arrowCount += result.count || 0;
+  }
+  updateSessionBar();
+  updateHistory();
+  return result;
+}
+
+async function analyzeImage() {
+  if (!currentImageBase64) return;
+  if (mode === 'duo' && (archer1Colors.length === 0 || archer2Colors.length === 0)) {
+    alert('⚠️ Configurez les couleurs des 2 archers !'); return;
   }
 
-  // ── CALL API ──
-  async function callAPI(imageBase64, currentMode, currentArchers) {
-    const prompt = buildPrompt(currentMode, currentArchers);
+  const btn = document.getElementById('btn-analyze');
+  const overlay = document.getElementById('preview-overlay');
+  btn.disabled = true; overlay.classList.add('analyzing');
 
-    const response = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64, prompt })
-    });
-
-    const result = await response.json();
-    if (result.error) return null;
-
-    if (currentMode === 'beursault' && Array.isArray(result.archers)) {
-      // Enforce 1 arrow per archer, score capped 1-3
-      result.archers = result.archers.map((a, i) => {
-        const raw   = a.arrows && a.arrows.length > 0 ? a.arrows[0] : 'M';
-        const score = raw === 'M' ? 'M' : Math.min(3, Math.max(1, Number(raw) || 1));
-        const total = score === 'M' ? 0 : score;
-        return { ...a, name: a.name || currentArchers[i]?.name || `Archer ${i+1}`, arrows: [score], total, count: 1 };
-      });
-
-      displayArchersResult(result, currentArchers, 'beursault');
-      session.volleys.push({
-        mode: 'beursault',
-        archersResult: result.archers
-      });
-      session.totalScore += result.archers.reduce((s, a) => s + (a.total || 0), 0);
-      session.arrowCount += result.archers.length;
-
-    } else if (currentMode === 'duo' && Array.isArray(result.archers)) {
-      displayArchersResult(result, currentArchers, 'duo');
-      const total  = result.archers.reduce((s, a) => s + (a.total || 0), 0);
-      const arrows = result.archers.reduce((s, a) => s + (a.count || 0), 0);
-      session.volleys.push({ mode: 'duo', type: result.type, archersResult: result.archers });
-      session.totalScore += total;
-      session.arrowCount += arrows;
-
-    } else if (result.arrows) {
-      displayResult(result);
-      session.volleys.push({ mode: 'solo', ...result });
-      session.totalScore += result.total || 0;
-      session.arrowCount += result.count || 0;
-    }
-
-    updateSessionBar();
-    updateHistory();
-    saveSession();
-    return result;
-  }
-
-  // ── ANALYZE IMAGE ──
-  async function analyzeImage() {
-    if (!currentImageBase64) return;
-
-    const activeArchers = getCurrentArchers();
-
-    if ((mode === 'duo' || mode === 'beursault') && !activeArchers.every(a => totalColors(a.colors) > 0)) {
-      alert('⚠️ Veuillez configurer les couleurs des plumes de chaque archer !');
-      return;
-    }
-
-    const btn     = document.getElementById('btn-analyze');
-    const overlay = document.getElementById('preview-overlay');
-    btn.disabled  = true;
-    overlay.classList.add('analyzing');
-
-    if (!navigator.onLine) {
-      overlay.classList.remove('analyzing');
-      btn.disabled = false;
-      addToQueue(currentImageBase64);
-      document.getElementById('analyze-section').classList.remove('visible');
-      document.getElementById('file-input').value = '';
-      currentImageBase64 = null;
-      alert('📶 Pas de connexion — photo mise en file d\'attente !');
-      return;
-    }
-
-    try {
-      await callAPI(currentImageBase64, mode, activeArchers);
-      overlay.classList.remove('analyzing');
-    } catch(err) {
-      overlay.classList.remove('analyzing');
-      btn.disabled = false;
-      console.error(err);
-      if (!navigator.onLine) {
-        addToQueue(currentImageBase64);
-        alert('📶 Connexion perdue — photo mise en file d\'attente !');
-      } else {
-        alert('Erreur lors de l\'analyse. Vérifiez votre connexion.');
-      }
-    }
-
+  if (!navigator.onLine) {
+    overlay.classList.remove('analyzing'); btn.disabled = false;
+    addToQueue(currentImageBase64);
     document.getElementById('analyze-section').classList.remove('visible');
-    document.getElementById('preview-overlay').classList.remove('analyzing');
-    currentImageBase64 = null;
     document.getElementById('file-input').value = '';
+    currentImageBase64 = null;
+    alert('📶 Pas de connexion — photo mise en file d\'attente !'); return;
   }
 
-  // ── BADGE CLASS ──
-  function getBadgeClass(score) {
-    if (score === 'X' || score === 10) return 'badge-x';
-    if (score === 9)  return 'badge-10';
-    if (score === 8 || score === 7) return 'badge-8';
-    if (score === 6 || score === 5) return 'badge-6';
-    if (score === 4 || score === 3) return 'badge-4';
-    if (score === 2 || score === 1) return 'badge-low';
-    return 'badge-miss';
+  try {
+    const a1name = document.getElementById('archer1-name').value;
+    const a2name = document.getElementById('archer2-name').value;
+    await callAPI(currentImageBase64, mode, archer1Colors, archer2Colors, a1name, a2name);
+    overlay.classList.remove('analyzing');
+  } catch (err) {
+    overlay.classList.remove('analyzing'); btn.disabled = false;
+    if (!navigator.onLine) { addToQueue(currentImageBase64); alert('📶 Connexion perdue — photo mise en file d\'attente !'); }
+    else alert('Erreur lors de l\'analyse. Vérifiez votre connexion.');
   }
+  document.getElementById('analyze-section').classList.remove('visible');
+  document.getElementById('preview-overlay').classList.remove('analyzing');
+  currentImageBase64 = null;
+  document.getElementById('file-input').value = '';
+}
 
-  function arrowsHtml(arrows, prefix) {
-    return (arrows || []).map((score, i) => `
-      <div class="arrow-score">
-        <div class="arrow-badge ${getBadgeClass(score)}">${score}</div>
-        <div class="arrow-label">${prefix}${i + 1}</div>
-      </div>`).join('');
-  }
+// ═══════════════════════════════════════════════
+// BADGES
+// ═══════════════════════════════════════════════
+function getBadgeClass(score) {
+  if (score === 'X' || score === 10) return 'badge-x';
+  if (score === 9) return 'badge-10';
+  if (score === 8 || score === 7) return 'badge-8';
+  if (score === 6 || score === 5) return 'badge-6';
+  if (score === 4 || score === 3) return 'badge-4';
+  if (score === 2 || score === 1) return 'badge-low';
+  return 'badge-miss';
+}
 
-  // ── DISPLAY SOLO ──
-  function displayResult(result) {
-    const card = document.getElementById('result-card');
-    document.getElementById('result-volley-label').textContent = `Volée ${session.volleys.length + 1}`;
-    document.getElementById('arrows-grid').innerHTML = arrowsHtml(result.arrows, 'F');
-    document.getElementById('result-total-value').textContent = result.total;
-    document.getElementById('result-analysis').textContent = result.analysis || '';
-    card.classList.add('visible');
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+function arrowsHtml(arrows, prefix) {
+  return (arrows || []).map((score, i) => `
+    <div class="arrow-score">
+      <div class="arrow-badge ${getBadgeClass(score)}">${score}</div>
+      <div class="arrow-label">${prefix}${i+1}</div>
+    </div>`).join('');
+}
 
-  // ── DISPLAY DUO / BEURSAULT ──
-  function displayArchersResult(result, currentArchers, resultMode) {
-    const container  = document.getElementById('result-multi');
-    const isBeursault = resultMode === 'beursault';
-    const volleyNum  = session.volleys.length + 1;
+// ═══════════════════════════════════════════════
+// DISPLAY RESULTS
+// ═══════════════════════════════════════════════
+function displayResult(result) {
+  const card = document.getElementById('result-card');
+  document.getElementById('result-volley-label').textContent = `Volée ${currentSession.volleys.length + 1}`;
+  document.getElementById('arrows-grid').innerHTML = arrowsHtml(result.arrows, 'F');
+  document.getElementById('result-total-value').textContent = result.total;
+  document.getElementById('result-analysis').textContent = result.analysis || '';
+  card.classList.add('visible');
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 
-    container.innerHTML =
-      `<div class="result-multi-header">
-        <div class="result-multi-label">${isBeursault ? '🎯 Beursault' : '🏹🏹 Duo'} — Volée ${volleyNum}</div>
-        <span class="volley-number${isBeursault ? ' beursault' : ''}">${result.type || (isBeursault ? 'BEURSAULT' : '')}</span>
-      </div>` +
-      (result.archers || []).map((a, i) => {
-        const rawColors = currentArchers[i]?.colors || {};
-        const colorArr  = Array.isArray(rawColors)
-          ? rawColors
-          : Object.entries(rawColors).flatMap(([n, v]) => Array(v).fill(n));
-        const cols = colorArr.map(name =>
-          `<div class="multi-color-dot" style="background:${hex(name)}"></div>`
-        ).join('');
+function displayDuoResult(result) {
+  const duo = document.getElementById('result-duo');
+  document.getElementById('duo-name-1').textContent = result.archer1.name || 'Archer 1';
+  document.getElementById('arrows-grid-1').innerHTML = arrowsHtml(result.archer1.arrows, 'F');
+  document.getElementById('total-value-1').textContent = result.archer1.total || 0;
+  document.getElementById('analysis-1').textContent = result.archer1.analysis || '';
+  document.getElementById('duo-colors-1').innerHTML = archer1Colors.map(name => {
+    const c = COLORS.find(x => x.name === name);
+    return `<div class="duo-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
+  }).join('');
 
-        return `<div class="multi-card">
-          <div class="multi-card-header">
-            <div class="multi-archer-name">${a.name || `Archer ${i + 1}`}</div>
-            <div class="multi-colors">${cols}</div>
-          </div>
-          <div class="arrows-grid">${arrowsHtml(a.arrows, 'F')}</div>
-          <div class="result-total">
-            <div class="total-label">Score</div>
-            <div class="total-value">${a.total || 0}</div>
-          </div>
-          ${a.analysis ? `<div class="result-analysis">${a.analysis}</div>` : ''}
-        </div>`;
-      }).join('');
+  document.getElementById('duo-name-2').textContent = result.archer2.name || 'Archer 2';
+  document.getElementById('arrows-grid-2').innerHTML = arrowsHtml(result.archer2.arrows, 'F');
+  document.getElementById('total-value-2').textContent = result.archer2.total || 0;
+  document.getElementById('analysis-2').textContent = result.archer2.analysis || '';
+  document.getElementById('duo-colors-2').innerHTML = archer2Colors.map(name => {
+    const c = COLORS.find(x => x.name === name);
+    return `<div class="duo-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
+  }).join('');
 
-    container.classList.add('visible');
-    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+  duo.classList.add('visible');
+  duo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 
-  // ── SESSION BAR ──
-  function updateSessionBar() {
-    document.getElementById('total-score').textContent  = session.totalScore;
-    document.getElementById('volley-count').textContent = session.volleys.length;
-    document.getElementById('arrow-count').textContent  = session.arrowCount;
-  }
+// ═══════════════════════════════════════════════
+// SESSION BAR + HISTORY
+// ═══════════════════════════════════════════════
+function updateSessionBar() {
+  if (!currentSession) return;
+  const s = currentSession;
+  document.getElementById('total-score').textContent = s.totalScore;
+  document.getElementById('volley-count').textContent = s.volleys.length;
+  document.getElementById('arrow-count').textContent = s.arrowCount;
+  const avg = s.arrowCount > 0 ? (s.totalScore / s.arrowCount).toFixed(1) : '—';
+  document.getElementById('avg-per-arrow').textContent = avg;
 
-  // ── HISTORY ──
-  function updateHistory() {
-    const container = document.getElementById('history-container');
-    if (session.volleys.length === 0) {
-      container.innerHTML = '<div class="history-empty">Aucune volée encore — prenez votre première photo !</div>';
-      return;
+  // Objectif bar
+  if (s.objectif && s.objectif.score) {
+    const pct = Math.min(100, Math.round((s.totalScore / s.objectif.score) * 100));
+    const fill = document.getElementById('objectif-bar-fill');
+    fill.style.width = pct + '%';
+    document.getElementById('obj-bar-pct').textContent = pct + '%';
+    // Couleur selon rythme
+    const volleys = s.volleys.length;
+    const totalVolleys = s.format.volleys;
+    if (totalVolleys && volleys > 0) {
+      const expectedPct = Math.round((volleys / totalVolleys) * 100);
+      fill.classList.toggle('on-track', pct >= expectedPct);
+      fill.classList.toggle('off-track', pct < expectedPct - 10);
     }
-    container.innerHTML = `<div class="history-list">` +
-      [...session.volleys].reverse().map((v, ri) => {
-        const i = session.volleys.length - ri;
-        const vMode = v.mode || (v.duo ? 'duo' : v.multi ? 'duo' : 'solo');
+  }
 
-        if ((vMode === 'duo' || vMode === 'beursault' || vMode === 'multi') && v.archersResult) {
-          const isB    = vMode === 'beursault';
-          const total   = v.archersResult.reduce((s, a) => s + (a.total || 0), 0);
-          const summary = v.archersResult.map(a => `${a.name || '?'}: ${a.total}pts`).join(' | ');
-          const icon    = isB ? '🎯' : '🏹🏹';
-          return `<div class="history-item${isB ? ' beursault-item' : ''}">
-            <div class="history-left">
-              <div class="history-volley">${icon} V.${i}</div>
-              <div style="font-size:0.8rem;color:var(--text-muted)">${summary}</div>
-            </div>
-            <div class="history-score">${total}</div>
-          </div>`;
-        }
+  updateVolleyLabel();
+}
 
-        // Rétrocompat ancien duo
-        if (v.duo && v.archer1 && v.archer2) {
-          return `<div class="history-item">
-            <div class="history-left">
-              <div class="history-volley">🏹🏹 V.${i}</div>
-              <div style="font-size:0.8rem;color:var(--text-muted)">${v.archer1.name}: ${v.archer1.total}pts | ${v.archer2.name}: ${v.archer2.total}pts</div>
-            </div>
-            <div class="history-score">${(v.archer1.total||0)+(v.archer2.total||0)}</div>
-          </div>`;
-        }
-
+function updateHistory() {
+  const container = document.getElementById('history-container');
+  if (!currentSession || currentSession.volleys.length === 0) {
+    container.innerHTML = '<div class="history-empty">Aucune volée encore — prenez votre première photo !</div>'; return;
+  }
+  container.innerHTML = `<div class="history-list">` +
+    [...currentSession.volleys].reverse().map((v, ri) => {
+      const i = currentSession.volleys.length - ri;
+      if (v.duo) {
         return `<div class="history-item">
           <div class="history-left">
-            <div class="history-volley">🏹 V.${i}</div>
-            <div class="history-arrows">${(v.arrows||[]).map(s => `<div class="mini-badge ${getBadgeClass(s)}">${s}</div>`).join('')}</div>
+            <div class="history-volley">VOLÉE ${i}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted)">${v.archer1.name}: ${v.archer1.total}pts &nbsp;|&nbsp; ${v.archer2.name}: ${v.archer2.total}pts</div>
           </div>
-          <div class="history-score">${v.total}</div>
+          <div class="history-score">${(v.archer1.total||0)+(v.archer2.total||0)}</div>
         </div>`;
-      }).join('') + `</div>`;
+      }
+      return `<div class="history-item">
+        <div class="history-left">
+          <div class="history-volley">VOLÉE ${i}</div>
+          <div class="history-arrows">${(v.arrows||[]).map(s => `<div class="mini-badge ${getBadgeClass(s)}">${s}</div>`).join('')}</div>
+        </div>
+        <div class="history-score">${v.total}</div>
+      </div>`;
+    }).join('') + `</div>`;
+}
+
+// ═══════════════════════════════════════════════
+// END SESSION
+// ═══════════════════════════════════════════════
+function endSession() {
+  if (!currentSession || currentSession.volleys.length === 0) { alert('Aucune volée enregistrée !'); return; }
+  const s = currentSession;
+  const total = s.totalScore;
+  const avg = s.arrowCount > 0 ? (total / s.arrowCount).toFixed(1) : 0;
+
+  document.getElementById('modal-total').textContent = total + (s.format.maxScore ? ' / ' + s.format.maxScore : '');
+  document.getElementById('modal-volleys').textContent = s.volleys.length;
+  document.getElementById('modal-arrows').textContent = s.arrowCount;
+  document.getElementById('modal-avg').textContent = avg;
+  document.getElementById('modal-icon').textContent = '🏆';
+
+  // Comparaison avec même format
+  const sessions = getSavedSessions();
+  const sameFormat = sessions.filter(ss => ss.format.id === s.format.id);
+  const compEl = document.getElementById('modal-comparison');
+  if (sameFormat.length === 0) {
+    compEl.textContent = '🏹 Première session sur ce format !';
+    compEl.className = 'modal-comparison comparison-first';
+  } else {
+    const lastScore = sameFormat[0].totalScore;
+    const diff = total - lastScore;
+    if (diff > 0)      { compEl.textContent = `🎉 +${diff} pts vs dernière session !`; compEl.className = 'modal-comparison comparison-better'; document.getElementById('modal-icon').textContent = '🏆'; }
+    else if (diff < 0) { compEl.textContent = `💪 ${Math.abs(diff)} pts de moins — la prochaine sera meilleure !`; compEl.className = 'modal-comparison comparison-worse'; document.getElementById('modal-icon').textContent = '🎯'; }
+    else               { compEl.textContent = '👌 Même score — régularité parfaite !'; compEl.className = 'modal-comparison comparison-first'; }
   }
 
-  // ── FIN DE SESSION ──
-  function endSession() {
-    if (session.volleys.length === 0) { alert('Aucune volée enregistrée !'); return; }
-    const total = session.totalScore;
-    const avg   = session.arrowCount > 0 ? (total / session.arrowCount).toFixed(1) : 0;
-    document.getElementById('modal-total').textContent   = total;
-    document.getElementById('modal-volleys').textContent = session.volleys.length;
-    document.getElementById('modal-arrows').textContent  = session.arrowCount;
-    document.getElementById('modal-avg').textContent     = avg;
-    const compEl = document.getElementById('modal-comparison');
-    const iconEl = document.getElementById('modal-icon');
-    if (lastSessionScore === 0) {
-      compEl.textContent = '🏹 Première session — référence enregistrée !';
-      compEl.className   = 'modal-comparison comparison-first';
-      iconEl.textContent = '🏹';
+  // Objectif
+  const objEl = document.getElementById('modal-objectif');
+  if (s.objectif && s.objectif.score) {
+    objEl.style.display = 'block';
+    if (total >= s.objectif.score) {
+      objEl.textContent = `✅ Objectif ${s.objectif.score} atteint !`;
+      objEl.className = 'modal-objectif ok';
     } else {
-      const diff = total - lastSessionScore;
-      if (diff > 0)      { compEl.textContent = `🎉 Bravo ! +${diff} pts !`;                                         compEl.className = 'modal-comparison comparison-better'; iconEl.textContent = '🏆'; }
-      else if (diff < 0) { compEl.textContent = `💪 ${Math.abs(diff)} pts de moins — la prochaine sera meilleure !`; compEl.className = 'modal-comparison comparison-worse';  iconEl.textContent = '🎯'; }
-      else               { compEl.textContent = '👌 Même score — régularité parfaite !';                              compEl.className = 'modal-comparison comparison-first';  iconEl.textContent = '👌'; }
+      objEl.textContent = `❌ Objectif ${s.objectif.score} — il manque ${s.objectif.score - total} pts`;
+      objEl.className = 'modal-objectif nok';
     }
-    localStorage.setItem('lastSessionScore', total);
-    document.getElementById('modal-overlay').classList.add('visible');
+  } else { objEl.style.display = 'none'; }
+
+  // Sauvegarder
+  saveSession({ ...s, totalScore: total, endDate: new Date().toISOString() });
+  document.getElementById('modal-overlay').classList.add('visible');
+}
+
+function restartSession() {
+  // Même format, nouvelle session
+  const format = currentSession.format;
+  const arc = currentSession.arc;
+  const objectif = currentSession.objectif;
+  currentSession = { format, arc, objectif, volleys: [], totalScore: 0, arrowCount: 0, startDate: new Date().toISOString() };
+  updateSessionBar();
+  updateHistory();
+  document.getElementById('result-card').classList.remove('visible');
+  document.getElementById('result-duo').classList.remove('visible');
+  document.getElementById('analyze-section').classList.remove('visible');
+  document.getElementById('modal-overlay').classList.remove('visible');
+}
+
+function goHome() {
+  currentSession = null;
+  document.getElementById('modal-overlay').classList.remove('visible');
+  showScreen('home');
+}
+
+// ═══════════════════════════════════════════════
+// PERSISTENCE (localStorage)
+// ═══════════════════════════════════════════════
+const SESSIONS_KEY = 'archerAI_sessions';
+
+function getSavedSessions() {
+  try { return JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]'); } catch { return []; }
+}
+
+function saveSession(session) {
+  const sessions = getSavedSessions();
+  sessions.unshift(session); // plus récent en premier
+  localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+}
+
+function deleteSession(index) {
+  if (!confirm('Supprimer cette session ?')) return;
+  const sessions = getSavedSessions();
+  sessions.splice(index, 1);
+  localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+  renderHistoryScreen();
+}
+
+// ═══════════════════════════════════════════════
+// HISTORIQUE SCREEN
+// ═══════════════════════════════════════════════
+function renderHistoryScreen() {
+  const sessions = getSavedSessions();
+  const container = document.getElementById('history-sessions-list');
+  const filtersEl = document.getElementById('history-filters');
+
+  if (sessions.length === 0) {
+    filtersEl.innerHTML = '';
+    container.innerHTML = '<div class="history-empty">Aucune session sauvegardée pour l\'instant.</div>';
+    return;
   }
 
-  function newSession() {
-    lastSessionScore = parseInt(localStorage.getItem('lastSessionScore') || '0');
-    session = { volleys: [], totalScore: 0, arrowCount: 0 };
-    localStorage.removeItem(SESSION_KEY);
-    updateSessionBar();
-    updateHistory();
-    document.getElementById('result-card').classList.remove('visible');
-    document.getElementById('result-multi').classList.remove('visible');
-    document.getElementById('analyze-section').classList.remove('visible');
-    document.getElementById('modal-overlay').classList.remove('visible');
-  }
+  // Filtres dynamiques (formats présents)
+  const formatIds = [...new Set(sessions.map(s => s.format.id))];
+  const activeFilter = filtersEl.dataset.active || 'all';
+  filtersEl.innerHTML = `<div class="filter-chip ${activeFilter === 'all' ? 'active' : ''}" onclick="setHistoryFilter('all')">Tout</div>` +
+    formatIds.map(id => {
+      const f = sessions.find(s => s.format.id === id).format;
+      return `<div class="filter-chip ${activeFilter === id ? 'active' : ''}" onclick="setHistoryFilter('${id}')">${f.name}</div>`;
+    }).join('');
 
-  // ── SERVICE WORKER & AUTO-UPDATE ──
-  (function initSW() {
-    if (!('serviceWorker' in navigator)) return;
+  const filtered = activeFilter === 'all' ? sessions : sessions.filter(s => s.format.id === activeFilter);
 
-    function showUpdateToast(version) {
-      if (document.getElementById('update-toast')) return;
-      const toast = document.createElement('div');
-      toast.id = 'update-toast';
-      toast.style.cssText = `
-        position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-        background:var(--dark2); border:1px solid var(--gold);
-        color:var(--text); padding:14px 20px; border-radius:12px;
-        font-family:'DM Sans',sans-serif; font-size:0.9rem;
-        display:flex; align-items:center; gap:14px;
-        box-shadow:0 4px 24px rgba(0,0,0,0.5); z-index:998;
-        animation:fadeUp 0.4s ease;
-      `;
-      toast.innerHTML = `
-        <span>🔄 Mise à jour disponible${version ? ` (${version})` : ''}</span>
-        <button onclick="window.location.reload()" style="
-          background:var(--gold); color:var(--dark); border:none;
-          padding:6px 14px; border-radius:6px; font-family:'Bebas Neue',sans-serif;
-          font-size:0.95rem; letter-spacing:1px; cursor:pointer;">
-          Recharger
-        </button>
-        <button onclick="this.parentElement.remove()" style="
-          background:transparent; border:none; color:var(--text-muted);
-          font-size:1.2rem; cursor:pointer; line-height:1;">✕</button>
-      `;
-      document.body.appendChild(toast);
-    }
+  if (filtered.length === 0) { container.innerHTML = '<div class="history-empty">Aucune session pour ce format.</div>'; return; }
 
-    function autoReloadOrNotify(version) {
-      // Si aucune session en cours, rechargement silencieux
-      if (session.volleys.length === 0) {
-        window.location.reload();
-      } else {
-        showUpdateToast(version);
-      }
-    }
+  container.innerHTML = filtered.map((s, i) => {
+    const pct = s.format.maxScore ? Math.round((s.totalScore / s.format.maxScore) * 100) : null;
+    const objTag = s.objectif && s.objectif.score
+      ? s.totalScore >= s.objectif.score
+        ? `<div class="objectif-tag achieved">✅ Objectif ${s.objectif.score} atteint</div>`
+        : `<div class="objectif-tag missed">❌ Objectif ${s.objectif.score} — manque ${s.objectif.score - s.totalScore} pts</div>`
+      : '';
 
-    navigator.serviceWorker.register('./sw.js').then(reg => {
-      // Vérification périodique (toutes les 60 minutes)
-      setInterval(() => reg.update(), 60 * 60 * 1000);
+    const progressBar = pct !== null ? `
+      <div class="progress-mini">
+        <div class="progress-mini-labels">
+          <span>${s.totalScore} pts</span><span>${s.format.maxScore} max</span>
+        </div>
+        <div class="progress-mini-track">
+          <div class="progress-mini-fill" style="width:${pct}%"></div>
+        </div>
+      </div>` : '';
 
-      reg.addEventListener('updatefound', () => {
-        const sw = reg.installing;
-        sw.addEventListener('statechange', () => {
-          if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-            autoReloadOrNotify(null);
-          }
-        });
-      });
-    }).catch(err => console.warn('SW:', err));
+    const avg = s.arrowCount > 0 ? (s.totalScore / s.arrowCount).toFixed(1) : '—';
 
-    // Message de l'activate du nouveau SW
-    navigator.serviceWorker.addEventListener('message', e => {
-      if (e.data?.type === 'UPDATE_READY') {
-        autoReloadOrNotify(e.data.version);
-      }
-    });
+    return `<div class="session-card">
+      <div class="session-card-header">
+        <div>
+          <div class="session-card-format">${s.format.name}${s.arc ? ' — ' + s.arc : ''}</div>
+          <div class="session-card-meta">${formatDate(s.endDate || s.startDate)} · ${s.format.detail}</div>
+          ${objTag}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end">
+          <div class="session-card-score">${s.totalScore}</div>
+          <div class="session-card-max">${s.format.maxScore ? '/ ' + s.format.maxScore : ''}</div>
+          <button class="btn-delete-session" onclick="deleteSession(${i})">🗑</button>
+        </div>
+      </div>
+      ${progressBar}
+      <div class="session-card-stats">
+        <div class="mini-stat">Volées : <span>${s.volleys.length}</span></div>
+        <div class="mini-stat">Flèches : <span>${s.arrowCount}</span></div>
+        <div class="mini-stat">Moy./flèche : <span>${avg}</span></div>
+        ${pct !== null ? `<div class="mini-stat">Score : <span>${pct}%</span></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
 
-    // Rechargement si le SW a pris le contrôle en cours de session
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) { refreshing = true; window.location.reload(); }
-    });
-  })();
+function setHistoryFilter(id) {
+  document.getElementById('history-filters').dataset.active = id;
+  renderHistoryScreen();
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+window.addEventListener('load', () => {
+  buildFormatsGrid();
+  loadProfiles();
+  updateQueueBanner();
+  renderHomeRecap();
+  window.addEventListener('online', () => { if (getQueue().length > 0) processQueue(); });
+});
 </script>
 </body>
 </html>
