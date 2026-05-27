@@ -186,6 +186,29 @@
   .preview-dot { width:17px; height:17px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); }
   .preview-label { font-size:0.72rem; color:var(--text-muted); font-style:italic; }
 
+  /* FLECHE CONFIG */
+  .fleche-config { display:flex; flex-direction:column; gap:8px; }
+  .fleche-row { display:flex; align-items:center; gap:10px; }
+  .fleche-row-label { font-size:0.75rem; color:var(--text-muted); min-width:90px; flex-shrink:0; }
+  .fleche-color-chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .fleche-chip {
+    display:flex; align-items:center; gap:5px; padding:5px 10px;
+    border-radius:20px; border:2px solid transparent; cursor:pointer;
+    font-size:0.76rem; font-weight:500; transition:all 0.2s;
+    background:var(--dark2); color:var(--text-muted);
+  }
+  .fleche-chip.selected { border-color:var(--gold); color:var(--text); }
+  .fleche-chip .color-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; border:1px solid rgba(255,255,255,0.2); }
+  .fleche-preview {
+    display:flex; align-items:center; gap:8px; margin-top:10px;
+    padding:10px 12px; border-radius:10px; background:var(--dark2);
+    border:1px solid var(--border); min-height:40px;
+  }
+  .fleche-preview-item { display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--text-muted); }
+  .fleche-preview-dot { width:14px; height:14px; border-radius:50%; border:1px solid rgba(255,255,255,0.2); flex-shrink:0; }
+  .fleche-preview-sep { color:var(--border); font-size:0.9rem; }
+  .fleche-preview-empty { font-size:0.72rem; color:var(--text-muted); font-style:italic; }
+
   /* Upload */
   .upload-section { margin-bottom:18px; }
   .upload-zone { border:2px dashed var(--border); border-radius:16px; padding:38px 20px; text-align:center;
@@ -402,9 +425,22 @@
     </div>
 
     <div class="form-section">
-      <label class="form-label">Couleur(s) de mes plumes <span style="color:var(--text-muted);font-size:0.7rem;font-style:italic">(utilisées en mode Duo)</span></label>
-      <div class="colors-grid" id="profil-colors-grid"></div>
-      <div class="selected-colors-preview" id="profil-colors-preview"><span class="preview-label">Sélectionnez 1 à 3 couleurs</span></div>
+      <label class="form-label">Plumes <span style="color:var(--text-muted);font-size:0.7rem;font-style:italic">(utilisées en mode Duo)</span></label>
+      <div class="fleche-config" id="profil-fleche-config">
+        <div class="fleche-row">
+          <div class="fleche-row-label">🪶 Coq</div>
+          <div class="fleche-color-chips" id="profil-coq-chips"></div>
+        </div>
+        <div class="fleche-row">
+          <div class="fleche-row-label">🪶🪶 Latérales</div>
+          <div class="fleche-color-chips" id="profil-lat-chips"></div>
+        </div>
+        <div class="fleche-row">
+          <div class="fleche-row-label">🔩 Encoche</div>
+          <div class="fleche-color-chips" id="profil-enc-chips"></div>
+        </div>
+      </div>
+      <div class="fleche-preview" id="profil-fleche-preview"></div>
     </div>
 
     <button class="btn-primary" onclick="showScreen('home')">✅ Enregistrer</button>
@@ -488,16 +524,24 @@
       <div class="archer-card">
         <div class="archer-card-title">🏹 Archer 1 (moi)</div>
         <input type="text" class="archer-name-input" id="archer1-name" placeholder="Prénom" oninput="saveDuoProfiles()">
-        <div class="colors-label">Couleur(s) des plumes</div>
-        <div class="colors-grid" id="colors1"></div>
-        <div class="selected-colors-preview" id="preview1"><span class="preview-label">Sélectionnez 1 à 3 couleurs</span></div>
+        <div class="colors-label">Plumes</div>
+        <div class="fleche-config">
+          <div class="fleche-row"><div class="fleche-row-label">🪶 Coq</div><div class="fleche-color-chips" id="a1-coq-chips"></div></div>
+          <div class="fleche-row"><div class="fleche-row-label">🪶🪶 Latérales</div><div class="fleche-color-chips" id="a1-lat-chips"></div></div>
+          <div class="fleche-row"><div class="fleche-row-label">🔩 Encoche</div><div class="fleche-color-chips" id="a1-enc-chips"></div></div>
+        </div>
+        <div class="fleche-preview" id="preview1"></div>
       </div>
       <div class="archer-card">
         <div class="archer-card-title">🏹 Archer 2</div>
         <input type="text" class="archer-name-input" id="archer2-name" placeholder="Prénom" oninput="saveDuoProfiles()">
-        <div class="colors-label">Couleur(s) des plumes</div>
-        <div class="colors-grid" id="colors2"></div>
-        <div class="selected-colors-preview" id="preview2"><span class="preview-label">Sélectionnez 1 à 3 couleurs</span></div>
+        <div class="colors-label">Plumes</div>
+        <div class="fleche-config">
+          <div class="fleche-row"><div class="fleche-row-label">🪶 Coq</div><div class="fleche-color-chips" id="a2-coq-chips"></div></div>
+          <div class="fleche-row"><div class="fleche-row-label">🪶🪶 Latérales</div><div class="fleche-color-chips" id="a2-lat-chips"></div></div>
+          <div class="fleche-row"><div class="fleche-row-label">🔩 Encoche</div><div class="fleche-color-chips" id="a2-enc-chips"></div></div>
+        </div>
+        <div class="fleche-preview" id="preview2"></div>
       </div>
     </div>
 
@@ -616,12 +660,9 @@ let objectifEnabled = false;
 let mode = 'solo';
 let currentSession = null;
 let currentImageBase64 = null;
-let archer1Colors = JSON.parse(localStorage.getItem('archer1Colors') || '[]');
-let archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
-
-// Profil archer
-let profil = JSON.parse(localStorage.getItem('archerProfil') || '{}');
-// { prenom, arc, colors[] }
+let archer1Fleche = {};
+let archer2Fleche = {};
+let profil = {};
 
 // ══════════════════════════════════════════
 // NAVIGATION
@@ -640,12 +681,10 @@ function showScreen(name) {
 // ══════════════════════════════════════════
 function loadProfilScreen() {
   document.getElementById('profil-prenom').value = profil.prenom || '';
-  // arc chips
   document.querySelectorAll('#profil-arc-chips .chip').forEach(c => {
     c.classList.toggle('selected', c.textContent === profil.arc);
   });
-  // colors
-  buildProfilColorGrid();
+  loadProfilFleche();
 }
 
 function selectProfilArc(arc) {
@@ -656,34 +695,6 @@ function selectProfilArc(arc) {
   saveProfil();
 }
 
-function buildProfilColorGrid() {
-  const grid = document.getElementById('profil-colors-grid');
-  const sel = profil.colors || [];
-  grid.innerHTML = COLORS.map(c => `
-    <div class="color-chip${sel.includes(c.name) ? ' selected' : ''}" onclick="toggleProfilColor('${c.name}')">
-      <div class="color-dot" style="background:${c.hex};border:1px solid rgba(255,255,255,0.2)"></div>${c.name}
-    </div>`).join('');
-  updateProfilColorPreview();
-}
-
-function toggleProfilColor(name) {
-  let arr = profil.colors || [];
-  if (arr.includes(name)) arr = arr.filter(c => c !== name);
-  else { if (arr.length >= 3) { alert('Maximum 3 couleurs !'); return; } arr.push(name); }
-  profil.colors = arr;
-  saveProfil();
-  buildProfilColorGrid();
-}
-
-function updateProfilColorPreview() {
-  const preview = document.getElementById('profil-colors-preview');
-  const arr = profil.colors || [];
-  if (!arr.length) { preview.innerHTML = '<span class="preview-label">Sélectionnez 1 à 3 couleurs</span>'; return; }
-  preview.innerHTML = arr.map(name => {
-    const c = COLORS.find(x => x.name === name);
-    return `<div class="preview-dot" style="background:${c.hex}"></div>`;
-  }).join('') + `<span class="preview-label">${arr.join(' + ')}</span>`;
-}
 
 function saveProfil() {
   profil.prenom = document.getElementById('profil-prenom').value;
@@ -695,10 +706,11 @@ function renderProfilCard() {
   const nameEl = document.getElementById('profil-name-display');
   const arcEl  = document.getElementById('profil-arc-display');
   const colEl  = document.getElementById('profil-colors-display');
-
   nameEl.textContent = profil.prenom || 'Mon profil';
   arcEl.textContent  = profil.arc || '';
-  colEl.innerHTML = (profil.colors || []).map(name => {
+  const f = profil.fleche || {};
+  const dots = [f.coq, f.lat, f.enc].filter(Boolean);
+  colEl.innerHTML = dots.map(name => {
     const c = COLORS.find(x => x.name === name);
     return `<div class="profil-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
   }).join('');
@@ -817,10 +829,10 @@ function startSession() {
 
   // Pré-remplir Archer 1 depuis profil
   document.getElementById('archer1-name').value = profil.prenom || '';
-  archer1Colors = [...(profil.colors || [])];
-  archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
-  buildColorGrid('colors1', 1);
-  buildColorGrid('colors2', 2);
+  archer1Fleche = { ...(profil.fleche || {}) };
+  archer2Fleche = JSON.parse(localStorage.getItem('archer2Fleche') || '{}');
+  buildDuoFleche(1);
+  buildDuoFleche(2);
 
   updateVolleyLabel();
   showScreen('session');
@@ -833,39 +845,78 @@ function updateVolleyLabel() {
 }
 
 // ══════════════════════════════════════════
-// COULEURS DUO
+// FLECHE CONFIG (coq / latérales / encoche)
 // ══════════════════════════════════════════
-function buildColorGrid(containerId, archerIdx) {
+
+// Structure : { coq: 'Rouge', lat: 'Blanc', enc: 'Noir' }
+
+function buildFlecheChips(containerId, currentVal, onSelect) {
   const container = document.getElementById(containerId);
-  const sel = archerIdx === 1 ? archer1Colors : archer2Colors;
+  if (!container) return;
   container.innerHTML = COLORS.map(c => `
-    <div class="color-chip${sel.includes(c.name) ? ' selected' : ''}" onclick="toggleColor('${c.name}',${archerIdx})">
-      <div class="color-dot" style="background:${c.hex};border:1px solid rgba(255,255,255,0.2)"></div>${c.name}
+    <div class="fleche-chip${currentVal === c.name ? ' selected' : ''}" onclick="(${onSelect.toString()})('${c.name}')">
+      <div class="color-dot" style="background:${c.hex}"></div>${c.name}
     </div>`).join('');
-  updateColorPreview(archerIdx);
 }
 
-function toggleColor(colorName, archerIdx) {
-  let arr = archerIdx === 1 ? archer1Colors : archer2Colors;
-  if (arr.includes(colorName)) arr = arr.filter(c => c !== colorName);
-  else { if (arr.length >= 3) { alert('Maximum 3 couleurs !'); return; } arr.push(colorName); }
-  if (archerIdx === 1) archer1Colors = arr; else archer2Colors = arr;
-  saveDuoProfiles();
-  buildColorGrid(archerIdx === 1 ? 'colors1' : 'colors2', archerIdx);
+function renderFlechePreview(previewId, fleche) {
+  const el = document.getElementById(previewId);
+  if (!el) return;
+  const { coq, lat, enc } = fleche || {};
+  if (!coq && !lat && !enc) { el.innerHTML = '<span class="fleche-preview-empty">Configurez vos plumes</span>'; return; }
+  const parts = [];
+  if (coq) { const c = COLORS.find(x => x.name === coq); parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Coq: ${coq}</div>`); }
+  if (lat) { const c = COLORS.find(x => x.name === lat); parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Lat.: ${lat}</div>`); }
+  if (enc) { const c = COLORS.find(x => x.name === enc); parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Encoche: ${enc}</div>`); }
+  el.innerHTML = parts.join('<span class="fleche-preview-sep">·</span>');
 }
 
-function updateColorPreview(archerIdx) {
-  const preview = document.getElementById(`preview${archerIdx}`);
-  const arr = archerIdx === 1 ? archer1Colors : archer2Colors;
-  if (!arr.length) { preview.innerHTML = '<span class="preview-label">Sélectionnez 1 à 3 couleurs</span>'; return; }
-  preview.innerHTML = arr.map(name => {
-    const c = COLORS.find(x => x.name === name);
-    return `<div class="preview-dot" style="background:${c.hex}"></div>`;
-  }).join('') + `<span class="preview-label">${arr.join(' + ')}</span>`;
+function describeFleche(fleche) {
+  if (!fleche) return 'inconnue';
+  const parts = [];
+  if (fleche.coq) parts.push(`plume coq ${fleche.coq}`);
+  if (fleche.lat) parts.push(`plumes latérales ${fleche.lat}`);
+  if (fleche.enc) parts.push(`encoche ${fleche.enc}`);
+  return parts.length ? parts.join(', ') : 'inconnue';
+}
+
+// ── PROFIL FLECHE ──
+function loadProfilFleche() {
+  const f = profil.fleche || {};
+  buildFlecheChips('profil-coq-chips', f.coq, (name) => { profil.fleche = {...(profil.fleche||{}), coq: name}; saveProfil(); loadProfilFleche(); });
+  buildFlecheChips('profil-lat-chips', f.lat, (name) => { profil.fleche = {...(profil.fleche||{}), lat: name}; saveProfil(); loadProfilFleche(); });
+  buildFlecheChips('profil-enc-chips', f.enc, (name) => { profil.fleche = {...(profil.fleche||{}), enc: name}; saveProfil(); loadProfilFleche(); });
+  renderFlechePreview('profil-fleche-preview', profil.fleche);
+}
+
+// ── DUO FLECHE ──
+let archer1Fleche = {}; // { coq, lat, enc }
+let archer2Fleche = {};
+
+function buildDuoFleche(archerIdx) {
+  const f = archerIdx === 1 ? archer1Fleche : archer2Fleche;
+  const prefix = archerIdx === 1 ? 'a1' : 'a2';
+
+  buildFlecheChips(`${prefix}-coq-chips`, f.coq, (name) => {
+    if (archerIdx === 1) archer1Fleche = {...archer1Fleche, coq: name};
+    else archer2Fleche = {...archer2Fleche, coq: name};
+    saveDuoProfiles(); buildDuoFleche(archerIdx);
+  });
+  buildFlecheChips(`${prefix}-lat-chips`, f.lat, (name) => {
+    if (archerIdx === 1) archer1Fleche = {...archer1Fleche, lat: name};
+    else archer2Fleche = {...archer2Fleche, lat: name};
+    saveDuoProfiles(); buildDuoFleche(archerIdx);
+  });
+  buildFlecheChips(`${prefix}-enc-chips`, f.enc, (name) => {
+    if (archerIdx === 1) archer1Fleche = {...archer1Fleche, enc: name};
+    else archer2Fleche = {...archer2Fleche, enc: name};
+    saveDuoProfiles(); buildDuoFleche(archerIdx);
+  });
+  renderFlechePreview(`preview${archerIdx}`, archerIdx === 1 ? archer1Fleche : archer2Fleche);
 }
 
 function saveDuoProfiles() {
-  localStorage.setItem('archer2Colors', JSON.stringify(archer2Colors));
+  localStorage.setItem('archer2Fleche', JSON.stringify(archer2Fleche));
   localStorage.setItem('archer2Name', document.getElementById('archer2-name').value);
 }
 
@@ -914,7 +965,7 @@ function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
 
 function addToQueue(imageBase64) {
   const q = getQueue();
-  q.push({ imageBase64, mode, archer1Colors, archer2Colors,
+  q.push({ imageBase64, mode, archer1Fleche, archer2Fleche,
     archer1Name: document.getElementById('archer1-name').value,
     archer2Name: document.getElementById('archer2-name').value, timestamp:Date.now() });
   saveQueue(q); updateQueueBanner();
@@ -934,7 +985,7 @@ async function processQueue() {
   if (banner) banner.innerHTML = '⏳ Analyse en cours...';
   let done = 0;
   for (const item of q) {
-    try { const r = await callAPI(item.imageBase64, item.mode, item.archer1Colors, item.archer2Colors, item.archer1Name, item.archer2Name); if (r) done++; }
+    try { const r = await callAPI(item.imageBase64, item.mode, item.archer1Fleche||{}, item.archer2Fleche||{}, item.archer1Name, item.archer2Name); if (r) done++; }
     catch { break; }
   }
   saveQueue(done === q.length ? [] : q.slice(done));
@@ -944,13 +995,13 @@ async function processQueue() {
 // ══════════════════════════════════════════
 // API
 // ══════════════════════════════════════════
-async function callAPI(imageBase64, currentMode, a1colors, a2colors, a1name, a2name) {
+async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2name) {
   const isDuo = currentMode === 'duo';
   const a1 = a1name || 'Archer 1', a2 = a2name || 'Archer 2';
-  const c1 = a1colors.length ? a1colors.join(' + ') : 'inconnue';
-  const c2 = a2colors.length ? a2colors.join(' + ') : 'inconnue';
+  const desc1 = describeFleche(a1fleche);
+  const desc2 = describeFleche(a2fleche);
   const prompt = isDuo
-    ? `Tu es un expert en tir à l'arc. Analyse cette cible, 2 archers.\n${a1} plumes: ${c1}. ${a2} plumes: ${c2}.\nIdentifie le type (WA/VEGAS/BEURSAULT/GEF), attribue chaque flèche selon couleur plumes et score.\nBarèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M\nRéponds UNIQUEMENT JSON:\n{"type":"WA","archer1":{"name":"${a1}","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."},"archer2":{"name":"${a2}","arrows":[10,9,8],"total":27,"count":3,"analysis":"..."}}\nSi pas de cible: {"error":"Pas de cible détectée"}`
+    ? `Tu es un expert en tir à l'arc. Analyse cette cible, 2 archers.\n${a1} : ${desc1}.\n${a2} : ${desc2}.\nIdentifie le type (WA/VEGAS/BEURSAULT/GEF), attribue chaque flèche selon description et score.\nBarèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M\nRéponds UNIQUEMENT JSON:\n{"type":"WA","archer1":{"name":"${a1}","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."},"archer2":{"name":"${a2}","arrows":[10,9,8],"total":27,"count":3,"analysis":"..."}}\nSi pas de cible: {"error":"Pas de cible détectée"}`
     : `Tu es un expert en tir à l'arc. Analyse cette cible.\nIdentifie le type (WA/VEGAS/BEURSAULT/GEF) et applique le barème.\nBarèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M\nRéponds UNIQUEMENT JSON:\n{"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."}\nSi pas de cible: {"error":"Pas de cible détectée"}`;
 
   const response = await fetch("/api/analyze", {
@@ -977,7 +1028,7 @@ async function callAPI(imageBase64, currentMode, a1colors, a2colors, a1name, a2n
 
 async function analyzeImage() {
   if (!currentImageBase64) return;
-  if (mode === 'duo' && (!archer1Colors.length || !archer2Colors.length)) { alert('⚠️ Configurez les couleurs des 2 archers !'); return; }
+  if (mode === 'duo' && (!archer1Fleche.coq && !archer1Fleche.lat) && (!archer2Fleche.coq && !archer2Fleche.lat)) { alert('⚠️ Configurez les plumes des 2 archers !'); return; }
   const btn = document.getElementById('btn-analyze');
   const overlay = document.getElementById('preview-overlay');
   btn.disabled = true; overlay.classList.add('analyzing');
@@ -991,7 +1042,7 @@ async function analyzeImage() {
   try {
     const a1 = document.getElementById('archer1-name').value;
     const a2 = document.getElementById('archer2-name').value;
-    await callAPI(currentImageBase64, mode, archer1Colors, archer2Colors, a1, a2);
+    await callAPI(currentImageBase64, mode, archer1Fleche, archer2Fleche, a1, a2);
     overlay.classList.remove('analyzing');
   } catch(err) {
     overlay.classList.remove('analyzing'); btn.disabled = false;
@@ -1032,15 +1083,16 @@ function displayDuoResult(result) {
   document.getElementById('arrows-grid-1').innerHTML = arrowsHtml(result.archer1.arrows, 'F');
   document.getElementById('total-value-1').textContent = result.archer1.total || 0;
   document.getElementById('analysis-1').textContent = result.archer1.analysis || '';
-  document.getElementById('duo-colors-1').innerHTML = archer1Colors.map(name => {
-    const c = COLORS.find(x => x.name === name);
-    return `<div class="duo-color-dot" style="background:${c?c.hex:'#888'}"></div>`;
-  }).join('');
   document.getElementById('duo-name-2').textContent = result.archer2.name || 'Archer 2';
   document.getElementById('arrows-grid-2').innerHTML = arrowsHtml(result.archer2.arrows, 'F');
   document.getElementById('total-value-2').textContent = result.archer2.total || 0;
   document.getElementById('analysis-2').textContent = result.archer2.analysis || '';
-  document.getElementById('duo-colors-2').innerHTML = archer2Colors.map(name => {
+  const f1 = archer1Fleche || {}, f2 = archer2Fleche || {};
+  document.getElementById('duo-colors-1').innerHTML = [f1.coq, f1.lat, f1.enc].filter(Boolean).map(name => {
+    const c = COLORS.find(x => x.name === name);
+    return `<div class="duo-color-dot" style="background:${c?c.hex:'#888'}"></div>`;
+  }).join('');
+  document.getElementById('duo-colors-2').innerHTML = [f2.coq, f2.lat, f2.enc].filter(Boolean).map(name => {
     const c = COLORS.find(x => x.name === name);
     return `<div class="duo-color-dot" style="background:${c?c.hex:'#888'}"></div>`;
   }).join('');
@@ -1209,7 +1261,7 @@ function formatDate(iso) {
 // ══════════════════════════════════════════
 window.addEventListener('load', () => {
   profil = JSON.parse(localStorage.getItem('archerProfil') || '{}');
-  archer2Colors = JSON.parse(localStorage.getItem('archer2Colors') || '[]');
+  archer2Fleche = JSON.parse(localStorage.getItem('archer2Fleche') || '{}');
   renderProfilCard();
   renderHomeRecap();
   updateQueueBanner();
