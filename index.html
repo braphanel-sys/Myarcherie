@@ -850,13 +850,28 @@ function updateVolleyLabel() {
 
 // Structure : { coq: 'Rouge', lat: 'Blanc', enc: 'Noir' }
 
-function buildFlecheChips(containerId, currentVal, onSelect) {
+function buildFlecheChips(containerId, currentVal, target, key) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = COLORS.map(c => `
-    <div class="fleche-chip${currentVal === c.name ? ' selected' : ''}" onclick="(${onSelect.toString()})('${c.name}')">
+    <div class="fleche-chip${currentVal === c.name ? ' selected' : ''}" onclick="selectFlecheColor('${target}','${key}','${c.name}')">
       <div class="color-dot" style="background:${c.hex}"></div>${c.name}
     </div>`).join('');
+}
+
+function selectFlecheColor(target, key, colorName) {
+  if (target === 'profil') {
+    profil.fleche = Object.assign({}, profil.fleche||{}, {[key]: colorName});
+    saveProfil();
+    loadProfilFleche();
+  } else {
+    const idx = parseInt(target);
+    if (idx === 1) archer1Fleche = Object.assign({}, archer1Fleche, {[key]: colorName});
+    else archer2Fleche = Object.assign({}, archer2Fleche, {[key]: colorName});
+    saveDuoProfiles();
+    buildDuoFleche(idx);
+  }
+}
 }
 
 function renderFlechePreview(previewId, fleche) {
@@ -883,9 +898,9 @@ function describeFleche(fleche) {
 // ── PROFIL FLECHE ──
 function loadProfilFleche() {
   const f = profil.fleche || {};
-  buildFlecheChips('profil-coq-chips', f.coq, (name) => { profil.fleche = {...(profil.fleche||{}), coq: name}; saveProfil(); loadProfilFleche(); });
-  buildFlecheChips('profil-lat-chips', f.lat, (name) => { profil.fleche = {...(profil.fleche||{}), lat: name}; saveProfil(); loadProfilFleche(); });
-  buildFlecheChips('profil-enc-chips', f.enc, (name) => { profil.fleche = {...(profil.fleche||{}), enc: name}; saveProfil(); loadProfilFleche(); });
+  buildFlecheChips('profil-coq-chips', f.coq, 'profil', 'coq');
+  buildFlecheChips('profil-lat-chips', f.lat, 'profil', 'lat');
+  buildFlecheChips('profil-enc-chips', f.enc, 'profil', 'enc');
   renderFlechePreview('profil-fleche-preview', profil.fleche);
 }
 
@@ -894,22 +909,10 @@ function loadProfilFleche() {
 function buildDuoFleche(archerIdx) {
   const f = archerIdx === 1 ? archer1Fleche : archer2Fleche;
   const prefix = archerIdx === 1 ? 'a1' : 'a2';
-
-  buildFlecheChips(`${prefix}-coq-chips`, f.coq, (name) => {
-    if (archerIdx === 1) archer1Fleche = {...archer1Fleche, coq: name};
-    else archer2Fleche = {...archer2Fleche, coq: name};
-    saveDuoProfiles(); buildDuoFleche(archerIdx);
-  });
-  buildFlecheChips(`${prefix}-lat-chips`, f.lat, (name) => {
-    if (archerIdx === 1) archer1Fleche = {...archer1Fleche, lat: name};
-    else archer2Fleche = {...archer2Fleche, lat: name};
-    saveDuoProfiles(); buildDuoFleche(archerIdx);
-  });
-  buildFlecheChips(`${prefix}-enc-chips`, f.enc, (name) => {
-    if (archerIdx === 1) archer1Fleche = {...archer1Fleche, enc: name};
-    else archer2Fleche = {...archer2Fleche, enc: name};
-    saveDuoProfiles(); buildDuoFleche(archerIdx);
-  });
+  const t = String(archerIdx);
+  buildFlecheChips(`${prefix}-coq-chips`, f.coq, t, 'coq');
+  buildFlecheChips(`${prefix}-lat-chips`, f.lat, t, 'lat');
+  buildFlecheChips(`${prefix}-enc-chips`, f.enc, t, 'enc');
   renderFlechePreview(`preview${archerIdx}`, archerIdx === 1 ? archer1Fleche : archer2Fleche);
 }
 
