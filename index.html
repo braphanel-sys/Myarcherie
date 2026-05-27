@@ -432,8 +432,12 @@
           <div class="fleche-color-chips" id="profil-coq-chips"></div>
         </div>
         <div class="fleche-row">
-          <div class="fleche-row-label">🪶🪶 Latérales</div>
-          <div class="fleche-color-chips" id="profil-lat-chips"></div>
+          <div class="fleche-row-label">🪶 Lat. gauche</div>
+          <div class="fleche-color-chips" id="profil-lat1-chips"></div>
+        </div>
+        <div class="fleche-row">
+          <div class="fleche-row-label">🪶 Lat. droite</div>
+          <div class="fleche-color-chips" id="profil-lat2-chips"></div>
         </div>
         <div class="fleche-row">
           <div class="fleche-row-label">🔩 Encoche</div>
@@ -527,7 +531,8 @@
         <div class="colors-label">Plumes</div>
         <div class="fleche-config">
           <div class="fleche-row"><div class="fleche-row-label">🪶 Coq</div><div class="fleche-color-chips" id="a1-coq-chips"></div></div>
-          <div class="fleche-row"><div class="fleche-row-label">🪶🪶 Latérales</div><div class="fleche-color-chips" id="a1-lat-chips"></div></div>
+          <div class="fleche-row"><div class="fleche-row-label">🪶 Lat. gauche</div><div class="fleche-color-chips" id="a1-lat1-chips"></div></div>
+          <div class="fleche-row"><div class="fleche-row-label">🪶 Lat. droite</div><div class="fleche-color-chips" id="a1-lat2-chips"></div></div>
           <div class="fleche-row"><div class="fleche-row-label">🔩 Encoche</div><div class="fleche-color-chips" id="a1-enc-chips"></div></div>
         </div>
         <div class="fleche-preview" id="preview1"></div>
@@ -538,7 +543,8 @@
         <div class="colors-label">Plumes</div>
         <div class="fleche-config">
           <div class="fleche-row"><div class="fleche-row-label">🪶 Coq</div><div class="fleche-color-chips" id="a2-coq-chips"></div></div>
-          <div class="fleche-row"><div class="fleche-row-label">🪶🪶 Latérales</div><div class="fleche-color-chips" id="a2-lat-chips"></div></div>
+          <div class="fleche-row"><div class="fleche-row-label">🪶 Lat. gauche</div><div class="fleche-color-chips" id="a2-lat1-chips"></div></div>
+          <div class="fleche-row"><div class="fleche-row-label">🪶 Lat. droite</div><div class="fleche-color-chips" id="a2-lat2-chips"></div></div>
           <div class="fleche-row"><div class="fleche-row-label">🔩 Encoche</div><div class="fleche-color-chips" id="a2-enc-chips"></div></div>
         </div>
         <div class="fleche-preview" id="preview2"></div>
@@ -709,7 +715,7 @@ function renderProfilCard() {
   nameEl.textContent = profil.prenom || 'Mon profil';
   arcEl.textContent  = profil.arc || '';
   const f = profil.fleche || {};
-  const dots = [f.coq, f.lat, f.enc].filter(Boolean);
+  const dots = [f.coq, f.lat1, f.lat2, f.enc].filter(Boolean);
   colEl.innerHTML = dots.map(name => {
     const c = COLORS.find(x => x.name === name);
     return `<div class="profil-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
@@ -876,30 +882,33 @@ function selectFlecheColor(target, key, colorName) {
 function renderFlechePreview(previewId, fleche) {
   const el = document.getElementById(previewId);
   if (!el) return;
-  const { coq, lat, enc } = fleche || {};
-  if (!coq && !lat && !enc) { el.innerHTML = '<span class="fleche-preview-empty">Configurez vos plumes</span>'; return; }
+  const { coq, lat1, lat2, enc } = fleche || {};
+  if (!coq && !lat1 && !lat2 && !enc) { el.innerHTML = '<span class="fleche-preview-empty">Configurez vos plumes</span>'; return; }
   const parts = [];
-  if (coq) { const c = COLORS.find(x => x.name === coq); parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Coq: ${coq}</div>`); }
-  if (lat) { const c = COLORS.find(x => x.name === lat); parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Lat.: ${lat}</div>`); }
-  if (enc) { const c = COLORS.find(x => x.name === enc); parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Encoche: ${enc}</div>`); }
+  if (coq)  { const c = COLORS.find(x => x.name === coq);  parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Coq: ${coq}</div>`); }
+  if (lat1) { const c = COLORS.find(x => x.name === lat1); parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Lat.G: ${lat1}</div>`); }
+  if (lat2) { const c = COLORS.find(x => x.name === lat2); parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Lat.D: ${lat2}</div>`); }
+  if (enc)  { const c = COLORS.find(x => x.name === enc);  parts.push(`<div class="fleche-preview-item"><div class="fleche-preview-dot" style="background:${c?c.hex:'#888'}"></div>Encoche: ${enc}</div>`); }
   el.innerHTML = parts.join('<span class="fleche-preview-sep">·</span>');
 }
 
 function describeFleche(fleche) {
   if (!fleche) return 'inconnue';
   const parts = [];
-  if (fleche.coq) parts.push(`plume coq ${fleche.coq}`);
-  if (fleche.lat) parts.push(`plumes latérales ${fleche.lat}`);
-  if (fleche.enc) parts.push(`encoche ${fleche.enc}`);
+  if (fleche.coq)  parts.push(`plume coq ${fleche.coq}`);
+  if (fleche.lat1) parts.push(`latérale gauche ${fleche.lat1}`);
+  if (fleche.lat2) parts.push(`latérale droite ${fleche.lat2}`);
+  if (fleche.enc)  parts.push(`encoche ${fleche.enc}`);
   return parts.length ? parts.join(', ') : 'inconnue';
 }
 
 // ── PROFIL FLECHE ──
 function loadProfilFleche() {
   const f = profil.fleche || {};
-  buildFlecheChips('profil-coq-chips', f.coq, 'profil', 'coq');
-  buildFlecheChips('profil-lat-chips', f.lat, 'profil', 'lat');
-  buildFlecheChips('profil-enc-chips', f.enc, 'profil', 'enc');
+  buildFlecheChips('profil-coq-chips',  f.coq,  'profil', 'coq');
+  buildFlecheChips('profil-lat1-chips', f.lat1, 'profil', 'lat1');
+  buildFlecheChips('profil-lat2-chips', f.lat2, 'profil', 'lat2');
+  buildFlecheChips('profil-enc-chips',  f.enc,  'profil', 'enc');
   renderFlechePreview('profil-fleche-preview', profil.fleche);
 }
 
@@ -909,9 +918,10 @@ function buildDuoFleche(archerIdx) {
   const f = archerIdx === 1 ? archer1Fleche : archer2Fleche;
   const prefix = archerIdx === 1 ? 'a1' : 'a2';
   const t = String(archerIdx);
-  buildFlecheChips(`${prefix}-coq-chips`, f.coq, t, 'coq');
-  buildFlecheChips(`${prefix}-lat-chips`, f.lat, t, 'lat');
-  buildFlecheChips(`${prefix}-enc-chips`, f.enc, t, 'enc');
+  buildFlecheChips(`${prefix}-coq-chips`,  f.coq,  t, 'coq');
+  buildFlecheChips(`${prefix}-lat1-chips`, f.lat1, t, 'lat1');
+  buildFlecheChips(`${prefix}-lat2-chips`, f.lat2, t, 'lat2');
+  buildFlecheChips(`${prefix}-enc-chips`,  f.enc,  t, 'enc');
   renderFlechePreview(`preview${archerIdx}`, archerIdx === 1 ? archer1Fleche : archer2Fleche);
 }
 
@@ -1028,7 +1038,7 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
 
 async function analyzeImage() {
   if (!currentImageBase64) return;
-  if (mode === 'duo' && (!archer1Fleche.coq && !archer1Fleche.lat) && (!archer2Fleche.coq && !archer2Fleche.lat)) { alert('⚠️ Configurez les plumes des 2 archers !'); return; }
+  if (mode === 'duo' && (!archer1Fleche.coq && !archer1Fleche.lat1) && (!archer2Fleche.coq && !archer2Fleche.lat1)) { alert('⚠️ Configurez les plumes des 2 archers !'); return; }
   const btn = document.getElementById('btn-analyze');
   const overlay = document.getElementById('preview-overlay');
   btn.disabled = true; overlay.classList.add('analyzing');
@@ -1088,11 +1098,11 @@ function displayDuoResult(result) {
   document.getElementById('total-value-2').textContent = result.archer2.total || 0;
   document.getElementById('analysis-2').textContent = result.archer2.analysis || '';
   const f1 = archer1Fleche || {}, f2 = archer2Fleche || {};
-  document.getElementById('duo-colors-1').innerHTML = [f1.coq, f1.lat, f1.enc].filter(Boolean).map(name => {
+  document.getElementById('duo-colors-1').innerHTML = [f1.coq, f1.lat1, f1.lat2, f1.enc].filter(Boolean).map(name => {
     const c = COLORS.find(x => x.name === name);
     return `<div class="duo-color-dot" style="background:${c?c.hex:'#888'}"></div>`;
   }).join('');
-  document.getElementById('duo-colors-2').innerHTML = [f2.coq, f2.lat, f2.enc].filter(Boolean).map(name => {
+  document.getElementById('duo-colors-2').innerHTML = [f2.coq, f2.lat1, f2.lat2, f2.enc].filter(Boolean).map(name => {
     const c = COLORS.find(x => x.name === name);
     return `<div class="duo-color-dot" style="background:${c?c.hex:'#888'}"></div>`;
   }).join('');
