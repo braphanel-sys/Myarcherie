@@ -83,8 +83,8 @@
   .form-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; display:block; }
 
   .format-section-label {
-    font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px;
-    padding:6px 0 8px; display:flex; align-items:center; gap:8px;
+    font-size:0.68rem; color:var(--gold); text-transform:uppercase; letter-spacing:2px;
+    padding:10px 0 6px; display:flex; align-items:center; gap:8px; margin-top:4px;
   }
   .format-section-label::after { content:''; flex:1; height:1px; background:var(--border); }
   .format-section-label.recommended { color:var(--gold); }
@@ -416,11 +416,9 @@
     <div class="form-section">
       <label class="form-label">Type d'arc</label>
       <div class="chips" id="profil-arc-chips">
-        <div class="chip" onclick="selectProfilArc('Recurve')">Recurve</div>
-        <div class="chip" onclick="selectProfilArc('Classique')">Classique</div>
-        <div class="chip" onclick="selectProfilArc('Compound')">Compound</div>
-        <div class="chip" onclick="selectProfilArc('Barebow')">Barebow</div>
-        <div class="chip" onclick="selectProfilArc('Longbow')">Longbow</div>
+        <div class="chip" onclick="selectProfilArc('Arc classique')">Arc classique</div>
+        <div class="chip" onclick="selectProfilArc('Arc à poulies')">Arc à poulies</div>
+        <div class="chip" onclick="selectProfilArc('Arc nu')">Arc nu</div>
       </div>
     </div>
 
@@ -639,17 +637,23 @@
 // FORMATS FFTA
 // ══════════════════════════════════════════
 const FFTA_FORMATS = [
-  { id:'salle-40',    name:'Salle 18m',          detail:'18m · 40cm · 20×3 = 60 flèches',  distance:18,  blason:'40cm',         volleys:20, apv:3, maxScore:600,  arcs:['Recurve','Classique','Barebow','Longbow'] },
-  { id:'salle-vegas', name:'Salle Vegas',         detail:'18m · Trispot · 20×3 = 60 flèches', distance:18, blason:'Vegas trispot', volleys:20, apv:3, maxScore:600, arcs:['Compound'] },
-  { id:'salle-60',    name:'Salle 18m U13/U15',   detail:'18m · 60cm · 20×3 = 60 flèches',  distance:18,  blason:'60cm',         volleys:20, apv:3, maxScore:600,  arcs:[] },
-  { id:'ext-70',      name:'Extérieur 70m',       detail:'70m · 122cm · 12×6 = 72 flèches', distance:70,  blason:'122cm',        volleys:12, apv:6, maxScore:720,  arcs:['Recurve','Classique'] },
-  { id:'ext-60',      name:'Extérieur 60m',       detail:'60m · 122cm · 12×6 = 72 flèches', distance:60,  blason:'122cm',        volleys:12, apv:6, maxScore:720,  arcs:['Recurve','Classique'] },
-  { id:'ext-50-comp', name:'Extérieur 50m',       detail:'50m · 80cm · 12×6 = 72 flèches',  distance:50,  blason:'80cm',         volleys:12, apv:6, maxScore:720,  arcs:['Compound'] },
-  { id:'ext-50',      name:'Extérieur 50m',       detail:'50m · 122cm · 12×6 = 72 flèches', distance:50,  blason:'122cm',        volleys:12, apv:6, maxScore:720,  arcs:['Barebow'] },
-  { id:'ext-40',      name:'Extérieur 40m',       detail:'40m · 80cm · 12×6 = 72 flèches',  distance:40,  blason:'80cm',         volleys:12, apv:6, maxScore:720,  arcs:['Recurve','Classique','Compound','Barebow'] },
-  { id:'ext-30',      name:'Extérieur 30m',       detail:'30m · 80cm · 12×6 = 72 flèches',  distance:30,  blason:'80cm',         volleys:12, apv:6, maxScore:720,  arcs:['Recurve','Classique','Compound','Barebow'] },
-  { id:'beursault',   name:'Beursault',            detail:'Blason Beursault · 12×6',          distance:null,blason:'Beursault',    volleys:12, apv:6, maxScore:null, arcs:[] },
-  { id:'libre',       name:'⚙️ Format libre',     detail:'Personnalisez votre session',       distance:null,blason:null,           volleys:null,apv:null,maxScore:null,arcs:[] },
+  // ── SALLE ──
+  { id:'salle-40',    name:'Salle 18m — 40cm',       detail:'18m · 40cm · 20×3 = 60 flèches',   distance:18, blason:'40cm',         volleys:20, apv:3, maxScore:600,  section:'Salle',     arcs:['Arc classique','Arc nu'] },
+  { id:'salle-vegas', name:'Salle 18m — Vegas',       detail:'18m · Trispot · 20×3 = 60 flèches', distance:18, blason:'Vegas trispot', volleys:20, apv:3, maxScore:600,  section:'Salle',     arcs:['Arc à poulies'] },
+  { id:'salle-60',    name:'Salle 18m — 60cm',        detail:'18m · 60cm · 20×3 = 60 flèches',   distance:18, blason:'60cm',         volleys:20, apv:3, maxScore:600,  section:'Salle',     arcs:[] },
+
+  // ── EXTÉRIEUR ──
+  { id:'ext-20',      name:'Extérieur 20m',           detail:'20m · 80cm · 12×6 = 72 flèches',   distance:20, blason:'80cm',         volleys:12, apv:6, maxScore:720,  section:'Extérieur', arcs:['Arc classique'] },
+  { id:'ext-30',      name:'Extérieur 30m',           detail:'30m · 80cm · 12×6 = 72 flèches',   distance:30, blason:'80cm',         volleys:12, apv:6, maxScore:720,  section:'Extérieur', arcs:['Arc classique','Arc à poulies','Arc nu'] },
+  { id:'ext-40',      name:'Extérieur 40m',           detail:'40m · 122cm · 12×6 = 72 flèches',  distance:40, blason:'122cm',        volleys:12, apv:6, maxScore:720,  section:'Extérieur', arcs:['Arc classique','Arc à poulies','Arc nu'] },
+  { id:'ext-50',      name:'Extérieur 50m',           detail:'50m · 122cm · 12×6 = 72 flèches',  distance:50, blason:'122cm',        volleys:12, apv:6, maxScore:720,  section:'Extérieur', arcs:['Arc classique','Arc nu'] },
+  { id:'ext-50-comp', name:'Extérieur 50m',           detail:'50m · 80cm · 12×6 = 72 flèches',   distance:50, blason:'80cm',         volleys:12, apv:6, maxScore:720,  section:'Extérieur', arcs:['Arc à poulies'] },
+  { id:'ext-60',      name:'Extérieur 60m',           detail:'60m · 122cm · 12×6 = 72 flèches',  distance:60, blason:'122cm',        volleys:12, apv:6, maxScore:720,  section:'Extérieur', arcs:['Arc classique'] },
+  { id:'ext-70',      name:'Extérieur 70m',           detail:'70m · 122cm · 12×6 = 72 flèches',  distance:70, blason:'122cm',        volleys:12, apv:6, maxScore:720,  section:'Extérieur', arcs:['Arc classique'] },
+
+  // ── AUTRES ──
+  { id:'beursault',   name:'Beursault',               detail:'Blason Beursault · 12×6',           distance:null, blason:'Beursault', volleys:12, apv:6, maxScore:null, section:'Autres',    arcs:[] },
+  { id:'libre',       name:'⚙️ Format libre',         detail:'Personnalisez votre session',        distance:null, blason:null,        volleys:null, apv:null, maxScore:null, section:'Autres', arcs:[] },
 ];
 
 const COLORS = [
@@ -742,22 +746,23 @@ function renderHomeRecap() {
 function buildFormatsGrid() {
   const grid = document.getElementById('formats-grid');
   const arcType = profil.arc || null;
-
   const recommended = arcType ? FFTA_FORMATS.filter(f => f.arcs.includes(arcType)) : [];
-  const others = FFTA_FORMATS.filter(f => !recommended.includes(f));
-
+  const sections = ['Salle', 'Extérieur', 'Autres'];
   let html = '';
 
-  if (recommended.length) {
-    html += `<div class="format-section-label recommended">⭐ Recommandés pour ${arcType}</div>`;
-    html += recommended.map(f => formatCardHtml(f, true)).join('');
-    if (others.length) html += `<div class="format-section-label" style="margin-top:6px">Autres formats</div>`;
-  }
+  sections.forEach(section => {
+    const formats = FFTA_FORMATS.filter(f => f.section === section);
+    if (!formats.length) return;
+    html += `<div class="format-section-label${section !== 'Autres' ? '' : ''}">${section}</div>`;
+    // Recommandés en premier dans chaque section
+    const rec = formats.filter(f => recommended.includes(f));
+    const others = formats.filter(f => !recommended.includes(f));
+    html += rec.map(f => formatCardHtml(f, true)).join('');
+    html += others.map(f => formatCardHtml(f, false)).join('');
+  });
 
-  html += others.map(f => formatCardHtml(f, false)).join('');
   grid.innerHTML = html;
 
-  // Re-sélectionner si déjà choisi
   if (selectedFormatId) {
     const el = document.getElementById('fc-' + selectedFormatId);
     if (el) el.classList.add('selected');

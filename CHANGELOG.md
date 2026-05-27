@@ -6,13 +6,19 @@
 
 ---
 
-## V4.2 — Profil flèche complet *(Mai 2026 — en cours)*
+## V4.2 — Profil flèche complet & formats réorganisés *(Mai 2026 — en cours)*
 
 ### Ajouté
 - Configuration complète de la flèche dans le profil : plume coq, latérale gauche, latérale droite, encoche — chacune avec sélecteur de couleur indépendant
 - Les deux latérales peuvent être identiques ou de couleurs différentes
 - Archer 1 en mode Duo pré-rempli automatiquement depuis le profil
 - Prompt IA enrichi en mode Duo : description précise des 3 plumes + encoche pour une attribution fiable des flèches
+- Nouveau format FFTA : **Extérieur 20m** (80cm · 12×6 = 72 flèches) pour Arc classique
+
+### Modifié
+- **Types d'arc renommés en français** : Recurve → Arc classique, Compound → Arc à poulies, Barebow → Arc nu (Longbow et Classique supprimés)
+- **Grille des formats FFTA reorganisée par sections** : Salle / Extérieur / Autres — les formats recommandés selon le profil sont mis en avant dans chaque section
+- Style des étiquettes de section : couleur dorée (`--gold`), meilleure lisibilité
 
 ### Corrigé
 - Double déclaration `let` qui bloquait tout le JavaScript au démarrage
@@ -141,4 +147,4 @@
 
 ---
 
-*Document mis à jour le 27 mai 2026*
+*Document mis à jour le 27 mai 2026 — V4.2*
