@@ -86,9 +86,10 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 
 ## PWA
 
-- `sw.js` — stale-while-revalidate cache; `/api/` routes bypass cache entirely; posts `UPDATE_READY` to clients on activation.
+- `sw.js` — cache `archerAI-v4.3` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
 - `manifest.json` — standard PWA manifest, `theme_color: #C9A84C`.
-- When deploying a new version, increment `VERSION` in `sw.js` to bust the cache.
+- Pour déployer une nouvelle version : mettre à jour le nom du cache dans `sw.js` (ex. `archerAI-v4.4`).
+- **Bandeau mise à jour** (`#update-banner`) : affiché par `showUpdateBanner()` quand le SW détecte un nouveau worker installé. Bouton "Actualiser" envoie `'skipWaiting'` au SW puis recharge la page.
 
 ## Project files
 

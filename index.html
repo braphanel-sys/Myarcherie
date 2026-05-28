@@ -1378,7 +1378,46 @@ window.addEventListener('load', () => {
   renderHomeRecap();
   updateQueueBanner();
   window.addEventListener('online', () => { if (getQueue().length) processQueue(); });
+
+  // ── SERVICE WORKER & BANDEAU DE MISE À JOUR ──
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateBanner(newSW);
+          }
+        });
+      });
+    });
+  }
 });
+
+function showUpdateBanner(newSW) {
+  const banner = document.getElementById('update-banner');
+  if (banner) {
+    banner.style.display = 'flex';
+    banner.querySelector('button').onclick = () => {
+      newSW.postMessage('skipWaiting');
+      window.location.reload();
+    };
+  }
+}
 </script>
+<!-- Bandeau mise à jour -->
+<div id="update-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:#1E1E1E;border:1px solid rgba(201,168,76,0.35);border-radius:12px;
+  padding:12px 16px;z-index:998;align-items:center;gap:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);white-space:nowrap;">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div style="width:8px;height:8px;border-radius:50%;background:#C9A84C;flex-shrink:0;"></div>
+    <span style="font-family:'DM Sans',sans-serif;font-size:0.82rem;color:#E8E0D0;">Mise à jour disponible</span>
+  </div>
+  <button style="background:linear-gradient(135deg,#C9A84C,#A07830);color:#0D0D0D;border:none;
+    padding:6px 14px;border-radius:8px;font-family:'Bebas Neue',sans-serif;
+    font-size:0.8rem;letter-spacing:1.5px;cursor:pointer;">Actualiser</button>
+</div>
+
 </body>
 </html>
