@@ -9,7 +9,7 @@ ArcherAI is a single-page archery scoring app powered by Claude Vision. It has t
 - **`index.html`** (~1890 lines) — the entire frontend: CSS, HTML, and JS in one file. No build step, no dependencies, no bundler.
 - **`api/analyze.js`** — a Vercel serverless function that proxies requests to the Anthropic API. Reads `ANTHROPIC_API_KEY` from the environment.
 
-The `analyze.js`, `analyze (1).js`, `analyze (2).js`, `analyze (3).js` files at the root are older iterations kept for reference; the live endpoint is `api/analyze.js`.
+The root `analyze.js` is kept in sync with `api/analyze.js` and reflects the current prompt logic. `analyze (1).js`, `analyze (2).js`, `analyze (3).js` are old iterations (deleted from repo); the live endpoint is `api/analyze.js`.
 
 ## Running locally
 
@@ -90,6 +90,22 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 - `manifest.json` — standard PWA manifest, `theme_color: #C9A84C`.
 - When deploying a new version, increment `VERSION` in `sw.js` to bust the cache.
 
+## Project files
+
+| File | Description |
+|---|---|
+| `index.html` | Entire frontend — CSS, HTML, JS in one file |
+| `api/analyze.js` | Live Vercel serverless function (Anthropic proxy) |
+| `analyze.js` | Mirror of `api/analyze.js` — kept in sync, use as reference |
+| `sw.js` | Service Worker — stale-while-revalidate, offline queue |
+| `manifest.json` | PWA manifest |
+| `icon.svg` | Gold target + red arrow icon |
+| `guide-scoring.html` | Photo best-practices guide (linked from app header) |
+| `CHANGELOG.md` | Version history |
+| `RETOURS_TERRAIN.md` | Live field feedback tracker — problems reported by club members + solutions |
+
+---
+
 ## Score correction
 
 Arrow badges rendered by `arrowsHtml()` carry the `.editable` CSS class and an `onclick` calling `editArrow(gridId, idx, currentVal)`. The function:
@@ -101,6 +117,16 @@ Arrow badges rendered by `arrowsHtml()` carry the `.editable` CSS class and an `
 
 `gridId` values: `'arrows-grid'` (Solo), `'arrows-grid-1'` / `'arrows-grid-2'` (Duo).
 
+## Prompt IA (`analyze.js` / `api/analyze.js`)
+
+Le prompt par défaut (v2, mai 2026) impose à l'IA :
+1. Ne compter que les **fûts physiquement plantés** dans la cible — ignorer trous, impacts vides et déchirures
+2. Identifier le type de cible (WA, Vegas, Beursault, GEF) avant de scorer
+3. Répondre en JSON strict avec `type`, `arrows`, `total`, `count`, `analysis`
+
+Le frontend peut envoyer un `prompt` custom dans le body POST (ex. mode Duo avec description des plumes) ; le serveur utilise ce prompt en priorité et tombe sur le prompt par défaut si absent.
+
 ## Règles
 
 - Ne jamais modifier `api/analyze.js` sans confirmation explicite de l'utilisateur.
+- Mettre à jour ce fichier à chaque modification du projet — il sert d'historique.
