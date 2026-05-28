@@ -1,10 +1,21 @@
 export default async function handler(req, res) {
   // Allow CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS, GET');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // Route GET /api/analyze?stats=1 — lecture du compteur
+  if (req.method === 'GET' && req.query.stats === '1') {
+    try {
+      const count = await redisIncr('get');
+      return res.status(200).json({ total_analyses: count || 0 });
+    } catch(e) {
+      return res.status(200).json({ total_analyses: 'indisponible' });
+    }
+  }
+
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
@@ -72,10 +83,28 @@ Si l'image ne montre pas une cible avec des flèches plantées : {"error": "Pas 
       else throw new Error('Parse error');
     }
 
+    // Incrémenter le compteur (sans bloquer la réponse)
+    redisIncr('incr').catch(() => {});
+
     res.status(200).json(result);
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erreur serveur: ' + err.message });
   }
+}
+
+// Helper Redis via API REST Upstash
+async function redisIncr(action) {
+  const url = process.env.KV_REST_API_URL;
+  if (!url) return null;
+  const token = process.env.KV_REST_API_TOKEN;
+  const endpoint = action === 'incr'
+    ? `${url}/incr/total_analyses`
+    : `${url}/get/total_analyses`;
+  const r = await fetch(endpoint, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {}
+  });
+  const d = await r.json();
+  return d.result;
 }

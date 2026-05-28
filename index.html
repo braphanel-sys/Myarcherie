@@ -356,7 +356,7 @@
 
   <!-- HEADER -->
   <div class="header">
-    <div class="logo">
+    <div class="logo" id="logo-admin" oncontextmenu="return false;">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="24" cy="24" r="22" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
         <circle cx="24" cy="24" r="15" stroke="#C9A84C" stroke-width="1" fill="none" opacity="0.5"/>
@@ -374,7 +374,17 @@
     </div>
   </div>
 
-  <!-- ══════════ HOME ══════════ -->
+  <!-- PANNEAU ADMIN (appui long sur le logo) -->
+  <div id="admin-panel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:#161616;border:1px solid rgba(201,168,76,0.4);border-radius:16px;padding:28px 32px;
+    z-index:200;text-align:center;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:3px;color:#8A8070;margin-bottom:12px;">ANALYSES TOTALES</div>
+    <div id="admin-count" style="font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:#C9A84C;line-height:1;">—</div>
+    <div style="font-size:0.75rem;color:#8A8070;margin-top:8px;">depuis le début</div>
+    <button onclick="document.getElementById('admin-panel').style.display='none'"
+      style="margin-top:20px;background:transparent;border:1px solid rgba(201,168,76,0.3);color:#8A8070;
+      padding:8px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;cursor:pointer;">Fermer</button>
+  </div>
   <div class="screen active" id="screen-home">
 
     <!-- Profil card -->
@@ -1321,6 +1331,41 @@ function setHistoryFilter(id) { document.getElementById('history-filters').datas
 function formatDate(iso) {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+// ══════════════════════════════════════════
+// ADMIN — appui long sur le logo (3 sec)
+// ══════════════════════════════════════════
+let adminPressTimer = null;
+
+document.getElementById('logo-admin').addEventListener('touchstart', () => {
+  adminPressTimer = setTimeout(showAdminPanel, 3000);
+}, { passive: true });
+
+document.getElementById('logo-admin').addEventListener('touchend', () => {
+  clearTimeout(adminPressTimer);
+});
+
+document.getElementById('logo-admin').addEventListener('mousedown', () => {
+  adminPressTimer = setTimeout(showAdminPanel, 3000);
+});
+
+document.getElementById('logo-admin').addEventListener('mouseup', () => {
+  clearTimeout(adminPressTimer);
+});
+
+async function showAdminPanel() {
+  const panel = document.getElementById('admin-panel');
+  const countEl = document.getElementById('admin-count');
+  panel.style.display = 'block';
+  countEl.textContent = '…';
+  try {
+    const r = await fetch('/api/analyze?stats=1');
+    const d = await r.json();
+    countEl.textContent = d.total_analyses ?? '—';
+  } catch {
+    countEl.textContent = '—';
+  }
 }
 
 // ══════════════════════════════════════════
