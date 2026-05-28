@@ -254,6 +254,8 @@
   .arrows-grid { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:16px; }
   .arrow-score { display:flex; flex-direction:column; align-items:center; gap:4px; }
   .arrow-badge { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:1.15rem; font-weight:bold; }
+  .arrow-badge.editable { cursor:pointer; transition:transform 0.15s, opacity 0.15s; }
+  .arrow-badge.editable:hover { transform:scale(1.12); opacity:0.85; }
   .badge-x  { background:#FFD700; color:#000; border:2px solid #FFD700; }
   .badge-10 { background:#FFD700; color:#000; }
   .badge-9  { background:#FFD700; color:#000; }
@@ -1079,13 +1081,63 @@ function getBadgeClass(s) {
   if (s === 2||s === 1) return 'badge-low'; return 'badge-miss';
 }
 
-function arrowsHtml(arrows, prefix) {
-  return (arrows||[]).map((s,i) => `<div class="arrow-score"><div class="arrow-badge ${getBadgeClass(s)}">${s}</div><div class="arrow-label">${prefix}${i+1}</div></div>`).join('');
+function arrowsHtml(arrows, prefix, gridId) {
+  return (arrows||[]).map((s,i) => `
+    <div class="arrow-score">
+      <div class="arrow-badge ${getBadgeClass(s)} editable" onclick="editArrow('${gridId}',${i},'${s}')" title="Corriger">${s}</div>
+      <div class="arrow-label">${prefix}${i+1}</div>
+    </div>`).join('');
+}
+
+function editArrow(gridId, idx, currentVal) {
+  const values = ['X','10','9','8','7','6','5','4','3','2','1','M'];
+  const val = prompt(`Corriger la flèche ${idx+1} (valeur actuelle: ${currentVal})`, currentVal);
+  if (val === null) return;
+  const clean = val.trim().toUpperCase();
+  if (!values.includes(clean)) { alert('Valeur invalide. Utilisez : X, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ou M'); return; }
+  const parsed = clean === 'M' ? 'M' : (clean === 'X' ? 'X' : parseInt(clean));
+
+  // Trouver la volée correspondante (dernière volée affichée)
+  const lastIdx = currentSession.volleys.length - 1;
+  if (lastIdx < 0) return;
+  const volley = currentSession.volleys[lastIdx];
+
+  if (gridId === 'arrows-grid') {
+    const old = volley.arrows[idx];
+    const oldVal = old === 'M' ? 0 : (old === 'X' ? 10 : parseInt(old));
+    const newVal = parsed === 'M' ? 0 : (parsed === 'X' ? 10 : parseInt(parsed));
+    volley.arrows[idx] = parsed;
+    volley.total = volley.total - oldVal + newVal;
+    currentSession.totalScore = currentSession.totalScore - oldVal + newVal;
+    document.getElementById('arrows-grid').innerHTML = arrowsHtml(volley.arrows, 'F', 'arrows-grid');
+    document.getElementById('result-total-value').textContent = volley.total;
+  } else if (gridId === 'arrows-grid-1') {
+    const old = volley.archer1.arrows[idx];
+    const oldVal = old === 'M' ? 0 : (old === 'X' ? 10 : parseInt(old));
+    const newVal = parsed === 'M' ? 0 : (parsed === 'X' ? 10 : parseInt(parsed));
+    volley.archer1.arrows[idx] = parsed;
+    volley.archer1.total = volley.archer1.total - oldVal + newVal;
+    currentSession.totalScore = currentSession.totalScore - oldVal + newVal;
+    document.getElementById('arrows-grid-1').innerHTML = arrowsHtml(volley.archer1.arrows, 'F', 'arrows-grid-1');
+    document.getElementById('total-value-1').textContent = volley.archer1.total;
+  } else if (gridId === 'arrows-grid-2') {
+    const old = volley.archer2.arrows[idx];
+    const oldVal = old === 'M' ? 0 : (old === 'X' ? 10 : parseInt(old));
+    const newVal = parsed === 'M' ? 0 : (parsed === 'X' ? 10 : parseInt(parsed));
+    volley.archer2.arrows[idx] = parsed;
+    volley.archer2.total = volley.archer2.total - oldVal + newVal;
+    currentSession.totalScore = currentSession.totalScore - oldVal + newVal;
+    document.getElementById('arrows-grid-2').innerHTML = arrowsHtml(volley.archer2.arrows, 'F', 'arrows-grid-2');
+    document.getElementById('total-value-2').textContent = volley.archer2.total;
+  }
+
+  updateSessionBar();
+  updateHistory();
 }
 
 function displayResult(result) {
   document.getElementById('result-volley-label').textContent = `Volée ${currentSession.volleys.length + 1}`;
-  document.getElementById('arrows-grid').innerHTML = arrowsHtml(result.arrows, 'F');
+  document.getElementById('arrows-grid').innerHTML = arrowsHtml(result.arrows, 'F', 'arrows-grid');
   document.getElementById('result-total-value').textContent = result.total;
   document.getElementById('result-analysis').textContent = result.analysis || '';
   const card = document.getElementById('result-card');
@@ -1095,11 +1147,11 @@ function displayResult(result) {
 
 function displayDuoResult(result) {
   document.getElementById('duo-name-1').textContent = result.archer1.name || 'Archer 1';
-  document.getElementById('arrows-grid-1').innerHTML = arrowsHtml(result.archer1.arrows, 'F');
+  document.getElementById('arrows-grid-1').innerHTML = arrowsHtml(result.archer1.arrows, 'F', 'arrows-grid-1');
   document.getElementById('total-value-1').textContent = result.archer1.total || 0;
   document.getElementById('analysis-1').textContent = result.archer1.analysis || '';
   document.getElementById('duo-name-2').textContent = result.archer2.name || 'Archer 2';
-  document.getElementById('arrows-grid-2').innerHTML = arrowsHtml(result.archer2.arrows, 'F');
+  document.getElementById('arrows-grid-2').innerHTML = arrowsHtml(result.archer2.arrows, 'F', 'arrows-grid-2');
   document.getElementById('total-value-2').textContent = result.archer2.total || 0;
   document.getElementById('analysis-2').textContent = result.archer2.analysis || '';
   const f1 = archer1Fleche || {}, f2 = archer2Fleche || {};

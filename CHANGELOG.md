@@ -6,9 +6,10 @@
 
 ---
 
-## V4.2 — Profil flèche complet & formats réorganisés *(Mai 2026 — en cours)*
+## V4.2 — Profil flèche complet, formats réorganisés & correction de scores *(Mai 2026 — en cours)*
 
 ### Ajouté
+- **Correction de flèches** : cliquer sur un badge de score (Solo ou Duo) ouvre une invite pour corriger la valeur — le total de la volée et le score de session sont recalculés à la volée
 - Configuration complète de la flèche dans le profil : plume coq, latérale gauche, latérale droite, encoche — chacune avec sélecteur de couleur indépendant
 - Les deux latérales peuvent être identiques ou de couleurs différentes
 - Archer 1 en mode Duo pré-rempli automatiquement depuis le profil
@@ -147,4 +148,4 @@
 
 ---
 
-*Document mis à jour le 27 mai 2026 — V4.2*
+*Document mis à jour le 28 mai 2026 — V4.2*
