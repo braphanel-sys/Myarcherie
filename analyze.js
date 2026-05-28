@@ -8,8 +8,26 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { imageBase64 } = req.body;
+    const { imageBase64, prompt } = req.body;
     if (!imageBase64) return res.status(400).json({ error: 'No image provided' });
+
+    const defaultPrompt = `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible de tir à l'arc.
+
+RÈGLE ABSOLUE : Ne compte QUE les flèches physiquement plantées dans la cible en ce moment — c'est-à-dire les objets avec un fût (tige cylindrique) clairement visible qui dépasse de la cible. Ignore totalement les impacts vides, trous, déchirures ou marques laissés par des tirs précédents.
+
+ÉTAPE 1 — Identifie le type de cible (WA, VEGAS, BEURSAULT, GEF).
+ÉTAPE 2 — Compte uniquement les fûts de flèches visibles et plantés actuellement.
+ÉTAPE 3 — Pour chaque flèche détectée, estime sa zone d'impact et applique le bon barème.
+
+Barèmes :
+- WA : jaune = X/10/9, rouge = 8/7, bleu = 6/5, noir = 4/3, blanc = 2/1, hors cible = M
+- VEGAS : jaune = X/10/9, rouge = 8/7, bleu = 6, hors blason = M
+- BEURSAULT/GEF : centre = 3, milieu = 2, extérieur = 1, hors cible = M
+
+Réponds UNIQUEMENT en JSON, sans aucun texte avant ou après :
+{"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"Courte analyse en français sur la qualité du groupe"}
+
+Si l'image ne montre pas une cible avec des flèches plantées : {"error": "Pas de cible détectée"}`;
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -34,26 +52,7 @@ export default async function handler(req, res) {
             },
             {
               type: "text",
-              text: `Tu es un expert en tir à l'arc. Analyse cette photo d'une cible de tir à l'arc avec des flèches plantées dedans.
-
-Identifie chaque flèche et estime sa zone d'impact selon le système de scoring standard :
-- Zone jaune (or) centre : 10 (X si très centré) ou 9
-- Zone rouge : 8 ou 7
-- Zone bleue : 6 ou 5
-- Zone noire : 4 ou 3
-- Zone blanche : 2 ou 1
-- Raté (hors cible) : M
-
-Réponds UNIQUEMENT en JSON, sans aucun texte avant ou après, avec ce format exact :
-{
-  "arrows": [8, 10, 7, 9, 6, "M"],
-  "total": 40,
-  "count": 6,
-  "analysis": "Une courte phrase d'analyse en français sur la dispersion ou la qualité du groupe de flèches"
-}
-
-Si l'image ne montre pas une cible de tir à l'arc avec des flèches, réponds :
-{"error": "Pas de cible détectée"}`
+              text: prompt || defaultPrompt
             }
           ]
         }]
