@@ -6,7 +6,14 @@
 
 ---
 
-## V4.5.2 — Bandeau version accueil *(Juin 2026 — actuelle)*
+## V4.5.3 — Fix SyntaxError Android *(Juin 2026 — actuelle)*
+
+### Corrigé
+- **Fix critique Android Chrome** : caractères Unicode `═` (U+2550) dans les commentaires JS remplacés par `=` simples — corrige le SyntaxError qui cassait l'app sur Android
+
+---
+
+## V4.5.2 — Bandeau version accueil *(Juin 2026)*
 
 ### Ajouté
 - **Bandeau version** : affichage "ArcherAI v4.5.1" en bas de l'écran d'accueil pour faciliter le debug
