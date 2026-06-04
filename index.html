@@ -349,6 +349,47 @@
   @media(max-width:600px) {
     .stat-value{font-size:1.45rem} .modal{padding:22px} .modal-result{font-size:2.7rem} .btn-modal-row{flex-direction:column}
   }
+
+  /* ══ TRI DE FLÈCHES ══ */
+  .tri-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .tri-progress-label { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:2px; color:var(--gold); }
+  .tri-progress-bar-track { height:4px; background:var(--dark3); border-radius:2px; margin-bottom:16px; overflow:hidden; }
+  .tri-progress-bar-fill { height:100%; background:var(--gold); border-radius:2px; transition:width 0.4s ease; }
+  .tri-target-container { background:var(--dark3); border:1px solid var(--border); border-radius:16px;
+    overflow:hidden; margin-bottom:14px; position:relative;
+    width:100%; aspect-ratio:1/1; max-width:440px; margin-left:auto; margin-right:auto; }
+  .tri-target-wrapper { width:100%; height:100%; transform-origin:center center; cursor:crosshair; }
+  .tri-zoom-hint { position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+    font-size:0.7rem; color:var(--text-muted); background:rgba(0,0,0,0.5);
+    padding:4px 10px; border-radius:20px; white-space:nowrap; pointer-events:none; opacity:0.8; }
+  .tri-actions { display:flex; gap:10px; max-width:440px; margin:0 auto; }
+  .tri-btn-reset { flex:1; background:var(--dark3); border:1px solid var(--border); color:var(--text-muted);
+    padding:14px; border-radius:12px; font-family:'Bebas Neue',sans-serif;
+    font-size:1rem; letter-spacing:2px; cursor:pointer; transition:all 0.2s; }
+  .tri-btn-reset:hover { border-color:var(--gold); color:var(--gold); }
+  .tri-btn-validate { flex:2; background:linear-gradient(135deg,var(--gold),#A07830); color:var(--dark);
+    border:none; padding:14px; border-radius:12px; font-family:'Bebas Neue',sans-serif;
+    font-size:1.1rem; letter-spacing:2px; cursor:pointer; transition:all 0.2s; }
+  .tri-btn-validate:disabled { opacity:0.35; cursor:not-allowed; }
+  .tri-btn-validate:not(:disabled):hover { opacity:0.9; }
+  .tri-results-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+  @media(min-width:500px) { .tri-results-grid { grid-template-columns:repeat(4,1fr); } }
+  .tri-result-card { background:var(--dark3); border:1px solid var(--border); border-radius:12px; padding:10px 8px; text-align:center; }
+  .tri-result-card.top1 { border-color:#FFD700; background:rgba(255,215,0,0.07); }
+  .tri-result-card.top2 { border-color:#C0C0C0; }
+  .tri-result-card.top3 { border-color:#CD7F32; }
+  .tri-result-card.bad  { border-color:rgba(192,57,43,0.4); }
+  .tri-result-fleche { font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:1px; color:var(--text-muted); margin-bottom:4px; }
+  .tri-result-disp { font-size:0.7rem; color:var(--text-muted); margin-top:4px; }
+  .tri-ranking { background:var(--dark3); border:1px solid var(--border); border-radius:14px; padding:16px; margin-top:16px; }
+  .tri-ranking-title { font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:2px; color:var(--text-muted); margin-bottom:12px; }
+  .tri-rank-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.88rem; }
+  .tri-rank-row:last-child { border-bottom:none; }
+  .tri-rank-pos { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--text-muted); min-width:28px; }
+  .tri-rank-pos.gold { color:#FFD700; }
+  .tri-rank-name { flex:1; color:var(--text); }
+  .tri-rank-avg { font-family:'Bebas Neue',sans-serif; font-size:1rem; color:var(--gold); min-width:40px; text-align:right; }
+  .tri-rank-disp { font-size:0.75rem; color:var(--text-muted); min-width:70px; text-align:right; }
 </style>
 </head>
 <body>
@@ -404,6 +445,7 @@
 
     <div class="home-actions">
       <button class="btn-primary" onclick="showScreen('setup')">🏹 Nouvelle session</button>
+      <button class="btn-secondary" onclick="showScreen('tri-setup')">🎯 Tri de flèches</button>
       <button class="btn-secondary" onclick="showScreen('history')">📋 Historique</button>
     </div>
 
@@ -622,6 +664,91 @@
     <div id="history-sessions-list"></div>
   </div>
 
+</div>
+
+<!-- ══════════ TRI DE FLÈCHES ══════════ -->
+
+<!-- Setup tri -->
+<div class="screen" id="screen-tri-setup">
+  <div class="history-screen-header">
+    <div class="history-screen-title">🎯 Tri de flèches</div>
+    <button class="btn-icon" onclick="showScreen('home')">← Retour</button>
+  </div>
+  <div class="form-section">
+    <label class="form-label">Nombre de flèches dans le lot</label>
+    <div class="chips" id="tri-nb-chips">
+      <div class="chip" onclick="selectTriNb(6)">6</div>
+      <div class="chip" onclick="selectTriNb(8)">8</div>
+      <div class="chip" onclick="selectTriNb(10)">10</div>
+      <div class="chip" onclick="selectTriNb(12)">12</div>
+    </div>
+  </div>
+  <div class="form-section">
+    <label class="form-label">Nombre de volées</label>
+    <div class="chips" id="tri-vol-chips">
+      <div class="chip" onclick="selectTriVol(3)">3</div>
+      <div class="chip" onclick="selectTriVol(6)">6</div>
+      <div class="chip" onclick="selectTriVol(10)">10</div>
+      <div class="chip" onclick="selectTriVol(12)">12</div>
+    </div>
+  </div>
+  <div class="form-section">
+    <label class="form-label">Flèches à conserver <span style="color:var(--text-muted);font-size:0.7rem;font-style:italic">(pour la compétition)</span></label>
+    <div class="chips" id="tri-keep-chips">
+      <div class="chip" onclick="selectTriKeep(3)">3</div>
+      <div class="chip" onclick="selectTriKeep(6)">6</div>
+      <div class="chip" onclick="selectTriKeep(8)">8</div>
+      <div class="chip" onclick="selectTriKeep(10)">10</div>
+    </div>
+  </div>
+  <button class="btn-start" onclick="startTri()">🎯 Commencer le tri</button>
+</div>
+
+<!-- Saisie tri -->
+<div class="screen" id="screen-tri-saisie">
+  <div class="tri-header">
+    <div class="tri-progress-label" id="tri-progress-label">Flèche 1 — Volée 1</div>
+    <button class="btn-end-session" onclick="endTri()">Terminer</button>
+  </div>
+  <div class="tri-progress-bar-track"><div class="tri-progress-bar-fill" id="tri-progress-fill"></div></div>
+
+  <div class="tri-target-container" id="tri-target-container">
+    <div class="tri-target-wrapper" id="tri-target-wrapper">
+      <svg id="tri-target-svg" viewBox="0 0 400 400" width="100%" height="100%" style="touch-action:none;">
+        <!-- Zones WA -->
+        <circle cx="200" cy="200" r="190" fill="white" stroke="#ccc" stroke-width="1"/>
+        <circle cx="200" cy="200" r="171" fill="white" stroke="#ccc" stroke-width="0.5"/>
+        <circle cx="200" cy="200" r="152" fill="#1a1a1a"/>
+        <circle cx="200" cy="200" r="133" fill="#1a1a1a" stroke="#333" stroke-width="0.5"/>
+        <circle cx="200" cy="200" r="114" fill="#3498DB"/>
+        <circle cx="200" cy="200" r="95"  fill="#3498DB" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+        <circle cx="200" cy="200" r="76"  fill="#C0392B"/>
+        <circle cx="200" cy="200" r="57"  fill="#C0392B" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+        <circle cx="200" cy="200" r="38"  fill="#FFD700"/>
+        <circle cx="200" cy="200" r="19"  fill="#FFD700" stroke="rgba(0,0,0,0.2)" stroke-width="0.5"/>
+        <!-- Croix centrale -->
+        <line x1="196" y1="200" x2="204" y2="200" stroke="rgba(0,0,0,0.3)" stroke-width="0.8"/>
+        <line x1="200" y1="196" x2="200" y2="204" stroke="rgba(0,0,0,0.3)" stroke-width="0.8"/>
+        <!-- Marker impact (caché au départ) -->
+        <circle id="tri-marker" cx="200" cy="200" r="7" fill="none" stroke="none" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <div class="tri-zoom-hint" id="tri-zoom-hint">Pincez pour zoomer · Tapez pour placer</div>
+  </div>
+
+  <div class="tri-actions">
+    <button class="tri-btn-reset" onclick="resetTriMarker()">↺ Refaire</button>
+    <button class="tri-btn-validate" id="tri-btn-validate" onclick="validateTriImpact()" disabled>✓ Valider</button>
+  </div>
+</div>
+
+<!-- Résultats tri -->
+<div class="screen" id="screen-tri-results">
+  <div class="history-screen-header">
+    <div class="history-screen-title">🎯 Résultats</div>
+    <button class="btn-icon" onclick="showScreen('home')">🏠 Accueil</button>
+  </div>
+  <div id="tri-results-content"></div>
 </div>
 
 <!-- MODAL FIN SESSION -->
@@ -972,13 +1099,28 @@ function processFile(file) {
   const reader = new FileReader();
   reader.onload = e => {
     const dataUrl = e.target.result;
-    currentImageBase64 = dataUrl.split(',')[1];
-    document.getElementById('preview-img').src = dataUrl;
-    document.getElementById('analyze-section').classList.add('visible');
-    document.getElementById('result-card').classList.remove('visible');
-    document.getElementById('result-duo').classList.remove('visible');
-    document.getElementById('btn-analyze').disabled = false;
-    document.getElementById('analyze-section').scrollIntoView({behavior:'smooth',block:'nearest'});
+    // Compression via canvas — max 1200px, qualité 0.82
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else       { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const compressed = canvas.toDataURL('image/jpeg', 0.82);
+      currentImageBase64 = compressed.split(',')[1];
+      document.getElementById('preview-img').src = compressed;
+      document.getElementById('analyze-section').classList.add('visible');
+      document.getElementById('result-card').classList.remove('visible');
+      document.getElementById('result-duo').classList.remove('visible');
+      document.getElementById('btn-analyze').disabled = false;
+      document.getElementById('analyze-section').scrollIntoView({behavior:'smooth',block:'nearest'});
+    };
+    img.src = dataUrl;
   };
   reader.readAsDataURL(file);
 }
@@ -1050,7 +1192,7 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
     currentSession.arrowCount += result.count || 0;
   }
   updateSessionBar(); updateHistory();
-  saveCurrentSession();
+  autoSaveSession();
   return result;
 }
 
@@ -1144,7 +1286,7 @@ function editArrow(gridId, idx, currentVal) {
 
   updateSessionBar();
   updateHistory();
-  saveCurrentSession();
+  autoSaveSession();
 }
 
 function displayResult(result) {
@@ -1248,14 +1390,14 @@ function endSession() {
     else { objEl.textContent = `❌ Objectif ${s.objectif.score} — il manque ${s.objectif.score - total} pts`; objEl.className = 'modal-objectif nok'; }
   } else objEl.style.display = 'none';
   saveSession({ ...s, totalScore:total, endDate:new Date().toISOString() });
-  clearCurrentSession();
+  clearSessionDraft();
   document.getElementById('modal-overlay').classList.add('visible');
 }
 
 function restartSession() {
   const { format, arc, objectif } = currentSession;
   currentSession = { format, arc, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString() };
-  clearCurrentSession();
+  clearSessionDraft();
   updateSessionBar(); updateHistory();
   document.getElementById('result-card').classList.remove('visible');
   document.getElementById('result-duo').classList.remove('visible');
@@ -1270,92 +1412,103 @@ function goHome() {
 }
 
 // ══════════════════════════════════════════
-// PERSISTENCE
+// AUTO-SAVE SESSION EN COURS
 // ══════════════════════════════════════════
-const SESSIONS_KEY    = 'archerAI_sessions';
-const CURRENT_KEY     = 'archerAI_currentSession';
-const SEUIL_TOAST     = 4  * 60 * 60 * 1000;  // 4h  → toast discret
-const SEUIL_MODAL     = 12 * 60 * 60 * 1000;  // 12h → modal de choix
+const SESSION_DRAFT_KEY = 'archerAI_session_draft';
 
-function getSavedSessions() { try { return JSON.parse(localStorage.getItem(SESSIONS_KEY)||'[]'); } catch { return []; } }
-function saveSession(s) { const all = getSavedSessions(); all.unshift(s); localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); }
-
-// ── Persistance session en cours ──
-function saveCurrentSession() {
+function autoSaveSession() {
   if (!currentSession) return;
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(currentSession));
+  localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify(currentSession));
 }
 
-function clearCurrentSession() {
-  localStorage.removeItem(CURRENT_KEY);
+function clearSessionDraft() {
+  localStorage.removeItem(SESSION_DRAFT_KEY);
 }
 
-function loadSavedSession() {
+// ── Seuils de restauration ──
+const SEUIL_TOAST = 4  * 60 * 60 * 1000;  // 4h  → toast discret
+const SEUIL_MODAL = 12 * 60 * 60 * 1000;  // 12h → modal de choix
+
+function restoreSessionIfExists() {
   try {
-    const raw = localStorage.getItem(CURRENT_KEY);
-    if (!raw) return;
-    const saved = JSON.parse(raw);
-    if (!saved || !saved.volleys || !saved.volleys.length) return;
-    const age = Date.now() - (new Date(saved.startDate).getTime());
+    const draft = localStorage.getItem(SESSION_DRAFT_KEY);
+    if (!draft) return false;
+    const s = JSON.parse(draft);
+    if (!s || !s.volleys || s.volleys.length === 0) return false;
+    const age = Date.now() - (new Date(s.startDate).getTime());
+
     if (age < SEUIL_TOAST) {
       // Restauration silencieuse
-      currentSession = saved;
-      showScreen('session');
-      updateSessionBar(); updateHistory();
+      _applyRestoredSession(s);
+
     } else if (age < SEUIL_MODAL) {
       // Toast discret
-      currentSession = saved;
-      showScreen('session');
-      updateSessionBar(); updateHistory();
-      showRestoreToast(saved);
+      _applyRestoredSession(s);
+      _showRestoreToast(s);
+
     } else {
       // Modal de choix
-      showRestoreModal(saved);
+      _showRestoreModal(s);
     }
-  } catch(e) { clearCurrentSession(); }
+    return true;
+  } catch { return false; }
 }
 
-function showRestoreToast(saved) {
+function _applyRestoredSession(s) {
+  currentSession = s;
+  document.getElementById('session-format-name').textContent = s.format.name + (s.arc ? ' — ' + s.arc : '');
+  document.getElementById('session-format-detail').textContent = s.format.detail;
+  const barWrap = document.getElementById('objectif-bar-wrap');
+  if (s.objectif && s.objectif.score) {
+    barWrap.classList.add('visible');
+    document.getElementById('obj-bar-label').textContent = `Objectif ${s.objectif.score}${s.format.maxScore ? ' / '+s.format.maxScore : ''}`;
+  } else { barWrap.classList.remove('visible'); }
+  updateSessionBar(); updateHistory();
+  showScreen('session');
+}
+
+function _showRestoreToast(s) {
   const toast = document.createElement('div');
-  toast.id = 'restore-toast';
   toast.style.cssText = `position:fixed;top:16px;left:50%;transform:translateX(-50%);
     background:#1E1E1E;border:1px solid #C9A84C;border-radius:12px;
     padding:12px 20px;font-size:0.85rem;color:#E8E0D0;z-index:200;
-    text-align:center;animation:fadeDown 0.4s ease;max-width:320px;
-    width:calc(100% - 32px);box-shadow:0 4px 24px rgba(0,0,0,0.5);`;
-  const nb = saved.volleys.length;
-  const pts = saved.totalScore;
-  toast.innerHTML = `🏹 Session retrouvée — <span style="color:#C9A84C;font-weight:500">${nb} volée${nb>1?'s':''}, ${pts} pts</span>. On continue !`;
+    text-align:center;max-width:320px;width:calc(100% - 32px);
+    box-shadow:0 4px 24px rgba(0,0,0,0.5);`;
+  const nb = s.volleys.length;
+  toast.innerHTML = `🏹 Session retrouvée — <span style="color:#C9A84C;font-weight:500">${nb} volée${nb>1?'s':''}, ${s.totalScore} pts</span>. On continue !`;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 4000);
 }
 
-function showRestoreModal(saved) {
-  const heures = Math.floor((Date.now() - new Date(saved.startDate).getTime()) / 3600000);
-  const nb = saved.volleys.length;
-  const pts = saved.totalScore;
+function _showRestoreModal(s) {
+  const heures = Math.floor((Date.now() - new Date(s.startDate).getTime()) / 3600000);
+  const nb = s.volleys.length;
   document.getElementById('restore-session-summary').textContent =
-    `${nb} volée${nb>1?'s':''} enregistrée${nb>1?'s':''} · ${pts} pts · il y a ~${heures}h`;
-  window._pendingRestoreSession = saved;
+    `${nb} volée${nb>1?'s':''} · ${s.totalScore} pts · il y a ~${heures}h`;
+  window._pendingRestore = s;
   document.getElementById('restore-modal-overlay').classList.add('visible');
 }
 
-function restoreSession() {
-  if (window._pendingRestoreSession) {
-    currentSession = window._pendingRestoreSession;
-    window._pendingRestoreSession = null;
-    showScreen('session');
-    updateSessionBar(); updateHistory();
+function confirmRestoreSession() {
+  if (window._pendingRestore) {
+    _applyRestoredSession(window._pendingRestore);
+    window._pendingRestore = null;
   }
   document.getElementById('restore-modal-overlay').classList.remove('visible');
 }
 
-function discardSession() {
-  window._pendingRestoreSession = null;
-  clearCurrentSession();
+function confirmDiscardSession() {
+  window._pendingRestore = null;
+  clearSessionDraft();
   document.getElementById('restore-modal-overlay').classList.remove('visible');
 }
 
+// ══════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════
+const SESSIONS_KEY = 'archerAI_sessions';
+function getSavedSessions() { try { return JSON.parse(localStorage.getItem(SESSIONS_KEY)||'[]'); } catch { return []; } }
+function saveSession(s) { const all = getSavedSessions(); all.unshift(s); localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); }
 function deleteSession(i) {
   if (!confirm('Supprimer cette session ?')) return;
   const all = getSavedSessions(); all.splice(i,1); localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); renderHistoryScreen();
@@ -1462,7 +1615,7 @@ window.addEventListener('load', () => {
   renderProfilCard();
   renderHomeRecap();
   updateQueueBanner();
-  loadSavedSession();
+  if (!restoreSessionIfExists()) restoreTriIfExists();
   window.addEventListener('online', () => { if (getQueue().length) processQueue(); });
 
   // ── SERVICE WORKER & BANDEAU DE MISE À JOUR ──
@@ -1490,7 +1643,324 @@ function showUpdateBanner(newSW) {
     };
   }
 }
-</script>
+// ══════════════════════════════════════════
+// TRI DE FLÈCHES
+// ══════════════════════════════════════════
+let triState = {
+  nbFleches: 6,
+  nbVolleys: 6,
+  nbKeep: 6,
+  currentVolley: 0,
+  currentFleche: 0,
+  data: []
+};
+
+let triMarkerPos = null;
+let triZoom = 1;
+let triPanX = 0, triPanY = 0;
+let triPinchStartDist = null;
+let triPinchStartZoom = 1;
+
+function selectTriNb(n) {
+  triState.nbFleches = n;
+  document.querySelectorAll('#tri-nb-chips .chip').forEach(c => c.classList.toggle('selected', parseInt(c.textContent) === n));
+  // Ajuster nbKeep si nécessaire
+  if (triState.nbKeep > n) { triState.nbKeep = n; document.querySelectorAll('#tri-keep-chips .chip').forEach(c => c.classList.toggle('selected', parseInt(c.textContent) === n)); }
+}
+
+function selectTriVol(n) {
+  triState.nbVolleys = n;
+  document.querySelectorAll('#tri-vol-chips .chip').forEach(c => c.classList.toggle('selected', parseInt(c.textContent) === n));
+}
+
+const TRI_DRAFT_KEY = 'archerAI_tri_draft';
+
+function autoSaveTri() {
+  localStorage.setItem(TRI_DRAFT_KEY, JSON.stringify(triState));
+}
+
+function clearTriDraft() {
+  localStorage.removeItem(TRI_DRAFT_KEY);
+}
+
+function restoreTriIfExists() {
+  try {
+    const draft = localStorage.getItem(TRI_DRAFT_KEY);
+    if (!draft) return false;
+    const s = JSON.parse(draft);
+    if (!s || !s.data || s.data.every(d => d.length === 0)) return false;
+    triState = s;
+    updateTriView();
+    showScreen('tri-saisie');
+    initTriTouch();
+    return true;
+  } catch { return false; }
+}
+
+function selectTriKeep(n) {
+  triState.nbKeep = n;
+  document.querySelectorAll('#tri-keep-chips .chip').forEach(c => c.classList.toggle('selected', parseInt(c.textContent) === n));
+}
+
+function startTri() {
+  if (!triState.nbFleches || !triState.nbVolleys) { alert('Configurez le nombre de flèches et de volées !'); return; }
+  if (triState.nbKeep > triState.nbFleches) { triState.nbKeep = triState.nbFleches; }
+  triState.currentVolley = 0;
+  triState.currentFleche = 0;
+  triState.data = Array.from({length: triState.nbFleches}, () => []);
+  triMarkerPos = null;
+  triZoom = 1; triPanX = 0; triPanY = 0;
+  updateTriView();
+  showScreen('tri-saisie');
+  initTriTouch();
+}
+
+function updateTriView() {
+  const f = triState.currentFleche + 1;
+  const v = triState.currentVolley + 1;
+  document.getElementById('tri-progress-label').textContent = `Flèche ${f} — Volée ${v}`;
+  const total = triState.nbFleches * triState.nbVolleys;
+  const done = triState.currentVolley * triState.nbFleches + triState.currentFleche;
+  document.getElementById('tri-progress-fill').style.width = (done / total * 100) + '%';
+  resetTriMarker();
+}
+
+function resetTriMarker() {
+  triMarkerPos = null;
+  const marker = document.getElementById('tri-marker');
+  marker.setAttribute('stroke', 'none');
+  marker.setAttribute('fill', 'none');
+  document.getElementById('tri-btn-validate').disabled = true;
+}
+
+function placeMarker(dx, dy) {
+  triMarkerPos = {dx, dy};
+  const cx = 200 + dx * 190;
+  const cy = 200 + dy * 190;
+  const marker = document.getElementById('tri-marker');
+  marker.setAttribute('cx', cx);
+  marker.setAttribute('cy', cy);
+  marker.setAttribute('fill', '#FF4444');
+  marker.setAttribute('stroke', 'white');
+  marker.setAttribute('r', Math.max(5, 8 / triZoom));
+  document.getElementById('tri-btn-validate').disabled = false;
+}
+
+function getZoneFromRadius(r) {
+  if (r < 0.1) return 'X';
+  if (r < 0.2) return 10;
+  if (r < 0.3) return 9;
+  if (r < 0.4) return 8;
+  if (r < 0.5) return 7;
+  if (r < 0.6) return 6;
+  if (r < 0.7) return 5;
+  if (r < 0.8) return 4;
+  if (r < 0.9) return 3;
+  if (r < 1.0) return 2;
+  if (r < 1.1) return 1;
+  return 'M';
+}
+
+function validateTriImpact() {
+  if (!triMarkerPos) return;
+  const r = Math.sqrt(triMarkerPos.dx ** 2 + triMarkerPos.dy ** 2);
+  const zone = getZoneFromRadius(r);
+  triState.data[triState.currentFleche].push({...triMarkerPos, zone});
+
+  // Avancer
+  triState.currentFleche++;
+  if (triState.currentFleche >= triState.nbFleches) {
+    triState.currentFleche = 0;
+    triState.currentVolley++;
+  }
+
+  if (triState.currentVolley >= triState.nbVolleys) {
+    clearTriDraft();
+    showTriResults();
+    return;
+  }
+
+  autoSaveTri();
+
+  // Reset zoom entre chaque flèche
+  triZoom = 1; triPanX = 0; triPanY = 0;
+  applyTriTransform();
+  updateTriView();
+}
+
+function endTri() {
+  if (triState.data[0] && triState.data[0].length > 0) {
+    showTriResults();
+  } else {
+    showScreen('home');
+  }
+}
+
+// ── RÉSULTATS ──
+function showTriResults() {
+  showScreen('tri-results');
+  const container = document.getElementById('tri-results-content');
+  const keep = triState.nbKeep;
+
+  const stats = triState.data.map((impacts, fi) => {
+    if (!impacts.length) return { fi, meanDx:0, meanDy:0, disp:0, avgZone:0, count:0 };
+    const meanDx = impacts.reduce((s,p) => s + p.dx, 0) / impacts.length;
+    const meanDy = impacts.reduce((s,p) => s + p.dy, 0) / impacts.length;
+    const disp = impacts.reduce((s,p) => s + Math.sqrt((p.dx-meanDx)**2 + (p.dy-meanDy)**2), 0) / impacts.length;
+    const avgZone = impacts.reduce((s,p) => s + (p.zone === 'X' ? 10 : p.zone === 'M' ? 0 : p.zone), 0) / impacts.length;
+    return { fi, meanDx, meanDy, disp, avgZone, count: impacts.length };
+  });
+
+  const ranked = [...stats].sort((a, b) => a.disp - b.disp);
+  const rankMap = {}; ranked.forEach((s, i) => { rankMap[s.fi] = i + 1; });
+
+  // Résumé en haut
+  const headerHtml = `
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+      <div style="flex:1;background:rgba(39,174,96,0.12);border:1px solid rgba(39,174,96,0.3);border-radius:12px;padding:12px 16px;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#27AE60">${keep}</div>
+        <div style="font-size:0.72rem;color:#27AE60;letter-spacing:1px">✅ À GARDER</div>
+      </div>
+      <div style="flex:1;background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.3);border-radius:12px;padding:12px 16px;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#C0392B">${triState.nbFleches - keep}</div>
+        <div style="font-size:0.72rem;color:#C0392B;letter-spacing:1px">❌ À ÉCARTER</div>
+      </div>
+    </div>`;
+
+  // Grille mini-cibles
+  let gridHtml = '<div class="tri-results-grid">';
+  stats.forEach((s, fi) => {
+    const rank = rankMap[fi];
+    const isKeep = rank <= keep;
+    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+    const borderStyle = isKeep
+      ? 'border-color:rgba(39,174,96,0.6);background:rgba(39,174,96,0.06)'
+      : 'border-color:rgba(192,57,43,0.4);background:rgba(192,57,43,0.04)';
+    const tag = isKeep
+      ? `<div style="font-size:0.65rem;color:#27AE60;font-weight:600;margin-bottom:2px">✅ GARDER</div>`
+      : `<div style="font-size:0.65rem;color:#C0392B;font-weight:600;margin-bottom:2px">❌ ÉCARTER</div>`;
+    gridHtml += `<div class="tri-result-card" style="${borderStyle}">
+      ${tag}
+      <div class="tri-result-fleche">F${fi+1} ${medal}</div>
+      ${miniTargetSVG(triState.data[fi], s.meanDx, s.meanDy)}
+      <div class="tri-result-disp">Disp: ${(s.disp * 100).toFixed(1)}%</div>
+      <div class="tri-result-disp">Moy: ${s.avgZone.toFixed(1)}</div>
+    </div>`;
+  });
+  gridHtml += '</div>';
+
+  // Classement
+  let rankHtml = '<div class="tri-ranking"><div class="tri-ranking-title">CLASSEMENT</div>';
+  ranked.forEach((s, i) => {
+    const isKeep = i < keep;
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+    const tag = isKeep
+      ? `<span style="font-size:0.7rem;color:#27AE60;margin-left:6px">✅</span>`
+      : `<span style="font-size:0.7rem;color:#C0392B;margin-left:6px">❌</span>`;
+    rankHtml += `<div class="tri-rank-row" style="${isKeep ? '' : 'opacity:0.6'}">
+      <div class="tri-rank-pos ${i<3?'gold':''}">${medal}</div>
+      <div class="tri-rank-name">Flèche ${s.fi+1} ${tag}</div>
+      <div class="tri-rank-avg">${s.avgZone.toFixed(1)}</div>
+      <div class="tri-rank-disp">disp: ${(s.disp*100).toFixed(1)}%</div>
+    </div>`;
+  });
+  rankHtml += '</div>';
+
+  container.innerHTML = `<p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:14px;">${triState.nbVolleys} volées · ${triState.nbFleches} flèches · garder les ${keep} meilleures</p>` + headerHtml + gridHtml + rankHtml;
+}
+
+function miniTargetSVG(impacts, meanDx, meanDy) {
+  const S = 80; const C = S/2; const R = S/2 - 4;
+  let dots = impacts.map(p => {
+    const x = C + p.dx * R;
+    const y = C + p.dy * R;
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="#FF4444" opacity="0.8"/>`;
+  }).join('');
+  const mx = C + meanDx * R, my = C + meanDy * R;
+  const mean = impacts.length ? `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="4" fill="none" stroke="#FFD700" stroke-width="1.5"/>` : '';
+  return `<svg viewBox="0 0 ${S} ${S}" width="72" height="72" style="display:block;margin:4px auto;">
+    <circle cx="${C}" cy="${C}" r="${R}" fill="white" stroke="#ccc" stroke-width="0.5"/>
+    <circle cx="${C}" cy="${C}" r="${R*0.8}" fill="white" stroke="#ccc" stroke-width="0.5"/>
+    <circle cx="${C}" cy="${C}" r="${R*0.6}" fill="#1a1a1a"/>
+    <circle cx="${C}" cy="${C}" r="${R*0.6}" fill="#3498DB"/>
+    <circle cx="${C}" cy="${C}" r="${R*0.4}" fill="#C0392B"/>
+    <circle cx="${C}" cy="${C}" r="${R*0.2}" fill="#FFD700"/>
+    ${dots}${mean}
+  </svg>`;
+}
+
+// ── TOUCH / ZOOM ──
+function initTriTouch() {
+  const wrapper = document.getElementById('tri-target-wrapper');
+  const svg = document.getElementById('tri-target-svg');
+  if (wrapper._triInitialized) return;
+  wrapper._triInitialized = true;
+
+  wrapper.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      // Pinch start
+      triPinchStartDist = getTouchDist(e.touches);
+      triPinchStartZoom = triZoom;
+      e.preventDefault();
+    } else if (e.touches.length === 1) {
+      // Tap or drag marker
+      e.preventDefault();
+    }
+  }, {passive: false});
+
+  wrapper.addEventListener('touchmove', e => {
+    if (e.touches.length === 2) {
+      const dist = getTouchDist(e.touches);
+      triZoom = Math.min(5, Math.max(1, triPinchStartZoom * dist / triPinchStartDist));
+      applyTriTransform();
+      e.preventDefault();
+    } else if (e.touches.length === 1 && triZoom > 1) {
+      // Pan when zoomed
+      e.preventDefault();
+    }
+  }, {passive: false});
+
+  wrapper.addEventListener('touchend', e => {
+    if (e.changedTouches.length === 1 && e.touches.length === 0 && triPinchStartDist === null) {
+      // Single tap — place marker
+      const touch = e.changedTouches[0];
+      placeTap(touch.clientX, touch.clientY, svg);
+    }
+    if (e.touches.length < 2) triPinchStartDist = null;
+  }, {passive: false});
+
+  // Mouse support (desktop test)
+  wrapper.addEventListener('click', e => {
+    placeTap(e.clientX, e.clientY, svg);
+  });
+}
+
+function placeTap(clientX, clientY, svg) {
+  const rect = svg.getBoundingClientRect();
+  const svgX = ((clientX - rect.left) / rect.width) * 400;
+  const svgY = ((clientY - rect.top) / rect.height) * 400;
+  const dx = (svgX - 200) / 190;
+  const dy = (svgY - 200) / 190;
+  placeMarker(dx, dy);
+}
+
+function applyTriTransform() {
+  const wrapper = document.getElementById('tri-target-wrapper');
+  wrapper.style.transform = `scale(${triZoom}) translate(${triPanX}px, ${triPanY}px)`;
+  // Ajuster la taille du marker selon zoom
+  if (triMarkerPos) {
+    const marker = document.getElementById('tri-marker');
+    marker.setAttribute('r', Math.max(4, 8 / triZoom));
+  }
+}
+
+function getTouchDist(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+
 <!-- Modal restauration session (> 12h) -->
 <div id="restore-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);
   z-index:150;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);">
@@ -1503,10 +1973,10 @@ function showUpdateBanner(newSW) {
     </p>
     <p style="font-size:0.85rem;color:#E8E0D0;margin-bottom:24px;" id="restore-session-summary"></p>
     <div style="display:flex;gap:12px;">
-      <button onclick="restoreSession()" style="flex:1;background:linear-gradient(135deg,#C9A84C,#A07830);color:#0D0D0D;
+      <button onclick="confirmRestoreSession()" style="flex:1;background:linear-gradient(135deg,#C9A84C,#A07830);color:#0D0D0D;
         border:none;padding:14px;border-radius:10px;font-family:'Bebas Neue',sans-serif;
         font-size:1rem;letter-spacing:2px;cursor:pointer;">Reprendre</button>
-      <button onclick="discardSession()" style="flex:1;background:transparent;color:#8A8070;
+      <button onclick="confirmDiscardSession()" style="flex:1;background:transparent;color:#8A8070;
         border:1px solid rgba(255,255,255,0.1);padding:14px;border-radius:10px;
         font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;cursor:pointer;">Nouvelle session</button>
     </div>
