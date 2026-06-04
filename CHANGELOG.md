@@ -6,7 +6,19 @@
 
 ---
 
-## V4.4 — Persistance & restauration de session *(Juin 2026 — actuelle)*
+## V4.5 — Tri de flèches + compression image *(Juin 2026 — actuelle)*
+
+### Ajouté
+- **Tri de flèches** : nouvel outil accessible depuis l'accueil — config (nb flèches, nb volées, nb à conserver), saisie des impacts sur cible WA interactive (SVG, zoom/pinch tactile), classement par dispersion, mini-cibles par flèche, résumé visuel garder ✅ / écarter ❌
+- **Auto-save du tri** : état du tri en cours sauvegardé dans `archerAI_tri_draft`, restauré automatiquement au démarrage si interrompu
+
+### Amélioré
+- **Compression image avant envoi IA** : redimensionnement canvas (max 1200px) + JPEG 0.82 — réduit la taille des requêtes sans perte visible de précision
+- **Session draft refactorisée** : clé renommée `archerAI_session_draft`, fonctions clarifiées (`autoSaveSession`, `confirmRestoreSession`, `confirmDiscardSession`), restauration qui recharge aussi le format et l'objectif
+
+---
+
+## V4.4 — Persistance & restauration de session *(Juin 2026)*
 
 ### Ajouté
 - **Sauvegarde automatique de session** : la session en cours est écrite dans localStorage (`archerAI_currentSession`) après chaque volée et à la fin de session
@@ -107,4 +119,4 @@
 
 ---
 
-*Document mis à jour le 4 juin 2026*
+*Document mis à jour le 4 juin 2026 — V4.5*
