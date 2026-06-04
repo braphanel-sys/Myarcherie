@@ -18,6 +18,8 @@
 ### Amélioré
 - **Prompt IA v2** : règle absolue de ne détecter que les fûts physiquement plantés — les impacts vides, trous et déchirures sont ignorés
 - **Proxy API** : accepte un prompt custom depuis le frontend (utilisé en mode Duo pour la description précise des plumes)
+- **Bandeau "Mise à jour disponible"** : détection automatique d'un nouveau Service Worker installé — bouton "Actualiser" déclenche `skipWaiting` et recharge la page sans intervention manuelle
+- **Service Worker simplifié** : cache `archerAI-v4.3`, préchargement de `/`, `/index.html`, `/guide-scoring.html` à l'installation ; stale-while-revalidate allégé, bypass total pour `/api/`
 
 ### Verrouillé ✅
 - Analyse photo + scoring IA
