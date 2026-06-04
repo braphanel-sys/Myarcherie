@@ -1486,7 +1486,9 @@ function _showRestoreModal(s) {
   document.getElementById('restore-session-summary').textContent =
     `${nb} volée${nb>1?'s':''} · ${s.totalScore} pts · il y a ~${heures}h`;
   window._pendingRestore = s;
-  document.getElementById('restore-modal-overlay').classList.add('visible');
+  const el = document.getElementById('restore-modal-overlay');
+  el.style.display = 'flex';
+  el.style.pointerEvents = 'auto';
 }
 
 function confirmRestoreSession() {
@@ -1494,13 +1496,17 @@ function confirmRestoreSession() {
     _applyRestoredSession(window._pendingRestore);
     window._pendingRestore = null;
   }
-  document.getElementById('restore-modal-overlay').classList.remove('visible');
+  const el = document.getElementById('restore-modal-overlay');
+  el.style.display = 'none';
+  el.style.pointerEvents = 'none';
 }
 
 function confirmDiscardSession() {
   window._pendingRestore = null;
   clearSessionDraft();
-  document.getElementById('restore-modal-overlay').classList.remove('visible');
+  const el = document.getElementById('restore-modal-overlay');
+  el.style.display = 'none';
+  el.style.pointerEvents = 'none';
 }
 
 // ══════════════════════════════════════════
@@ -1963,7 +1969,7 @@ function getTouchDist(touches) {
 
 <!-- Modal restauration session (> 12h) -->
 <div id="restore-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);
-  z-index:150;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);">
+  z-index:150;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);pointer-events:none;">
   <div style="background:#161616;border:1px solid rgba(201,168,76,0.2);border-radius:20px;
     padding:36px 32px;max-width:400px;width:100%;text-align:center;">
     <div style="font-size:3rem;margin-bottom:12px;">🏹</div>

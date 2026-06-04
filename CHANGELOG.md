@@ -6,7 +6,14 @@
 
 ---
 
-## V4.5 — Tri de flèches + compression image *(Juin 2026 — actuelle)*
+## V4.5.1 — Fix modal restauration *(Juin 2026 — actuelle)*
+
+### Corrigé
+- **Modal restauration session** : `pointer-events:none` par défaut sur l'overlay — le modal invisible ne bloquait plus les clics et la navigation (profil inaccessible)
+
+---
+
+## V4.5 — Tri de flèches + compression image *(Juin 2026)*
 
 ### Ajouté
 - **Tri de flèches** : nouvel outil accessible depuis l'accueil — config (nb flèches, nb volées, nb à conserver), saisie des impacts sur cible WA interactive (SVG, zoom/pinch tactile), classement par dispersion, mini-cibles par flèche, résumé visuel garder ✅ / écarter ❌

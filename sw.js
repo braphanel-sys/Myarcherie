@@ -1,4 +1,4 @@
-const CACHE = 'archerAI-v4.5';
+const CACHE = 'archerAI-v4.5.1';
 const FILES = [
   '/',
   '/index.html',
