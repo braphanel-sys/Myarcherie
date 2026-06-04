@@ -6,7 +6,14 @@
 
 ---
 
-## V4.5.1 — Fix modal restauration *(Juin 2026 — actuelle)*
+## V4.5.2 — Bandeau version accueil *(Juin 2026 — actuelle)*
+
+### Ajouté
+- **Bandeau version** : affichage "ArcherAI v4.5.1" en bas de l'écran d'accueil pour faciliter le debug
+
+---
+
+## V4.5.1 — Fix modal restauration *(Juin 2026)*
 
 ### Corrigé
 - **Modal restauration session** : `pointer-events:none` par défaut sur l'overlay — le modal invisible ne bloquait plus les clics et la navigation (profil inaccessible)
