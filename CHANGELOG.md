@@ -6,7 +6,16 @@
 
 ---
 
-## V4.3 — Fiabilité & outils archer *(Mai 2026 — actuelle)*
+## V4.4 — Persistance & restauration de session *(Juin 2026 — actuelle)*
+
+### Ajouté
+- **Sauvegarde automatique de session** : la session en cours est écrite dans localStorage (`archerAI_currentSession`) après chaque volée et à la fin de session
+- **Restauration intelligente au démarrage** : si une session interrompue est détectée, comportement adapté selon l'ancienneté — silencieux < 4h, toast discret entre 4h et 12h, modal de choix au-delà
+- **Modal "Session retrouvée"** : affiche le résumé (nb volées, pts, durée) avec boutons Reprendre / Nouvelle session
+
+---
+
+## V4.3 — Fiabilité & outils archer *(Mai 2026)*
 
 ### Ajouté
 - **Correction manuelle des scores** : tap sur un badge de flèche pour modifier la valeur — total de la volée et score de session recalculés immédiatement. Fonctionne en Solo et Duo
@@ -98,4 +107,4 @@
 
 ---
 
-*Document mis à jour le 28 mai 2026*
+*Document mis à jour le 4 juin 2026*

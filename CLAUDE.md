@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ArcherAI is a single-page archery scoring app powered by Claude Vision. It has two distinct parts:
 
-- **`index.html`** (~1890 lines) — the entire frontend: CSS, HTML, and JS in one file. No build step, no dependencies, no bundler.
+- **`index.html`** (~1530 lines) — the entire frontend: CSS, HTML, and JS in one file. No build step, no dependencies, no bundler.
 - **`api/analyze.js`** — a Vercel serverless function that proxies requests to the Anthropic API. Reads `ANTHROPIC_API_KEY` from the environment.
 
 The root `analyze.js` is kept in sync with `api/analyze.js` and reflects the current prompt logic. `analyze (1).js`, `analyze (2).js`, `analyze (3).js` are old iterations (deleted from repo); the live endpoint is `api/analyze.js`.
@@ -41,6 +41,7 @@ The JS is organized into clearly labeled sections (search for `// ──`):
 | `DISPLAY SOLO / DUO / BEURSAULT` | Renders scoring results; `arrowsHtml(arrows, prefix, gridId)` — badges cliquables via `editArrow()` |
 | `SESSION BAR / HISTORY` | Running score bar and volley history list |
 | `FIN DE SESSION` | End session, clear state |
+| `PERSISTANCE SESSION` | `saveCurrentSession()`, `clearCurrentSession()`, `loadSavedSession()` — toast < 4h, modal > 12h |
 | `SERVICE WORKER & AUTO-UPDATE` | SW registration, silent reload vs toast logic |
 
 ## Design system
@@ -76,6 +77,8 @@ All state lives in `localStorage` — no backend database.
 |---|---|
 | `archerAI_profile` | `{ prenom, nom, arcTypes[], plumeColors{}, encocheColor }` |
 | `archerAI_session` | `{ volleys[], totalScore, arrowCount }` — saved on `visibilitychange` / `pagehide` |
+| `archerAI_currentSession` | session en cours — sauvegardée après chaque volée, supprimée à la fin ; restaurée au démarrage avec logique toast/modal |
+| `archerAI_sessions` | historique des sessions terminées (tableau, ordre antéchronologique) |
 | `archerAI_duo_archers` | `[{name, colors{}}, {name, colors{}}]` |
 | `archerAI_beursault_archers` | `[{name, colors{}}, ...]` (1–5 items) |
 | `archerAI_queue` | offline queue of base64 images |
