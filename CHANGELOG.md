@@ -6,7 +6,16 @@
 
 ---
 
-## V4.5.3 — Fix SyntaxError Android *(Juin 2026 — actuelle)*
+## V4.5.4 — Extraction JS dans app.js *(Juin 2026 — actuelle)*
+
+### Modifié
+- **Refacto critique** : tout le JS extrait de `index.html` dans un fichier externe `app.js` — résout définitivement le SyntaxError sur Android Chrome et parsers iOS
+- `index.html` allégé à ~817 lignes (CSS + HTML uniquement), `app.js` contient les ~1186 lignes de logique
+- `app.js` ajouté au précache du Service Worker
+
+---
+
+## V4.5.3 — Fix SyntaxError Android *(Juin 2026)*
 
 ### Corrigé
 - **Fix critique Android Chrome** : caractères Unicode `═` (U+2550) dans les commentaires JS remplacés par `=` simples — corrige le SyntaxError qui cassait l'app sur Android

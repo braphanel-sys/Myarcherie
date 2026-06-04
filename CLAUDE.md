@@ -6,7 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ArcherAI is a single-page archery scoring app powered by Claude Vision. It has two distinct parts:
 
-- **`index.html`** (~2011 lines) — the entire frontend: CSS, HTML, and JS in one file. No build step, no dependencies, no bundler.
+- **`index.html`** (~817 lines) — CSS + HTML uniquement. Le JS est dans `app.js`.
+- **`app.js`** (~1186 lines) — tout le JavaScript de l'app (anciennement inline dans index.html).
 - **`api/analyze.js`** — a Vercel serverless function that proxies requests to the Anthropic API. Reads `ANTHROPIC_API_KEY` from the environment.
 
 The root `analyze.js` is kept in sync with `api/analyze.js` and reflects the current prompt logic. `analyze (1).js`, `analyze (2).js`, `analyze (3).js` are old iterations (deleted from repo); the live endpoint is `api/analyze.js`.
@@ -91,7 +92,7 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 
 ## PWA
 
-- `sw.js` — cache `archerAI-v4.5.3` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
+- `sw.js` — cache `archerAI-v4.5.4`, précache `app.js` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
 - `manifest.json` — standard PWA manifest, `theme_color: #C9A84C`.
 - Pour déployer une nouvelle version : mettre à jour le nom du cache dans `sw.js` (ex. `archerAI-v4.4`).
 - **Bandeau mise à jour** (`#update-banner`) : affiché par `showUpdateBanner()` quand le SW détecte un nouveau worker installé. Bouton "Actualiser" envoie `'skipWaiting'` au SW puis recharge la page.
@@ -100,7 +101,8 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 
 | File | Description |
 |---|---|
-| `index.html` | Entire frontend — CSS, HTML, JS in one file |
+| `index.html` | CSS + HTML uniquement (~817 lignes) |
+| `app.js` | Tout le JavaScript de l'app (~1186 lignes) |
 | `api/analyze.js` | Live Vercel serverless function (Anthropic proxy) |
 | `analyze.js` | Mirror of `api/analyze.js` — kept in sync, use as reference |
 | `sw.js` | Service Worker — stale-while-revalidate, offline queue |
