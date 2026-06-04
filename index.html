@@ -1050,6 +1050,7 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
     currentSession.arrowCount += result.count || 0;
   }
   updateSessionBar(); updateHistory();
+  saveCurrentSession();
   return result;
 }
 
@@ -1143,6 +1144,7 @@ function editArrow(gridId, idx, currentVal) {
 
   updateSessionBar();
   updateHistory();
+  saveCurrentSession();
 }
 
 function displayResult(result) {
@@ -1246,12 +1248,14 @@ function endSession() {
     else { objEl.textContent = `❌ Objectif ${s.objectif.score} — il manque ${s.objectif.score - total} pts`; objEl.className = 'modal-objectif nok'; }
   } else objEl.style.display = 'none';
   saveSession({ ...s, totalScore:total, endDate:new Date().toISOString() });
+  clearCurrentSession();
   document.getElementById('modal-overlay').classList.add('visible');
 }
 
 function restartSession() {
   const { format, arc, objectif } = currentSession;
   currentSession = { format, arc, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString() };
+  clearCurrentSession();
   updateSessionBar(); updateHistory();
   document.getElementById('result-card').classList.remove('visible');
   document.getElementById('result-duo').classList.remove('visible');
@@ -1268,9 +1272,90 @@ function goHome() {
 // ══════════════════════════════════════════
 // PERSISTENCE
 // ══════════════════════════════════════════
-const SESSIONS_KEY = 'archerAI_sessions';
+const SESSIONS_KEY    = 'archerAI_sessions';
+const CURRENT_KEY     = 'archerAI_currentSession';
+const SEUIL_TOAST     = 4  * 60 * 60 * 1000;  // 4h  → toast discret
+const SEUIL_MODAL     = 12 * 60 * 60 * 1000;  // 12h → modal de choix
+
 function getSavedSessions() { try { return JSON.parse(localStorage.getItem(SESSIONS_KEY)||'[]'); } catch { return []; } }
 function saveSession(s) { const all = getSavedSessions(); all.unshift(s); localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); }
+
+// ── Persistance session en cours ──
+function saveCurrentSession() {
+  if (!currentSession) return;
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(currentSession));
+}
+
+function clearCurrentSession() {
+  localStorage.removeItem(CURRENT_KEY);
+}
+
+function loadSavedSession() {
+  try {
+    const raw = localStorage.getItem(CURRENT_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.volleys || !saved.volleys.length) return;
+    const age = Date.now() - (new Date(saved.startDate).getTime());
+    if (age < SEUIL_TOAST) {
+      // Restauration silencieuse
+      currentSession = saved;
+      showScreen('session');
+      updateSessionBar(); updateHistory();
+    } else if (age < SEUIL_MODAL) {
+      // Toast discret
+      currentSession = saved;
+      showScreen('session');
+      updateSessionBar(); updateHistory();
+      showRestoreToast(saved);
+    } else {
+      // Modal de choix
+      showRestoreModal(saved);
+    }
+  } catch(e) { clearCurrentSession(); }
+}
+
+function showRestoreToast(saved) {
+  const toast = document.createElement('div');
+  toast.id = 'restore-toast';
+  toast.style.cssText = `position:fixed;top:16px;left:50%;transform:translateX(-50%);
+    background:#1E1E1E;border:1px solid #C9A84C;border-radius:12px;
+    padding:12px 20px;font-size:0.85rem;color:#E8E0D0;z-index:200;
+    text-align:center;animation:fadeDown 0.4s ease;max-width:320px;
+    width:calc(100% - 32px);box-shadow:0 4px 24px rgba(0,0,0,0.5);`;
+  const nb = saved.volleys.length;
+  const pts = saved.totalScore;
+  toast.innerHTML = `🏹 Session retrouvée — <span style="color:#C9A84C;font-weight:500">${nb} volée${nb>1?'s':''}, ${pts} pts</span>. On continue !`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+function showRestoreModal(saved) {
+  const heures = Math.floor((Date.now() - new Date(saved.startDate).getTime()) / 3600000);
+  const nb = saved.volleys.length;
+  const pts = saved.totalScore;
+  document.getElementById('restore-session-summary').textContent =
+    `${nb} volée${nb>1?'s':''} enregistrée${nb>1?'s':''} · ${pts} pts · il y a ~${heures}h`;
+  window._pendingRestoreSession = saved;
+  document.getElementById('restore-modal-overlay').classList.add('visible');
+}
+
+function restoreSession() {
+  if (window._pendingRestoreSession) {
+    currentSession = window._pendingRestoreSession;
+    window._pendingRestoreSession = null;
+    showScreen('session');
+    updateSessionBar(); updateHistory();
+  }
+  document.getElementById('restore-modal-overlay').classList.remove('visible');
+}
+
+function discardSession() {
+  window._pendingRestoreSession = null;
+  clearCurrentSession();
+  document.getElementById('restore-modal-overlay').classList.remove('visible');
+}
+
 function deleteSession(i) {
   if (!confirm('Supprimer cette session ?')) return;
   const all = getSavedSessions(); all.splice(i,1); localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); renderHistoryScreen();
@@ -1377,6 +1462,7 @@ window.addEventListener('load', () => {
   renderProfilCard();
   renderHomeRecap();
   updateQueueBanner();
+  loadSavedSession();
   window.addEventListener('online', () => { if (getQueue().length) processQueue(); });
 
   // ── SERVICE WORKER & BANDEAU DE MISE À JOUR ──
@@ -1405,6 +1491,28 @@ function showUpdateBanner(newSW) {
   }
 }
 </script>
+<!-- Modal restauration session (> 12h) -->
+<div id="restore-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);
+  z-index:150;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);">
+  <div style="background:#161616;border:1px solid rgba(201,168,76,0.2);border-radius:20px;
+    padding:36px 32px;max-width:400px;width:100%;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:12px;">🏹</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;color:#C9A84C;margin-bottom:10px;">Session retrouvée !</div>
+    <p style="font-size:0.9rem;color:#8A8070;line-height:1.6;margin-bottom:8px;">
+      T'as laissé une session en plan... l'arc était encore chaud ou t'es parti chercher tes flèches et t'es plus revenu ? 😄
+    </p>
+    <p style="font-size:0.85rem;color:#E8E0D0;margin-bottom:24px;" id="restore-session-summary"></p>
+    <div style="display:flex;gap:12px;">
+      <button onclick="restoreSession()" style="flex:1;background:linear-gradient(135deg,#C9A84C,#A07830);color:#0D0D0D;
+        border:none;padding:14px;border-radius:10px;font-family:'Bebas Neue',sans-serif;
+        font-size:1rem;letter-spacing:2px;cursor:pointer;">Reprendre</button>
+      <button onclick="discardSession()" style="flex:1;background:transparent;color:#8A8070;
+        border:1px solid rgba(255,255,255,0.1);padding:14px;border-radius:10px;
+        font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;cursor:pointer;">Nouvelle session</button>
+    </div>
+  </div>
+</div>
+
 <!-- Bandeau mise à jour -->
 <div id="update-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
   background:#1E1E1E;border:1px solid rgba(201,168,76,0.35);border-radius:12px;
