@@ -6,7 +6,15 @@
 
 ---
 
-## V4.5.7 — Stockage photos + export ZIP *(Juin 2026 — actuelle)*
+## V4.5.8 — Tri de flèches : saisie libre *(Juin 2026 — actuelle)*
+
+### Modifié
+- **Tri de flèches — saisie libre** : les chips prédéfinis (6/8/10/12 flèches, 3/6/10/12 volées, 3/6/8/10 à conserver) remplacés par des `<input type="number">` libres (min 1, max 99)
+- Auto-correction : si "à conserver" > "nb flèches", la valeur est ramenée au nombre de flèches et l'input mis à jour
+
+---
+
+## V4.5.7 — Stockage photos + export ZIP *(Juin 2026)*
 
 ### Ajouté
 - **Stockage photo par volée** : chaque volée analysée conserve l'image compressée (`photo: base64`) dans `currentSession.volleys[]`

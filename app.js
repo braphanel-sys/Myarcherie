@@ -897,14 +897,15 @@ let triPinchStartZoom = 1;
 
 function selectTriNb(n) {
   triState.nbFleches = n;
-  document.querySelectorAll('#tri-nb-chips .chip').forEach(c => c.classList.toggle('selected', parseInt(c.textContent) === n));
-  // Ajuster nbKeep si nécessaire
-  if (triState.nbKeep > n) { triState.nbKeep = n; document.querySelectorAll('#tri-keep-chips .chip').forEach(c => c.classList.toggle('selected', parseInt(c.textContent) === n)); }
+  if (triState.nbKeep > n) {
+    triState.nbKeep = n;
+    const keepInput = document.getElementById('tri-keep-input');
+    if (keepInput) keepInput.value = n;
+  }
 }
 
 function selectTriVol(n) {
   triState.nbVolleys = n;
-  document.querySelectorAll('#tri-vol-chips .chip').forEach(c => c.classList.toggle('selected', parseInt(c.textContent) === n));
 }
 
 const TRI_DRAFT_KEY = 'archerAI_tri_draft';
@@ -933,7 +934,6 @@ function restoreTriIfExists() {
 
 function selectTriKeep(n) {
   triState.nbKeep = n;
-  document.querySelectorAll('#tri-keep-chips .chip').forEach(c => c.classList.toggle('selected', parseInt(c.textContent) === n));
 }
 
 function startTri() {

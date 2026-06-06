@@ -680,30 +680,15 @@
   </div>
   <div class="form-section">
     <label class="form-label">Nombre de flèches dans le lot</label>
-    <div class="chips" id="tri-nb-chips">
-      <div class="chip" onclick="selectTriNb(6)">6</div>
-      <div class="chip" onclick="selectTriNb(8)">8</div>
-      <div class="chip" onclick="selectTriNb(10)">10</div>
-      <div class="chip" onclick="selectTriNb(12)">12</div>
-    </div>
+    <input type="number" id="tri-nb-input" class="archer-name-input" min="1" max="99" placeholder="ex : 12" oninput="selectTriNb(parseInt(this.value)||0)">
   </div>
   <div class="form-section">
     <label class="form-label">Nombre de volées</label>
-    <div class="chips" id="tri-vol-chips">
-      <div class="chip" onclick="selectTriVol(3)">3</div>
-      <div class="chip" onclick="selectTriVol(6)">6</div>
-      <div class="chip" onclick="selectTriVol(10)">10</div>
-      <div class="chip" onclick="selectTriVol(12)">12</div>
-    </div>
+    <input type="number" id="tri-vol-input" class="archer-name-input" min="1" max="99" placeholder="ex : 6" oninput="selectTriVol(parseInt(this.value)||0)">
   </div>
   <div class="form-section">
     <label class="form-label">Flèches à conserver <span style="color:var(--text-muted);font-size:0.7rem;font-style:italic">(pour la compétition)</span></label>
-    <div class="chips" id="tri-keep-chips">
-      <div class="chip" onclick="selectTriKeep(3)">3</div>
-      <div class="chip" onclick="selectTriKeep(6)">6</div>
-      <div class="chip" onclick="selectTriKeep(8)">8</div>
-      <div class="chip" onclick="selectTriKeep(10)">10</div>
-    </div>
+    <input type="number" id="tri-keep-input" class="archer-name-input" min="1" max="99" placeholder="ex : 6" oninput="selectTriKeep(parseInt(this.value)||0)">
   </div>
   <button class="btn-start" onclick="startTri()">🎯 Commencer le tri</button>
 </div>
