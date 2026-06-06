@@ -644,6 +644,7 @@ const SESSION_DRAFT_KEY = 'archerAI_session_draft';
 
 function autoSaveSession() {
   if (!currentSession) return;
+  currentSession.lastActivityAt = new Date().toISOString();
   localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify(currentSession));
 }
 
@@ -651,9 +652,8 @@ function clearSessionDraft() {
   localStorage.removeItem(SESSION_DRAFT_KEY);
 }
 
-// ── Seuils de restauration ──
-const SEUIL_TOAST = 4  * 60 * 60 * 1000;  // 4h  → toast discret
-const SEUIL_MODAL = 12 * 60 * 60 * 1000;  // 12h → modal de choix
+// ── Seuil de restauration ──
+const SEUIL_TOAST = 4 * 60 * 60 * 1000;  // 4h → toast discret
 
 function restoreSessionIfExists() {
   try {
@@ -661,21 +661,10 @@ function restoreSessionIfExists() {
     if (!draft) return false;
     const s = JSON.parse(draft);
     if (!s || !s.volleys || s.volleys.length === 0) return false;
-    const age = Date.now() - (new Date(s.startDate).getTime());
-
-    if (age < SEUIL_TOAST) {
-      // Restauration silencieuse
-      _applyRestoredSession(s);
-
-    } else if (age < SEUIL_MODAL) {
-      // Toast discret
-      _applyRestoredSession(s);
-      _showRestoreToast(s);
-
-    } else {
-      // Modal de choix
-      _showRestoreModal(s);
-    }
+    const ref = s.lastActivityAt || s.startDate;
+    const age = Date.now() - new Date(ref).getTime();
+    _applyRestoredSession(s);
+    if (age >= SEUIL_TOAST) _showRestoreToast(s);
     return true;
   } catch { return false; }
 }
@@ -703,31 +692,9 @@ function _showRestoreToast(s) {
   const nb = s.volleys.length;
   toast.innerHTML = `🏹 Session retrouvée — <span style="color:#C9A84C;font-weight:500">${nb} volée${nb>1?'s':''}, ${s.totalScore} pts</span>. On continue !`;
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 4000);
+  setTimeout(() => toast.remove(), 6000);
 }
 
-function _showRestoreModal(s) {
-  const heures = Math.floor((Date.now() - new Date(s.startDate).getTime()) / 3600000);
-  const nb = s.volleys.length;
-  document.getElementById('restore-session-summary').textContent =
-    `${nb} volée${nb>1?'s':''} · ${s.totalScore} pts · il y a ~${heures}h`;
-  window._pendingRestore = s;
-  document.getElementById('restore-modal-overlay').classList.add('visible');
-}
-
-function confirmRestoreSession() {
-  if (window._pendingRestore) {
-    _applyRestoredSession(window._pendingRestore);
-    window._pendingRestore = null;
-  }
-  document.getElementById('restore-modal-overlay').classList.remove('visible');
-}
-
-function confirmDiscardSession() {
-  window._pendingRestore = null;
-  clearSessionDraft();
-  document.getElementById('restore-modal-overlay').classList.remove('visible');
-}
 
 // ==========================================
 // PERSISTENCE

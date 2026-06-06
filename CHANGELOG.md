@@ -6,7 +6,16 @@
 
 ---
 
-## V4.5.4 — Extraction JS dans app.js *(Juin 2026 — actuelle)*
+## V4.5.5 — Restauration session lastActivityAt *(Juin 2026 — actuelle)*
+
+### Modifié
+- **Restauration session** : l'âge du brouillon est désormais calculé depuis `lastActivityAt` (dernière volée enregistrée) et non plus depuis `startDate` — évite les fausses alertes sur les longues sessions
+- **Seuil unique 4h** : suppression du seuil modal à 12h ; au-delà de 4h d'inactivité, un simple toast s'affiche pendant 6s, la session est toujours restaurée automatiquement
+- **Toast 6s** : durée portée de 4s à 6s pour laisser le temps de lire
+
+---
+
+## V4.5.4 — Extraction JS dans app.js *(Juin 2026)*
 
 ### Modifié
 - **Refacto critique** : tout le JS extrait de `index.html` dans un fichier externe `app.js` — résout définitivement le SyntaxError sur Android Chrome et parsers iOS
