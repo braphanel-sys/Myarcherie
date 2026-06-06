@@ -406,16 +406,17 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
   const result = await response.json();
   if (result.error) return null;
 
+  const apv = currentSession.format?.apv;
   if (isDuo && result.archer1) {
     displayDuoResult(result);
     currentSession.volleys.push({ duo:true, archer1:result.archer1, archer2:result.archer2 });
     currentSession.totalScore += (result.archer1.total||0) + (result.archer2.total||0);
-    currentSession.arrowCount += (result.archer1.count||0) + (result.archer2.count||0);
+    currentSession.arrowCount += apv ? apv * 2 : (result.archer1.count||0) + (result.archer2.count||0);
   } else if (result.arrows) {
     displayResult(result);
     currentSession.volleys.push(result);
     currentSession.totalScore += result.total || 0;
-    currentSession.arrowCount += result.count || 0;
+    currentSession.arrowCount += apv || result.count || 0;
   }
   updateSessionBar(); updateHistory();
   autoSaveSession();

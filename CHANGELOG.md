@@ -6,7 +6,17 @@
 
 ---
 
-## V4.5.5 — Restauration session lastActivityAt *(Juin 2026 — actuelle)*
+## V4.5.6 — Fix comptage flèches/volée *(Juin 2026 — actuelle)*
+
+### Corrigé
+- **arrowCount basé sur `format.apv`** : le nombre de flèches par volée est désormais tiré du format de tir configuré (`format.apv`) et non de `result.count` retourné par l'IA — évite la sur-détection (ex. trous dans la cible comptés comme flèches)
+- Solo : `apv || result.count` (fallback si format libre sans apv)
+- Duo : `apv * 2 || result.archer1.count + result.archer2.count`
+- `const apv` factorisé avant le `if/else` — couvre les deux modes
+
+---
+
+## V4.5.5 — Restauration session lastActivityAt *(Juin 2026)*
 
 ### Modifié
 - **Restauration session** : l'âge du brouillon est désormais calculé depuis `lastActivityAt` (dernière volée enregistrée) et non plus depuis `startDate` — évite les fausses alertes sur les longues sessions

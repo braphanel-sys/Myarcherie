@@ -38,7 +38,7 @@ The JS is organized into clearly labeled sections (search for `// ──`):
 | `COLOR COUNTER PER ARCHER` | `incArcherColor()`, `decArcherColor()`, `renderArcherColorGrid()` |
 | `MODE` | `setMode()` — switches between solo/duo/beursault, shows/hides archer config |
 | `BUILD PROMPT` | Constructs the French prompt for Claude based on mode and archer data |
-| `CALL API` | Sends image + prompt, parses response, updates session |
+| `CALL API` | Sends image + prompt, parses response, updates session — `arrowCount` basé sur `format.apv` (solo: `apv\|\|result.count`, duo: `apv*2\|\|counts IA`) |
 | `DISPLAY SOLO / DUO / BEURSAULT` | Renders scoring results; `arrowsHtml(arrows, prefix, gridId)` — badges cliquables via `editArrow()` |
 | `SESSION BAR / HISTORY` | Running score bar and volley history list |
 | `FIN DE SESSION` | End session, clear state |
@@ -92,7 +92,7 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 
 ## PWA
 
-- `sw.js` — cache `archerAI-v4.5.5`, précache `app.js` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
+- `sw.js` — cache `archerAI-v4.5.6`, précache `app.js` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
 - `manifest.json` — standard PWA manifest, `theme_color: #C9A84C`.
 - Pour déployer une nouvelle version : mettre à jour le nom du cache dans `sw.js` (ex. `archerAI-v4.4`).
 - **Bandeau mise à jour** (`#update-banner`) : affiché par `showUpdateBanner()` quand le SW détecte un nouveau worker installé. Bouton "Actualiser" envoie `'skipWaiting'` au SW puis recharge la page.
