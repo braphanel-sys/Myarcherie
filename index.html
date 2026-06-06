@@ -772,9 +772,11 @@
       <button class="btn-new-session" onclick="restartSession()">🔄 Rejouer</button>
       <button class="btn-home" onclick="goHome()">🏠 Accueil</button>
     </div>
+    <button id="btn-download-photos" onclick="downloadSessionPhotos()" style="display:none;width:100%;margin-top:10px;background:transparent;border:1px solid rgba(201,168,76,0.4);color:#C9A84C;padding:12px;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;cursor:pointer;">📥 Télécharger les photos</button>
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="/app.js" defer></script>
 
 <!-- Modal restauration session (> 12h) -->

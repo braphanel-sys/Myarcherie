@@ -409,12 +409,12 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
   const apv = currentSession.format?.apv;
   if (isDuo && result.archer1) {
     displayDuoResult(result);
-    currentSession.volleys.push({ duo:true, archer1:result.archer1, archer2:result.archer2 });
+    currentSession.volleys.push({ duo:true, archer1:result.archer1, archer2:result.archer2, photo:imageBase64 });
     currentSession.totalScore += (result.archer1.total||0) + (result.archer2.total||0);
     currentSession.arrowCount += apv ? apv * 2 : (result.archer1.count||0) + (result.archer2.count||0);
   } else if (result.arrows) {
     displayResult(result);
-    currentSession.volleys.push(result);
+    currentSession.volleys.push({ ...result, photo:imageBase64 });
     currentSession.totalScore += result.total || 0;
     currentSession.arrowCount += apv || result.count || 0;
   }
@@ -618,6 +618,10 @@ function endSession() {
   } else objEl.style.display = 'none';
   saveSession({ ...s, totalScore:total, endDate:new Date().toISOString() });
   clearSessionDraft();
+  // Afficher le bouton photos si des photos existent
+  const hasPhotos = s.volleys.some(v => v.photo || (v.archer1 && v.archer1.photo));
+  const btnPhotos = document.getElementById('btn-download-photos');
+  if (btnPhotos) btnPhotos.style.display = hasPhotos ? 'block' : 'none';
   document.getElementById('modal-overlay').classList.add('visible');
 }
 
@@ -636,6 +640,42 @@ function goHome() {
   currentSession = null;
   document.getElementById('modal-overlay').classList.remove('visible');
   showScreen('home');
+}
+
+async function downloadSessionPhotos() {
+  if (!currentSession) return;
+  const volleys = currentSession.volleys.filter(v => v.photo);
+  if (!volleys.length) return;
+
+  const btn = document.getElementById('btn-download-photos');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Préparation...'; }
+
+  try {
+    const zip = new JSZip();
+    const date = new Date().toISOString().slice(0,10);
+    const folder = zip.folder(`ArcherAI_${date}`);
+
+    volleys.forEach((v, i) => {
+      const score = v.total || (v.archer1 ? `${v.archer1.total}-${v.archer2.total}` : '');
+      const filename = `volee-${i+1}_${score}pts.jpg`;
+      folder.file(filename, v.photo, { base64: true });
+    });
+
+    const blob = await zip.generateAsync({ type:'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ArcherAI_${date}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    if (btn) { btn.textContent = '✅ Téléchargé !'; }
+    setTimeout(() => { if (btn) { btn.disabled = false; btn.textContent = '📥 Télécharger les photos'; } }, 3000);
+  } catch(e) {
+    console.error(e);
+    if (btn) { btn.disabled = false; btn.textContent = '📥 Télécharger les photos'; }
+    alert('Erreur lors de la création du zip.');
+  }
 }
 
 // ==========================================

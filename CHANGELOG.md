@@ -6,7 +6,16 @@
 
 ---
 
-## V4.5.6 — Fix comptage flèches/volée *(Juin 2026 — actuelle)*
+## V4.5.7 — Stockage photos + export ZIP *(Juin 2026 — actuelle)*
+
+### Ajouté
+- **Stockage photo par volée** : chaque volée analysée conserve l'image compressée (`photo: base64`) dans `currentSession.volleys[]`
+- **Export ZIP** : bouton "📥 Télécharger les photos" apparaît dans le modal de fin de session si au moins une photo est disponible ; génère un ZIP `ArcherAI_YYYY-MM-DD.zip` via JSZip (CDN), chaque fichier nommé `volee-N_Xpts.jpg`
+- **JSZip 3.10.1** chargé via CDN (cloudflare) dans `index.html`, avant `app.js`
+
+---
+
+## V4.5.6 — Fix comptage flèches/volée *(Juin 2026)*
 
 ### Corrigé
 - **arrowCount basé sur `format.apv`** : le nombre de flèches par volée est désormais tiré du format de tir configuré (`format.apv`) et non de `result.count` retourné par l'IA — évite la sur-détection (ex. trous dans la cible comptés comme flèches)
