@@ -6,7 +6,14 @@
 
 ---
 
-## V4.5.8 — Tri de flèches : saisie libre *(Juin 2026 — actuelle)*
+## V4.5.9 — Fix restauration tri de flèches *(Juin 2026 — actuelle)*
+
+### Corrigé
+- **Tri de flèches** : la page de saisie ne remonte plus au démarrage après fermeture de l'app — `clearTriDraft()` n'était pas appelé via `endTri()` quand des données étaient présentes
+
+---
+
+## V4.5.8 — Tri de flèches : saisie libre *(Juin 2026)*
 
 ### Modifié
 - **Tri de flèches — saisie libre** : les chips prédéfinis (6/8/10/12 flèches, 3/6/10/12 volées, 3/6/8/10 à conserver) remplacés par des `<input type="number">` libres (min 1, max 99)
@@ -185,4 +192,4 @@
 
 ---
 
-*Document mis à jour le 4 juin 2026 — V4.5*
+*Document mis à jour le 10 juin 2026 — V4.5.9*
