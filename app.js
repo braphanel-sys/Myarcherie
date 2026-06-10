@@ -1024,6 +1024,7 @@ function validateTriImpact() {
 
 function endTri() {
   if (triState.data[0] && triState.data[0].length > 0) {
+    clearTriDraft();
     showTriResults();
   } else {
     showScreen('home');
