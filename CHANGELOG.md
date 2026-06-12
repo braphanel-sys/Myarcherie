@@ -6,7 +6,27 @@
 
 ---
 
-## V4.5.9 — Fix restauration tri de flèches *(Juin 2026 — actuelle)*
+## V4.6.0 — Correctifs audit complet *(Juin 2026 — actuelle)*
+
+### Corrigé
+- **Modal restauration >4h** : le modal ne bloquait plus la navigation — corrigé
+- **Photos strippées de l'historique** : les données base64 sont retirées des sessions sauvegardées pour ne pas saturer le localStorage
+- **callAPI sans session active** : guard ajouté pour éviter l'appel si aucune session n'est en cours
+- **archer2Name persistant** : le nom du 2e archer en mode duo est désormais correctement sauvegardé
+
+### Sécurité
+- **API sécurisée — prompts côté serveur** : `api/analyze.js` ne reçoit plus un `prompt` libre du client mais des données structurées (`mode`, `a1`, `a2`, `desc1`, `desc2`) — le prompt est construit et contrôlé entièrement côté serveur
+- **CORS restreint** : `Access-Control-Allow-Origin` limité à `https://myarcherie.vercel.app` (plus de `*`)
+- **Sanitisation des entrées** : noms et descriptions archers nettoyés (regex Unicode, longueur max)
+
+### Amélioré
+- **SW update fiabilisé** : détection et activation du nouveau Service Worker rendue plus robuste
+- **manifest.json restauré** : fichier manifest corrigé/restauré
+- **Bandeau version** : affiche désormais `v4.6.0`
+
+---
+
+## V4.5.9 — Fix restauration tri de flèches *(Juin 2026)*
 
 ### Corrigé
 - **Tri de flèches** : la page de saisie ne remonte plus au démarrage après fermeture de l'app — `clearTriDraft()` n'était pas appelé via `endTri()` quand des données étaient présentes

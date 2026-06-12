@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ArcherAI is a single-page archery scoring app powered by Claude Vision. It has two distinct parts:
 
-- **`index.html`** (~817 lines) — CSS + HTML uniquement. Le JS est dans `app.js`.
-- **`app.js`** (~1195 lines) — tout le JavaScript de l'app (anciennement inline dans index.html).
+- **`index.html`** (~806 lines) — CSS + HTML uniquement. Le JS est dans `app.js`.
+- **`app.js`** (~1231 lines) — tout le JavaScript de l'app (anciennement inline dans index.html).
 - **`api/analyze.js`** — a Vercel serverless function that proxies requests to the Anthropic API. Reads `ANTHROPIC_API_KEY` from the environment.
 
 The root `analyze.js` is kept in sync with `api/analyze.js` and reflects the current prompt logic. `analyze (1).js`, `analyze (2).js`, `analyze (3).js` are old iterations (deleted from repo); the live endpoint is `api/analyze.js`.
@@ -37,8 +37,8 @@ The JS is organized into clearly labeled sections (search for `// ──`):
 | `ARCHERS DUO / BEURSAULT` | Render and manage per-mode archer lists |
 | `COLOR COUNTER PER ARCHER` | `incArcherColor()`, `decArcherColor()`, `renderArcherColorGrid()` |
 | `MODE` | `setMode()` — switches between solo/duo/beursault, shows/hides archer config |
-| `BUILD PROMPT` | Constructs the French prompt for Claude based on mode and archer data |
-| `CALL API` | Sends image + prompt, parses response, updates session — `arrowCount` basé sur `format.apv` ; stocke `photo:base64` dans chaque volée |
+| `BUILD PROMPT` | Construit les données structurées envoyées au serveur (`mode`, `a1`, `a2`, `desc1`, `desc2`) — le prompt IA est généré côté serveur depuis V4.6.0 |
+| `CALL API` | Envoie image + données structurées, parse la réponse, met à jour la session — `arrowCount` basé sur `format.apv` ; guard "sans session active" ; photos base64 strippées avant sauvegarde historique |
 | `DISPLAY SOLO / DUO / BEURSAULT` | Renders scoring results; `arrowsHtml(arrows, prefix, gridId)` — badges cliquables via `editArrow()` |
 | `SESSION BAR / HISTORY` | Running score bar and volley history list |
 | `FIN DE SESSION` | End session, clear state |
@@ -92,7 +92,7 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 
 ## PWA
 
-- `sw.js` — cache `archerAI-v4.5.9`, précache `app.js` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
+- `sw.js` — cache `archerAI-v4.6.0`, précache `app.js` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
 - `manifest.json` — standard PWA manifest, `theme_color: #C9A84C`.
 - Pour déployer une nouvelle version : mettre à jour le nom du cache dans `sw.js` (ex. `archerAI-v4.4`).
 - **Bandeau mise à jour** (`#update-banner`) : affiché par `showUpdateBanner()` quand le SW détecte un nouveau worker installé. Bouton "Actualiser" envoie `'skipWaiting'` au SW puis recharge la page.
@@ -101,8 +101,8 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 
 | File | Description |
 |---|---|
-| `index.html` | CSS + HTML uniquement (~817 lignes) |
-| `app.js` | Tout le JavaScript de l'app (~1195 lignes) |
+| `index.html` | CSS + HTML uniquement (~806 lignes) |
+| `app.js` | Tout le JavaScript de l'app (~1231 lignes) |
 | `api/analyze.js` | Live Vercel serverless function (Anthropic proxy) |
 | `analyze.js` | Mirror of `api/analyze.js` — kept in sync, use as reference |
 | `sw.js` | Service Worker — stale-while-revalidate, offline queue |
@@ -127,12 +127,21 @@ Arrow badges rendered by `arrowsHtml()` carry the `.editable` CSS class and an `
 
 ## Prompt IA (`analyze.js` / `api/analyze.js`)
 
-Le prompt par défaut (v2, mai 2026) impose à l'IA :
+Depuis V4.6.0, le prompt est **entièrement construit côté serveur** — le client envoie uniquement des données structurées :
+
+| Champ | Description |
+|---|---|
+| `imageBase64` | Image compressée (JPEG, max 1200px) |
+| `mode` | `'solo'` ou `'duo'` |
+| `a1`, `a2` | Noms des archers (mode duo) |
+| `desc1`, `desc2` | Descriptions des plumes (mode duo) |
+
+Les noms et descriptions sont sanitisés côté serveur (`sanitize()` — regex Unicode, max 30/120 chars). Le CORS est restreint à `https://myarcherie.vercel.app`.
+
+Le prompt impose à l'IA :
 1. Ne compter que les **fûts physiquement plantés** dans la cible — ignorer trous, impacts vides et déchirures
 2. Identifier le type de cible (WA, Vegas, Beursault, GEF) avant de scorer
-3. Répondre en JSON strict avec `type`, `arrows`, `total`, `count`, `analysis`
-
-Le frontend peut envoyer un `prompt` custom dans le body POST (ex. mode Duo avec description des plumes) ; le serveur utilise ce prompt en priorité et tombe sur le prompt par défaut si absent.
+3. Répondre en JSON strict (`type`, `arrows`/`archer1`/`archer2`, `total`, `count`, `analysis`)
 
 ## Règles
 

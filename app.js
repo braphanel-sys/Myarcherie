@@ -391,17 +391,15 @@ async function processQueue() {
 // API
 // ==========================================
 async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2name) {
+  if (!currentSession) return null; // pas de session active : la queue reste en attente
   const isDuo = currentMode === 'duo';
   const a1 = a1name || 'Archer 1', a2 = a2name || 'Archer 2';
   const desc1 = describeFleche(a1fleche);
   const desc2 = describeFleche(a2fleche);
-  const prompt = isDuo
-    ? `Tu es un expert en tir à l'arc. Analyse cette cible, 2 archers.\n${a1} : ${desc1}.\n${a2} : ${desc2}.\nIdentifie le type (WA/VEGAS/BEURSAULT/GEF), attribue chaque flèche selon description et score.\nBarèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M\nRéponds UNIQUEMENT JSON:\n{"type":"WA","archer1":{"name":"${a1}","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."},"archer2":{"name":"${a2}","arrows":[10,9,8],"total":27,"count":3,"analysis":"..."}}\nSi pas de cible: {"error":"Pas de cible détectée"}`
-    : `Tu es un expert en tir à l'arc. Analyse cette cible.\nIdentifie le type (WA/VEGAS/BEURSAULT/GEF) et applique le barème.\nBarèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M\nRéponds UNIQUEMENT JSON:\n{"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."}\nSi pas de cible: {"error":"Pas de cible détectée"}`;
 
   const response = await fetch("/api/analyze", {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ imageBase64, prompt })
+    body: JSON.stringify({ imageBase64, mode: isDuo ? 'duo' : 'solo', a1, a2, desc1, desc2 })
   });
   const result = await response.json();
   if (result.error) return null;
@@ -616,7 +614,13 @@ function endSession() {
     if (total >= s.objectif.score) { objEl.textContent = `✅ Objectif ${s.objectif.score} atteint !`; objEl.className = 'modal-objectif ok'; }
     else { objEl.textContent = `❌ Objectif ${s.objectif.score} — il manque ${s.objectif.score - total} pts`; objEl.className = 'modal-objectif nok'; }
   } else objEl.style.display = 'none';
-  saveSession({ ...s, totalScore:total, endDate:new Date().toISOString() });
+  const volleysClean = s.volleys.map(v => {
+    const { photo, ...rest } = v;
+    if (rest.archer1) { const { photo: p1, ...a1 } = rest.archer1; rest.archer1 = a1; }
+    if (rest.archer2) { const { photo: p2, ...a2 } = rest.archer2; rest.archer2 = a2; }
+    return rest;
+  });
+  saveSession({ ...s, volleys: volleysClean, totalScore:total, endDate:new Date().toISOString() });
   clearSessionDraft();
   // Afficher le bouton photos si des photos existent
   const hasPhotos = s.volleys.some(v => v.photo || (v.archer1 && v.archer1.photo));
@@ -694,7 +698,7 @@ function clearSessionDraft() {
 }
 
 // ── Seuil de restauration ──
-const SEUIL_TOAST = 4 * 60 * 60 * 1000;  // 4h → toast discret
+const SEUIL_MODAL = 4 * 60 * 60 * 1000;  // < 4h : restauration + toast | > 4h : modal de choix
 
 function restoreSessionIfExists() {
   try {
@@ -704,10 +708,37 @@ function restoreSessionIfExists() {
     if (!s || !s.volleys || s.volleys.length === 0) return false;
     const ref = s.lastActivityAt || s.startDate;
     const age = Date.now() - new Date(ref).getTime();
-    _applyRestoredSession(s);
-    if (age >= SEUIL_TOAST) _showRestoreToast(s);
+    if (age < SEUIL_MODAL) {
+      _applyRestoredSession(s);
+      _showRestoreToast(s);
+    } else {
+      _showRestoreModal(s, age);
+    }
     return true;
   } catch { return false; }
+}
+
+function _showRestoreModal(s, age) {
+  const heures = Math.floor(age / 3600000);
+  const nb = s.volleys.length;
+  document.getElementById('restore-session-summary').textContent =
+    `${nb} volée${nb>1?'s':''} · ${s.totalScore} pts · il y a ~${heures}h`;
+  window._pendingRestore = s;
+  document.getElementById('restore-modal-overlay').style.display = 'flex';
+}
+
+function confirmRestoreSession() {
+  if (window._pendingRestore) {
+    _applyRestoredSession(window._pendingRestore);
+    window._pendingRestore = null;
+  }
+  document.getElementById('restore-modal-overlay').style.display = 'none';
+}
+
+function confirmDiscardSession() {
+  window._pendingRestore = null;
+  clearSessionDraft();
+  document.getElementById('restore-modal-overlay').style.display = 'none';
 }
 
 function _applyRestoredSession(s) {
@@ -846,6 +877,8 @@ async function showAdminPanel() {
 window.addEventListener('load', () => {
   profil = JSON.parse(localStorage.getItem('archerProfil') || '{}');
   archer2Fleche = JSON.parse(localStorage.getItem('archer2Fleche') || '{}');
+  const a2input = document.getElementById('archer2-name');
+  if (a2input) a2input.value = localStorage.getItem('archer2Name') || '';
   renderProfilCard();
   renderHomeRecap();
   updateQueueBanner();
@@ -872,8 +905,11 @@ function showUpdateBanner(newSW) {
   if (banner) {
     banner.style.display = 'flex';
     banner.querySelector('button').onclick = () => {
+      // Attendre l'activation effective du nouveau SW avant de recharger
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      }, { once: true });
       newSW.postMessage('skipWaiting');
-      window.location.reload();
     };
   }
 }
