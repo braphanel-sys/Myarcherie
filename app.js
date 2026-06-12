@@ -1024,7 +1024,6 @@ function validateTriImpact() {
 
 function endTri() {
   if (triState.data[0] && triState.data[0].length > 0) {
-    clearTriDraft();
     showTriResults();
   } else {
     showScreen('home');
@@ -1033,6 +1032,7 @@ function endTri() {
 
 // ── RÉSULTATS ──
 function showTriResults() {
+  clearTriDraft();
   showScreen('tri-results');
   const container = document.getElementById('tri-results-content');
   const keep = triState.nbKeep;
