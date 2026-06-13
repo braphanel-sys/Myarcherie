@@ -6,7 +6,22 @@
 
 ---
 
-## V4.6.0 — Correctifs audit complet *(Juin 2026 — actuelle)*
+## V4.6.2 — Timer : mode boucle (relance auto à chaque volée) *(Juin 2026 — actuelle)*
+
+### Ajouté
+- **Timer compétition** : chrono intégré dans l'écran Home avec 3 durées (1 min / 2 min / 4 min) + phase de préparation 10s avec bip sonore
+- **Mode boucle 🔁** : toggle qui relance automatiquement le timer à la fin de chaque volée analysée — idéal en compétition ou entraînement cadencé
+- **Feedback sonore** : bip de départ (préparation), bip de début de tir, buzzer 3 tons à la fin
+- **Export/Import données** : bouton dans les réglages pour exporter/importer profil + sessions en JSON
+
+### Technique
+- `timerState.loop` : flag boucle ; `timerState.lastDuration` : mémorise la durée pour relance
+- Relance via `callAPI()` : `setTimeout(() => startTimer(lastDuration), 1500)` si `loop` actif
+- `cancelTimer()` appelé dans `endSession()` pour arrêt propre en fin de session
+
+---
+
+## V4.6.0 — Correctifs audit complet *(Juin 2026)*
 
 ### Corrigé
 - **Modal restauration >4h** : le modal ne bloquait plus la navigation — corrigé

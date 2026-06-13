@@ -418,6 +418,10 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
   }
   updateSessionBar(); updateHistory();
   autoSaveSession();
+  // Relance auto du timer si mode boucle activé
+  if (timerState.loop && timerState.lastDuration) {
+    setTimeout(() => startTimer(timerState.lastDuration), 1500);
+  }
   return result;
 }
 
@@ -589,6 +593,7 @@ function updateHistory() {
 // END SESSION
 // ==========================================
 function endSession() {
+  if (typeof cancelTimer === 'function') cancelTimer();
   if (!currentSession || !currentSession.volleys.length) { alert('Aucune volée enregistrée !'); return; }
   const s = currentSession;
   const total = s.totalScore;
@@ -869,6 +874,156 @@ async function showAdminPanel() {
   } catch {
     countEl.textContent = '—';
   }
+}
+
+// ==========================================
+// TIMER COMPÉTITION
+// ==========================================
+let timerState = { interval:null, phase:null, remaining:0, ac:null, loop:false, lastDuration:120 };
+
+function toggleTimerLoop() {
+  timerState.loop = !timerState.loop;
+  const btn = document.getElementById('timer-loop-btn');
+  if (btn) btn.classList.toggle('active', timerState.loop);
+}
+
+function startTimer(durationSec) {
+  cancelTimer();
+  timerState.phase = 'prep';
+  timerState.remaining = 10; // 10 secondes de préparation
+  timerState._duration = durationSec;
+  timerState.lastDuration = durationSec;
+  document.getElementById('timer-controls').style.display = 'none';
+  document.getElementById('timer-display').style.display = 'block';
+  _playBeep(600, 0.15);
+  _renderTimer();
+  timerState.interval = setInterval(_tickTimer, 1000);
+}
+
+function cancelTimer() {
+  if (timerState.interval) clearInterval(timerState.interval);
+  timerState.interval = null; timerState.phase = null;
+  const ctrl = document.getElementById('timer-controls');
+  const disp = document.getElementById('timer-display');
+  if (ctrl) ctrl.style.display = 'flex';
+  if (disp) disp.style.display = 'none';
+}
+
+function _tickTimer() {
+  timerState.remaining--;
+  if (timerState.remaining < 0) {
+    if (timerState.phase === 'prep') {
+      // Fin de la préparation : début du tir
+      timerState.phase = 'tir';
+      timerState.remaining = timerState._duration;
+      _playBeep(800, 0.2);
+      _renderTimer();
+    } else {
+      // Fin du tir : buzzer 3 tons
+      _playBuzzer();
+      cancelTimer();
+    }
+    return;
+  }
+  _renderTimer();
+}
+
+function _renderTimer() {
+  const phaseEl = document.getElementById('timer-phase');
+  const timeEl  = document.getElementById('timer-time');
+  if (!phaseEl || !timeEl) return;
+  const m = Math.floor(timerState.remaining / 60);
+  const s = timerState.remaining % 60;
+  timeEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  const warning = timerState.phase === 'tir' && timerState.remaining <= 30;
+  phaseEl.textContent = timerState.phase === 'prep' ? 'PRÉPARATION' : 'TEMPS DE TIR';
+  phaseEl.className = 'timer-phase ' + (warning ? 'warning' : timerState.phase);
+  timeEl.className = 'timer-time' + (warning ? ' warning' : '');
+}
+
+function _audioCtx() {
+  if (!timerState.ac) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (Ctx) timerState.ac = new Ctx();
+  }
+  return timerState.ac;
+}
+
+function _playBeep(freq, duration) {
+  const ac = _audioCtx(); if (!ac) return;
+  const osc = ac.createOscillator(); const gain = ac.createGain();
+  osc.type = 'square'; osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.3, ac.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + duration);
+  osc.connect(gain); gain.connect(ac.destination);
+  osc.start(); osc.stop(ac.currentTime + duration);
+}
+
+function _playBuzzer() {
+  // 3 tons descendants type signal de fin de tir
+  [880, 660, 440].forEach((f, i) => setTimeout(() => _playBeep(f, 0.35), i * 400));
+}
+
+// ==========================================
+// EXPORT / IMPORT DES DONNÉES
+// ==========================================
+function exportData() {
+  try {
+    const dump = {
+      version: '4.6.1',
+      exportDate: new Date().toISOString(),
+      data: {
+        archerProfil: JSON.parse(localStorage.getItem('archerProfil') || '{}'),
+        archerAI_sessions: JSON.parse(localStorage.getItem('archerAI_sessions') || '[]'),
+        archerAI_session_draft: JSON.parse(localStorage.getItem('archerAI_session_draft') || 'null'),
+        archer2Fleche: JSON.parse(localStorage.getItem('archer2Fleche') || '{}'),
+        archer2Name: localStorage.getItem('archer2Name') || '',
+        archerAI_tri_draft: JSON.parse(localStorage.getItem('archerAI_tri_draft') || 'null')
+      }
+    };
+    const blob = new Blob([JSON.stringify(dump, null, 2)], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ArcherAI_export_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    console.error(e);
+    alert('Erreur lors de l\'export.');
+  }
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const dump = JSON.parse(e.target.result);
+      if (!dump || !dump.data) throw new Error('Fichier invalide');
+      const nbSessions = (dump.data.archerAI_sessions || []).length;
+      const ok = confirm(`Importer ces données ?\n\n• Profil : ${dump.data.archerProfil?.prenom || '—'}\n• ${nbSessions} session${nbSessions>1?'s':''} dans l'historique\n• Date export : ${dump.exportDate?.slice(0,10) || '—'}\n\n⚠️ Cela écrasera vos données actuelles.`);
+      if (!ok) { event.target.value = ''; return; }
+
+      const d = dump.data;
+      if (d.archerProfil)            localStorage.setItem('archerProfil', JSON.stringify(d.archerProfil));
+      if (d.archerAI_sessions)       localStorage.setItem('archerAI_sessions', JSON.stringify(d.archerAI_sessions));
+      if (d.archerAI_session_draft)  localStorage.setItem('archerAI_session_draft', JSON.stringify(d.archerAI_session_draft));
+      else                           localStorage.removeItem('archerAI_session_draft');
+      if (d.archer2Fleche)           localStorage.setItem('archer2Fleche', JSON.stringify(d.archer2Fleche));
+      if (d.archer2Name)             localStorage.setItem('archer2Name', d.archer2Name);
+      if (d.archerAI_tri_draft)      localStorage.setItem('archerAI_tri_draft', JSON.stringify(d.archerAI_tri_draft));
+
+      alert('✅ Import réussi ! Rechargement de l\'app...');
+      window.location.reload();
+    } catch(err) {
+      console.error(err);
+      alert('❌ Fichier invalide ou corrompu.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 // ==========================================

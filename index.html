@@ -157,6 +157,27 @@
   .stat-label { font-size:0.66rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-top:2px; }
   .objectif-bar-wrap { display:none; margin-top:11px; padding-top:11px; border-top:1px solid var(--border); }
   .objectif-bar-wrap.visible { display:block; }
+
+  /* Timer compétition */
+  .timer-wrap { margin-top:11px; padding-top:11px; border-top:1px solid var(--border); }
+  .timer-controls { display:flex; gap:8px; }
+  .timer-btn { flex:1; background:transparent; border:1px solid rgba(201,168,76,0.3); color:var(--text-muted);
+    padding:8px 6px; border-radius:8px; font-family:'Bebas Neue',sans-serif; font-size:0.85rem;
+    letter-spacing:1.5px; cursor:pointer; transition:all 0.2s; }
+  .timer-btn:hover { border-color:var(--gold); color:var(--gold); }
+  .timer-btn-primary { background:rgba(201,168,76,0.1); border-color:var(--gold); color:var(--gold); }
+  .timer-loop { flex:0 0 auto; padding:8px 10px; }
+  .timer-loop.active { background:rgba(39,174,96,0.15); border-color:var(--green); color:var(--green); }
+  .timer-display { text-align:center; padding:8px 0; }
+  .timer-phase { font-family:'Bebas Neue',sans-serif; font-size:0.7rem; letter-spacing:3px; color:var(--text-muted); margin-bottom:4px; }
+  .timer-phase.prep { color:var(--gold); }
+  .timer-phase.tir { color:var(--green); }
+  .timer-phase.warning { color:var(--red); animation:pulse 1s infinite; }
+  .timer-time { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; letter-spacing:4px; color:var(--text); line-height:1; margin-bottom:6px; }
+  .timer-time.warning { color:var(--red); }
+  .timer-cancel { background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; cursor:pointer; padding:4px 10px; }
+  .timer-cancel:hover { color:var(--red); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
   .objectif-bar-labels { display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-bottom:5px; }
   .objectif-bar-track { height:5px; background:var(--dark2); border-radius:3px; overflow:hidden; }
   .objectif-bar-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:3px; transition:width 0.6s ease; width:0%; }
@@ -460,7 +481,7 @@
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);">
-      <span style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.6.0</span>
+      <span style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.6.2</span>
     </div>
   </div>
 
@@ -507,6 +528,16 @@
 
     <button class="btn-primary" onclick="showScreen('home')">✅ Enregistrer</button>
     <button class="btn-secondary" style="margin-top:10px" onclick="showScreen('home')">← Retour</button>
+
+    <div style="margin-top:30px;padding-top:20px;border-top:1px solid var(--border);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:2px;color:var(--text-muted);margin-bottom:12px;">💾 Sauvegarde des données</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-secondary" style="flex:1;font-size:0.85rem;padding:11px" onclick="exportData()">📤 Exporter</button>
+        <button class="btn-secondary" style="flex:1;font-size:0.85rem;padding:11px" onclick="document.getElementById('import-file').click()">📥 Importer</button>
+      </div>
+      <input type="file" id="import-file" accept=".json,application/json" style="display:none" onchange="importData(event)">
+      <div style="font-size:0.7rem;color:var(--text-muted);margin-top:8px;font-style:italic;text-align:center;">Profil, sessions, records — tout en un fichier JSON</div>
+    </div>
   </div>
 
   <!-- ========== SETUP ========== -->
@@ -574,6 +605,20 @@
         <div class="objectif-bar-labels"><span id="obj-bar-label">Objectif</span><span id="obj-bar-pct">0%</span></div>
         <div class="objectif-bar-track"><div class="objectif-bar-fill" id="objectif-bar-fill"></div></div>
         <div class="objectif-deadline" id="objectif-deadline"></div>
+      </div>
+
+      <div class="timer-wrap" id="timer-wrap">
+        <div class="timer-controls" id="timer-controls">
+          <button class="timer-btn" onclick="startTimer(60)">1 min</button>
+          <button class="timer-btn timer-btn-primary" onclick="startTimer(120)">▶️ 2 min</button>
+          <button class="timer-btn" onclick="startTimer(240)">4 min</button>
+          <button class="timer-btn timer-loop" id="timer-loop-btn" onclick="toggleTimerLoop()" title="Relance auto à chaque volée">🔁</button>
+        </div>
+        <div class="timer-display" id="timer-display" style="display:none">
+          <div class="timer-phase" id="timer-phase">PRÉPARATION</div>
+          <div class="timer-time" id="timer-time">0:10</div>
+          <button class="timer-cancel" onclick="cancelTimer()">✕ Annuler</button>
+        </div>
       </div>
     </div>
 
