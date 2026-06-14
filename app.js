@@ -807,17 +807,30 @@ function renderHistoryScreen() {
       : '';
     const bar = pct !== null ? `<div class="progress-mini"><div class="progress-mini-labels"><span>${s.totalScore} pts</span><span>${s.format.maxScore} max</span></div><div class="progress-mini-track"><div class="progress-mini-fill" style="width:${pct}%"></div></div></div>` : '';
     const avg = s.arrowCount > 0 ? (s.totalScore/s.arrowCount).toFixed(1) : '—';
-    return `<div class="session-card">
+    // Détail des volées si disponible
+    const hasVolleys = s.volleys && s.volleys.length > 0 && s.volleys[0].arrows;
+    const volleysHtml = hasVolleys ? `
+      <div class="history-volleys" id="volleys-${i}" style="display:none">
+        <div style="height:1px;background:var(--border);margin:10px 0"></div>
+        ${s.volleys.map((v,vi) => `
+          <div class="history-volley-row">
+            <span class="history-volley-label">V${vi+1}</span>
+            <div class="history-volley-arrows">${(v.arrows||[]).map(a => `<div class="mini-badge ${getBadgeClass(a)}">${a}</div>`).join('')}</div>
+            <span class="history-volley-total">${v.total||0}</span>
+          </div>`).join('')}
+      </div>` : '';
+    const chevron = hasVolleys ? `<span class="history-chevron" id="chev-${i}">▼</span>` : '';
+    return `<div class="session-card ${hasVolleys?'session-card-expandable':''}" ${hasVolleys?`onclick="toggleHistoryDetail(${i})"`:''}> 
       <div class="session-card-header">
         <div>
-          <div class="session-card-format">${s.format.name}${s.arc?' — '+s.arc:''}</div>
+          <div class="session-card-format">${s.format.name}${s.arc?' — '+s.arc:''} ${chevron}</div>
           <div class="session-card-meta">${formatDate(s.endDate||s.startDate)} · ${s.format.detail}</div>
           ${objTag}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end">
           <div class="session-card-score">${s.totalScore}</div>
           <div class="session-card-max">${s.format.maxScore?'/ '+s.format.maxScore:''}</div>
-          <button class="btn-delete-session" onclick="deleteSession(${i})">🗑</button>
+          <button class="btn-delete-session" onclick="event.stopPropagation();deleteSession(${i})">🗑</button>
         </div>
       </div>
       ${bar}
@@ -827,8 +840,18 @@ function renderHistoryScreen() {
         <div class="mini-stat">Moy.: <span>${avg}</span></div>
         ${pct!==null?`<div class="mini-stat">Score: <span>${pct}%</span></div>`:''}
       </div>
+      ${volleysHtml}
     </div>`;
   }).join('');
+}
+
+function toggleHistoryDetail(i) {
+  const el = document.getElementById(`volleys-${i}`);
+  const chev = document.getElementById(`chev-${i}`);
+  if (!el) return;
+  const open = el.style.display === 'block';
+  el.style.display = open ? 'none' : 'block';
+  if (chev) chev.textContent = open ? '▼' : '▲';
 }
 
 function setHistoryFilter(id) { document.getElementById('history-filters').dataset.active = id; renderHistoryScreen(); }
@@ -970,7 +993,7 @@ function _playBuzzer() {
 function exportData() {
   try {
     const dump = {
-      version: '4.6.1',
+      version: '4.6.3',
       exportDate: new Date().toISOString(),
       data: {
         archerProfil: JSON.parse(localStorage.getItem('archerProfil') || '{}'),

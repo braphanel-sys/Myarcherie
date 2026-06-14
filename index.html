@@ -327,6 +327,13 @@
   .session-card-stats { display:flex; gap:14px; padding-top:11px; border-top:1px solid var(--border); flex-wrap:wrap; }
   .mini-stat { font-size:0.76rem; color:var(--text-muted); }
   .mini-stat span { color:var(--text); font-weight:500; }
+  .session-card-expandable { cursor:pointer; }
+  .session-card-expandable:active { border-color:rgba(201,168,76,0.4); }
+  .history-chevron { font-size:0.6rem; color:var(--text-muted); margin-left:6px; vertical-align:middle; }
+  .history-volley-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .history-volley-label { font-family:'Bebas Neue',sans-serif; font-size:0.75rem; letter-spacing:1px; color:var(--text-muted); min-width:22px; }
+  .history-volley-arrows { display:flex; gap:4px; flex-wrap:wrap; flex:1; }
+  .history-volley-total { font-family:'Bebas Neue',sans-serif; font-size:0.95rem; color:var(--gold); min-width:28px; text-align:right; }
   .objectif-tag { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:0.7rem; margin-top:7px; }
   .objectif-tag.achieved { background:rgba(39,174,96,0.15); border:1px solid rgba(39,174,96,0.3); color:#2ECC71; }
   .objectif-tag.missed   { background:rgba(192,57,43,0.15);  border:1px solid rgba(192,57,43,0.3);  color:#E74C3C; }
@@ -481,7 +488,7 @@
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);">
-      <span style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.6.2</span>
+      <span style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.6.3</span>
     </div>
   </div>
 

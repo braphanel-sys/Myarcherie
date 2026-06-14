@@ -40,7 +40,7 @@ The JS is organized into clearly labeled sections (search for `// ──`):
 | `BUILD PROMPT` | Construit les données structurées envoyées au serveur (`mode`, `a1`, `a2`, `desc1`, `desc2`) — le prompt IA est généré côté serveur depuis V4.6.0 |
 | `CALL API` | Envoie image + données structurées, parse la réponse, met à jour la session — `arrowCount` basé sur `format.apv` ; guard "sans session active" ; photos base64 strippées avant sauvegarde historique |
 | `DISPLAY SOLO / DUO / BEURSAULT` | Renders scoring results; `arrowsHtml(arrows, prefix, gridId)` — badges cliquables via `editArrow()` |
-| `SESSION BAR / HISTORY` | Running score bar and volley history list |
+| `SESSION BAR / HISTORY` | Running score bar and volley history list ; `renderHistoryScreen()` — cartes de session ; `toggleHistoryDetail(i)` — déploie/replie le détail des volées avec badges colorés au tap |
 | `FIN DE SESSION` | End session, clear state |
 | `PERSISTANCE SESSION` | `autoSaveSession()` (sauvegarde + met à jour `lastActivityAt`), `clearSessionDraft()`, `restoreSessionIfExists()` — seuil unique 4h basé sur `lastActivityAt` : silent < 4h, toast 6s ≥ 4h |
 | `TRI DE FLÈCHES` | `startTri()`, `validateTriImpact()`, `showTriResults()` — saisie SVG interactive, zoom/pinch, classement par dispersion ; config via inputs libres (nb flèches, volées, à conserver) ; `clearTriDraft()` appelé en tête de `showTriResults()` |
@@ -93,7 +93,7 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 
 ## PWA
 
-- `sw.js` — cache `archerAI-v4.6.2`, précache `app.js` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
+- `sw.js` — cache `archerAI-v4.6.3`, précache `app.js` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
 - `manifest.json` — standard PWA manifest, `theme_color: #C9A84C`.
 - Pour déployer une nouvelle version : mettre à jour le nom du cache dans `sw.js` (ex. `archerAI-v4.4`).
 - **Bandeau mise à jour** (`#update-banner`) : affiché par `showUpdateBanner()` quand le SW détecte un nouveau worker installé. Bouton "Actualiser" envoie `'skipWaiting'` au SW puis recharge la page.

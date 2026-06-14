@@ -6,7 +6,21 @@
 
 ---
 
-## V4.6.2 — Timer : mode boucle (relance auto à chaque volée) *(Juin 2026 — actuelle)*
+## V4.6.3 — Historique : détail des volées au tap *(Juin 2026 — actuelle)*
+
+### Ajouté
+- **Détail des volées au tap** : taper sur une session dans l'historique déploie le détail volée par volée avec badges scores colorés (or/rouge/blanc selon valeur)
+- **Chevron indicateur** : `▼` dans le titre de la carte, passe à `▲` quand le détail est ouvert
+- **Bouton 🗑 indépendant** : `event.stopPropagation()` sur le bouton suppression — le tap sur la carte ne déclenche plus accidentellement la suppression
+
+### Technique
+- `hasVolleys` : guard — n'affiche le chevron et le toggle que si `s.volleys[0].arrows` existe
+- `toggleHistoryDetail(i)` : toggle `display:none/block` sur `#volleys-{i}`, met à jour `#chev-{i}`
+- Nouvelles classes CSS : `.session-card-expandable`, `.history-chevron`, `.history-volley-row`, `.history-volley-label`, `.history-volley-arrows`, `.history-volley-total`
+
+---
+
+## V4.6.2 — Timer : mode boucle (relance auto à chaque volée) *(Juin 2026)*
 
 ### Ajouté
 - **Timer compétition** : chrono intégré dans l'écran Home avec 3 durées (1 min / 2 min / 4 min) + phase de préparation 10s avec bip sonore
