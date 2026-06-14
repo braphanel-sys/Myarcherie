@@ -488,7 +488,7 @@
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);">
-      <span style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.6.3</span>
+      <span style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.6.4-dev</span>
     </div>
   </div>
 
@@ -806,6 +806,11 @@
       <div class="modal-stat"><div class="modal-stat-value" id="modal-volleys">0</div><div class="modal-stat-label">Volées</div></div>
       <div class="modal-stat"><div class="modal-stat-value" id="modal-arrows">0</div><div class="modal-stat-label">Flèches</div></div>
       <div class="modal-stat"><div class="modal-stat-value" id="modal-avg">0</div><div class="modal-stat-label">Moy./flèche</div></div>
+    </div>
+    <!-- Debug export — branche dev uniquement -->
+    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(201,168,76,0.2);">
+      <button id="btn-export-debug" onclick="exportDebugZip()" style="width:100%;background:transparent;border:1px solid rgba(201,168,76,0.4);color:var(--gold);padding:12px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;letter-spacing:0.5px;cursor:pointer;">📦 Exporter les données de debug</button>
+      <p style="text-align:center;font-size:0.7rem;color:var(--text-muted);margin-top:6px;font-style:italic;">Photos + scores IA + log horodaté — branche dev</p>
     </div>
     <div class="btn-modal-row">
       <button class="btn-new-session" onclick="restartSession()">🔄 Rejouer</button>

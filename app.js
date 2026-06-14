@@ -39,6 +39,37 @@ let archer1Fleche = {};
 let archer2Fleche = {};
 let profil = {};
 
+// ── DEBUG LOG (branche dev uniquement — V4.6.4-dev) ──
+let debugLog = [];
+let debugPhotos = []; // { filename, base64, iaFilename, iaData }
+
+function logEvent(action, data = {}) {
+  debugLog.push({ ts: new Date().toISOString(), action, ...data });
+}
+
+function logVollee(volleeIndex, imageBase64, iaResponse, durationMs, scoreCorrige = null) {
+  const ts = new Date();
+  const hh = String(ts.getHours()).padStart(2,'0');
+  const mm = String(ts.getMinutes()).padStart(2,'0');
+  const label = `vollee_${String(volleeIndex).padStart(2,'0')}_${hh}h${mm}`;
+  debugPhotos.push({
+    filename: `${label}.jpg`,
+    base64: imageBase64,
+    iaFilename: `${label}_ia.json`,
+    iaData: iaResponse
+  });
+  logEvent('vollee_analysee', {
+    vollee: volleeIndex,
+    photo_file: `${label}.jpg`,
+    ia_file: `${label}_ia.json`,
+    duration_ms: durationMs,
+    score_ia: iaResponse?.total ?? null,
+    score_corrige: scoreCorrige,
+    correction: scoreCorrige !== null && scoreCorrige !== iaResponse?.total,
+    type_cible: iaResponse?.type ?? null
+  });
+}
+
 // ==========================================
 // NAVIGATION
 // ==========================================
@@ -189,6 +220,7 @@ function startSession() {
   } : null;
 
   currentSession = { format, arc: profil.arc || null, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString() };
+  logEvent('nouvelle_session', { mode: mode });
 
   document.getElementById('session-format-name').textContent = format.name + (profil.arc ? ' — ' + profil.arc : '');
   document.getElementById('session-format-detail').textContent = format.detail;
@@ -339,6 +371,7 @@ function processFile(file) {
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
       const compressed = canvas.toDataURL('image/jpeg', 0.82);
       currentImageBase64 = compressed.split(',')[1];
+      logEvent('photo_uploadee', { size_kb: Math.round(currentImageBase64.length * 0.75 / 1024) });
       document.getElementById('preview-img').src = compressed;
       document.getElementById('analyze-section').classList.add('visible');
       document.getElementById('result-card').classList.remove('visible');
@@ -397,10 +430,12 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
   const desc1 = describeFleche(a1fleche);
   const desc2 = describeFleche(a2fleche);
 
+  const t0 = Date.now();
   const response = await fetch("/api/analyze", {
     method:"POST", headers:{"Content-Type":"application/json"},
     body: JSON.stringify({ imageBase64, mode: isDuo ? 'duo' : 'solo', a1, a2, desc1, desc2 })
   });
+  const durationMs = Date.now() - t0;
   const result = await response.json();
   if (result.error) return null;
 
@@ -418,6 +453,9 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
   }
   updateSessionBar(); updateHistory();
   autoSaveSession();
+  const volleeIndex = currentSession.volleys.length;
+  logVollee(volleeIndex, imageBase64, result, durationMs);
+  logEvent('session_state', { total: currentSession.totalScore, volleys: volleeIndex, arrows: currentSession.arrowCount });
   // Relance auto du timer si mode boucle activé
   if (timerState.loop && timerState.lastDuration) {
     setTimeout(() => startTimer(timerState.lastDuration), 1500);
@@ -596,6 +634,7 @@ function endSession() {
   if (typeof cancelTimer === 'function') cancelTimer();
   if (!currentSession || !currentSession.volleys.length) { alert('Aucune volée enregistrée !'); return; }
   const s = currentSession;
+  logEvent('session_terminee', { total: s.totalScore, volleys: s.volleys.length });
   const total = s.totalScore;
   const avg = s.arrowCount > 0 ? (total/s.arrowCount).toFixed(1) : 0;
   document.getElementById('modal-total').textContent = total + (s.format.maxScore ? ' / '+s.format.maxScore : '');
@@ -637,6 +676,7 @@ function endSession() {
 function restartSession() {
   const { format, arc, objectif } = currentSession;
   currentSession = { format, arc, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString() };
+  logEvent('nouvelle_session', { mode: mode });
   clearSessionDraft();
   updateSessionBar(); updateHistory();
   document.getElementById('result-card').classList.remove('visible');
@@ -716,8 +756,10 @@ function restoreSessionIfExists() {
     if (age < SEUIL_MODAL) {
       _applyRestoredSession(s);
       _showRestoreToast(s);
+      logEvent('session_restauree', { age_minutes: Math.round(age / 60000) });
     } else {
       _showRestoreModal(s, age);
+      logEvent('session_restauree', { age_minutes: Math.round(age / 60000) });
     }
     return true;
   } catch { return false; }
@@ -1407,4 +1449,46 @@ function getTouchDist(touches) {
   const dx = touches[0].clientX - touches[1].clientX;
   const dy = touches[0].clientY - touches[1].clientY;
   return Math.sqrt(dx*dx + dy*dy);
+}
+
+// ── EXPORT DEBUG ZIP (branche dev uniquement — V4.6.4-dev) ──
+async function exportDebugZip() {
+  const btn = document.getElementById('btn-export-debug');
+  if (btn) { btn.disabled = true; btn.textContent = '📦 Génération...'; }
+  try {
+    if (typeof JSZip === 'undefined') throw new Error('JSZip non chargé');
+    const zip = new JSZip();
+    const now = new Date();
+    const sessionLabel = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}h${String(now.getMinutes()).padStart(2,'0')}`;
+    const logData = {
+      session_start: debugLog[0]?.ts ?? now.toISOString(),
+      session_export: now.toISOString(),
+      app_version: 'V4.6.4-dev',
+      mode: mode,
+      total_score: currentSession?.totalScore ?? 0,
+      total_volleys: currentSession?.volleys?.length ?? 0,
+      total_arrows: currentSession?.arrowCount ?? 0,
+      events: debugLog
+    };
+    zip.file('log.json', JSON.stringify(logData, null, 2));
+    for (const item of debugPhotos) {
+      const photoData = item.base64.replace(/^data:image\/\w+;base64,/, '');
+      zip.file(item.filename, photoData, { base64: true });
+      zip.file(item.iaFilename, JSON.stringify(item.iaData, null, 2));
+    }
+    const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `archerAI_debug_${sessionLabel}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    console.error('Export debug error:', e);
+    alert('Erreur export : ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '📦 Exporter les données de debug'; }
+  }
 }

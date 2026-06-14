@@ -6,6 +6,22 @@
 
 ---
 
+## V4.6.4-dev — Log terrain + export ZIP debug *(Juin 2026 — branche dev)*
+
+### Ajouté
+- **Log debug par volée** : chaque volée enregistre photo + réponse IA + durée API + timestamp dans `debugLog` / `debugPhotos`
+- **Export ZIP en fin de session** : `exportDebugZip()` génère `archerAI_debug_YYYY-MM-DD_HHhMM.zip` avec photos JPG, JSONs IA et `log.json` global
+- **Bouton "📦 Exporter les données de debug"** dans le modal de fin de session (branche dev uniquement)
+- **logEvent** sur tous les événements clés : `photo_uploadee`, `nouvelle_session`, `session_terminee`, `session_restauree`, `vollee_analysee`, `session_state`
+
+### Technique
+- Variables globales `debugLog[]` et `debugPhotos[]` initialisées au démarrage
+- `t0 = Date.now()` avant le fetch dans `callAPI()` ; `durationMs` calculé à réception
+- Guard `typeof JSZip === 'undefined'` dans `exportDebugZip()` pour erreur claire si CDN absent
+- `currentSession` (pas `session`) utilisé partout — adapté des instructions
+
+---
+
 ## V4.6.3 — Historique : détail des volées au tap *(Juin 2026 — actuelle)*
 
 ### Ajouté
