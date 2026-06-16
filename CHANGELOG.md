@@ -6,6 +6,14 @@
 
 ---
 
+## V4.6.9-dev (2026-06-16)
+- Feat: prompt anti-sur-comptage — règles strictes "tige + empennage visibles" pour qualifier une flèche
+- Transmission de `apv` (nombre attendu de flèches) au prompt IA via /api/analyze
+- Réduit le risque de compter d'anciens impacts comme nouvelles flèches
+- Bug observé V4.6.8 : volée 4 flèches scorée 9-9-8-7-6=39 au lieu de 9-9-8-8=34
+
+---
+
 ## V4.6.8-dev (2026-06-16)
 - Fix: app_version du log debug lu depuis le bandeau (#version-banner) au lieu du hardcode
 - Une seule source de vérité pour la version : le bandeau dans index.html

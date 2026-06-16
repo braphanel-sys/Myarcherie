@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { imageBase64, mode, a1, a2, desc1, desc2 } = req.body;
+    const { imageBase64, mode, a1, a2, desc1, desc2, apv } = req.body;
     if (!imageBase64) return res.status(400).json({ error: 'No image provided' });
 
     // Le prompt est construit côté serveur — le client n'envoie que des données
@@ -22,8 +22,25 @@ export default async function handler(req, res) {
 
     const BAREMES = `Barèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M`;
 
+    const apvBlock = apv ? `
+⚠️ NOMBRE DE FLÈCHES ATTENDU : exactement ${apv} flèche${apv > 1 ? 's' : ''} dans cette volée.
+- Si tu en identifies plus que ${apv} → tu confonds très probablement avec d'anciens impacts visibles sur la cible. RECOMPTE en t'appuyant uniquement sur les tiges + empennages visibles.
+- Si tu en identifies moins → certaines flèches ont raté la cible (noter "M").
+` : '';
+
+    const rulesBlock = `
+⚠️ RÈGLES STRICTES — Cette cible peut contenir de NOMBREUX impacts d'anciens tirs (trous + halos colorés). Tu dois les IGNORER complètement.
+
+Une FLÈCHE PLANTÉE doit avoir IMPÉRATIVEMENT :
+1. Une tige (hampe) visible, dépassant de la surface de la cible
+2. Un empennage (plumes ou plastique coloré) visible à l'extrémité
+
+Sans ces 2 éléments visibles = ancien impact = à IGNORER, ne JAMAIS le compter comme une flèche.
+${apvBlock}`;
+
     const prompt = mode === 'duo'
       ? `Tu es un expert en tir à l'arc. Analyse cette cible, 2 archers.
+${rulesBlock}
 ${name1} : ${d1}.
 ${name2} : ${d2}.
 Identifie le type (WA/VEGAS/BEURSAULT/GEF), attribue chaque flèche selon description et score. Ne compte que les fûts physiquement plantés, ignore les impacts vides.
@@ -32,6 +49,7 @@ Réponds UNIQUEMENT JSON:
 {"type":"WA","archer1":{"name":"${name1}","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."},"archer2":{"name":"${name2}","arrows":[10,9,8],"total":27,"count":3,"analysis":"..."}}
 Si pas de cible: {"error":"Pas de cible détectée"}`
       : `Tu es un expert en tir à l'arc. Analyse cette cible.
+${rulesBlock}
 Identifie le type (WA/VEGAS/BEURSAULT/GEF) et applique le barème. Ne compte que les fûts physiquement plantés, ignore les impacts vides.
 ${BAREMES}
 Réponds UNIQUEMENT JSON:

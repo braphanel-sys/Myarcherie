@@ -93,7 +93,7 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 
 ## PWA
 
-- `sw.js` — cache `archerAI-v4.6.8-dev` (branche dev) — V4.6.8-dev : app_version du log lu depuis #version-banner (source unique), précache `app.js` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
+- `sw.js` — cache `archerAI-v4.6.9-dev` (branche dev) — V4.6.9-dev : prompt IA renforcé contre sur-comptage (règles tige+empennage, transmission apv), précache `app.js` ; install précharge `/`, `/index.html`, `/guide-scoring.html` ; fetch : cache-first pour les GET, bypass total pour `/api/` ; écoute le message `'skipWaiting'` envoyé par le bandeau de mise à jour.
 - `manifest.json` — standard PWA manifest, `theme_color: #C9A84C`.
 - Pour déployer une nouvelle version : mettre à jour le nom du cache dans `sw.js` (ex. `archerAI-v4.4`).
 - **Bandeau mise à jour** (`#update-banner`) : affiché par `showUpdateBanner()` quand le SW détecte un nouveau worker installé. Bouton "Actualiser" envoie `'skipWaiting'` au SW puis recharge la page.

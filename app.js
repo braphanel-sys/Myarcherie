@@ -550,7 +550,7 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
   const t0 = Date.now();
   const response = await fetch("/api/analyze", {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ imageBase64, mode: isDuo ? 'duo' : 'solo', a1, a2, desc1, desc2 })
+    body: JSON.stringify({ imageBase64, mode: isDuo ? 'duo' : 'solo', a1, a2, desc1, desc2, apv: currentSession.format?.apv || null })
   });
   const durationMs = Date.now() - t0;
   const result = await response.json();
