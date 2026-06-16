@@ -1587,7 +1587,7 @@ async function exportDebugZip() {
     const logData = {
       session_start: debugLog[0]?.ts ?? now.toISOString(),
       session_export: now.toISOString(),
-      app_version: 'V4.6.5-dev',
+      app_version: document.querySelector('#version-banner')?.textContent?.trim() || 'unknown',
       mode: mode,
       total_score: currentSession?.totalScore ?? 0,
       total_volleys: currentSession?.volleys?.length ?? 0,

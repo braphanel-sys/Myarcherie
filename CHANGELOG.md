@@ -6,6 +6,12 @@
 
 ---
 
+## V4.6.8-dev (2026-06-16)
+- Fix: app_version du log debug lu depuis le bandeau (#version-banner) au lieu du hardcode
+- Une seule source de vérité pour la version : le bandeau dans index.html
+
+---
+
 ## V4.6.7-dev (2026-06-16)
 - Feat: auto-export du ZIP debug en fin de session (dev uniquement)
 - Déclenchement 800ms après affichage du modal de fin de session
