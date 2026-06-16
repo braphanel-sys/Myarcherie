@@ -6,6 +6,23 @@
 
 ---
 
+## V4.6.5-dev — Photo de référence du blason *(Juin 2026 — branche dev)*
+
+### Ajouté
+- **Photo de référence du blason** : bouton optionnel `📸 Photo du blason (référence)` en début de session
+- **Stockage local** dans `session.referencePhoto` (`{ base64, ts, captured }`) — pas d'appel API à ce stade
+- **Persistance** via `autoSaveSession()` + restauration correcte au redémarrage de l'app
+- **Inclusion dans le ZIP debug** : `reference_blason.jpg` + `reference_blason_meta.json`
+- **Bandeau version** → `V4.6.5-dev`
+
+### Technique
+- Nouvelle fonction `compressImageFile(file)` (Promise) extraite de `processFile` — réutilisable
+- `renderReferenceButton()` / `showReferenceCaptured()` / `resetReferencePhoto()` pour la gestion UI
+- `renderReferenceButton()` appelé dans `startSession()`, `restartSession()` et `_applyRestoredSession()`
+- `captureReferencePhoto()` utilise la même logique de compression (max 1200px, JPEG 0.82)
+
+---
+
 ## V4.6.4-dev — Log terrain + export ZIP debug *(Juin 2026 — branche dev)*
 
 ### Ajouté

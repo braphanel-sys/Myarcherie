@@ -219,8 +219,9 @@ function startSession() {
     date:  document.getElementById('obj-date').value || null
   } : null;
 
-  currentSession = { format, arc: profil.arc || null, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString() };
+  currentSession = { format, arc: profil.arc || null, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString(), referencePhoto: null };
   logEvent('nouvelle_session', { mode: mode });
+  if (typeof renderReferenceButton === 'function') renderReferenceButton();
 
   document.getElementById('session-format-name').textContent = format.name + (profil.arc ? ' — ' + profil.arc : '');
   document.getElementById('session-format-detail').textContent = format.detail;
@@ -353,6 +354,31 @@ function handleDrop(e) {
 }
 function handleFile(e) { const file = e.target.files[0]; if (file) processFile(file); }
 
+function compressImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = e => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const MAX = 1200;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else       { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function processFile(file) {
   const reader = new FileReader();
   reader.onload = e => {
@@ -382,6 +408,97 @@ function processFile(file) {
     img.src = dataUrl;
   };
   reader.readAsDataURL(file);
+}
+
+// ==========================================
+// PHOTO DE RÉFÉRENCE DU BLASON — V4.6.5-dev
+// ==========================================
+async function captureReferencePhoto(file) {
+  const btn = document.getElementById('btn-photo-reference');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Compression...'; }
+  try {
+    const dataUrl = await compressImageFile(file);
+    const base64 = dataUrl.split(',')[1];
+    currentSession.referencePhoto = {
+      base64: base64,
+      ts: new Date().toISOString(),
+      captured: true
+    };
+    autoSaveSession();
+    logEvent('reference_blason_capturee', {
+      ts: currentSession.referencePhoto.ts,
+      size_kb: Math.round(base64.length * 0.75 / 1024)
+    });
+    showReferenceCaptured();
+  } catch(e) {
+    console.error('Reference photo error:', e);
+    alert('Erreur capture référence : ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '📸 Photo du blason (référence)'; }
+  }
+}
+
+function showReferenceCaptured() {
+  const wrapper = document.getElementById('reference-wrapper');
+  if (!wrapper) return;
+  wrapper.innerHTML = `
+    <div style="
+      padding: 12px;
+      border: 1px solid rgba(46,204,113,0.4);
+      background: rgba(46,204,113,0.05);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text);
+    ">
+      ✅ Photo de référence enregistrée
+      <button onclick="resetReferencePhoto()" style="
+        margin-left: 8px;
+        background: transparent;
+        border: none;
+        color: var(--gold);
+        cursor: pointer;
+        text-decoration: underline;
+        font-size: 0.8rem;
+      ">refaire</button>
+    </div>
+  `;
+}
+
+function resetReferencePhoto() {
+  currentSession.referencePhoto = null;
+  autoSaveSession();
+  logEvent('reference_blason_supprimee');
+  renderReferenceButton();
+}
+
+function renderReferenceButton() {
+  const wrapper = document.getElementById('reference-wrapper');
+  if (!wrapper) return;
+  if (currentSession?.referencePhoto?.captured) {
+    showReferenceCaptured();
+    return;
+  }
+  wrapper.innerHTML = `
+    <label for="input-photo-reference" id="btn-photo-reference" style="
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: 1px dashed rgba(201,168,76,0.4);
+      color: var(--gold);
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      text-align: center;
+      cursor: pointer;
+    ">📸 Photo du blason (référence)</label>
+    <input type="file" id="input-photo-reference" accept="image/*" capture="environment"
+           style="display:none" onchange="if(this.files[0]) captureReferencePhoto(this.files[0])">
+    <p style="text-align:center; font-size:0.7rem; color:var(--text-muted); margin-top:6px; font-style:italic;">
+      Optionnel — facilite l'analyse des volées (branche dev)
+    </p>
+  `;
 }
 
 // ==========================================
@@ -675,8 +792,9 @@ function endSession() {
 
 function restartSession() {
   const { format, arc, objectif } = currentSession;
-  currentSession = { format, arc, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString() };
+  currentSession = { format, arc, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString(), referencePhoto: null };
   logEvent('nouvelle_session', { mode: mode });
+  if (typeof renderReferenceButton === 'function') renderReferenceButton();
   clearSessionDraft();
   updateSessionBar(); updateHistory();
   document.getElementById('result-card').classList.remove('visible');
@@ -798,6 +916,7 @@ function _applyRestoredSession(s) {
     document.getElementById('obj-bar-label').textContent = `Objectif ${s.objectif.score}${s.format.maxScore ? ' / '+s.format.maxScore : ''}`;
   } else { barWrap.classList.remove('visible'); }
   updateSessionBar(); updateHistory();
+  if (typeof renderReferenceButton === 'function') renderReferenceButton();
   showScreen('session');
 }
 
@@ -1463,7 +1582,7 @@ async function exportDebugZip() {
     const logData = {
       session_start: debugLog[0]?.ts ?? now.toISOString(),
       session_export: now.toISOString(),
-      app_version: 'V4.6.4-dev',
+      app_version: 'V4.6.5-dev',
       mode: mode,
       total_score: currentSession?.totalScore ?? 0,
       total_volleys: currentSession?.volleys?.length ?? 0,
@@ -1471,6 +1590,14 @@ async function exportDebugZip() {
       events: debugLog
     };
     zip.file('log.json', JSON.stringify(logData, null, 2));
+    if (currentSession?.referencePhoto?.captured) {
+      const refData = currentSession.referencePhoto.base64.replace(/^data:image\/\w+;base64,/, '');
+      zip.file('reference_blason.jpg', refData, { base64: true });
+      zip.file('reference_blason_meta.json', JSON.stringify({
+        ts: currentSession.referencePhoto.ts,
+        note: 'Photo de référence du blason vide capturée en début de session'
+      }, null, 2));
+    }
     for (const item of debugPhotos) {
       const photoData = item.base64.replace(/^data:image\/\w+;base64,/, '');
       zip.file(item.filename, photoData, { base64: true });
