@@ -6,6 +6,11 @@
 
 ---
 
+## V4.6.6-dev (2026-06-16)
+- Fix critique : migration modèle API `claude-sonnet-4-20250514` → `claude-sonnet-4-6` (modèle retiré par Anthropic le 15/06/2026)
+
+---
+
 ## V4.6.5-dev — Photo de référence du blason *(Juin 2026 — branche dev)*
 
 ### Ajouté
