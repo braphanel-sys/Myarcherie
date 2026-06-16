@@ -6,6 +6,12 @@
 
 ---
 
+## V4.6.4 (2026-06-16)
+- Fix critique : migration modèle API `claude-sonnet-4-20250514` → `claude-sonnet-4-6` (modèle retiré par Anthropic le 15/06/2026, analyses cassées en prod)
+- Fix validé en dev (V4.6.6-dev → V4.6.8-dev) sur cibles WA réelles avant backport
+
+---
+
 ## V4.6.3 — Historique : détail des volées au tap *(Juin 2026 — actuelle)*
 
 ### Ajouté
