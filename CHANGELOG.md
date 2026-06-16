@@ -6,6 +6,14 @@
 
 ---
 
+## V4.6.7-dev (2026-06-16)
+- Feat: auto-export du ZIP debug en fin de session (dev uniquement)
+- Déclenchement 800ms après affichage du modal de fin de session
+- Garde-fou : vérification du bandeau version contient "dev" → no-op si backporté sur main par erreur
+- Le bouton manuel "📦 Exporter les données de debug" reste en place comme fallback
+
+---
+
 ## V4.6.6-dev (2026-06-16)
 - Fix critique : migration modèle API `claude-sonnet-4-20250514` → `claude-sonnet-4-6` (modèle retiré par Anthropic le 15/06/2026)
 
