@@ -2,3 +2,7 @@
 *.jpg
 *.png
 *.pdf
+
+# Exception : photos d'entraînement pour calibration du prompt IA
+!Photo training/
+!Photo training/*.jpg
