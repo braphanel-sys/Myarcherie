@@ -6,6 +6,13 @@
 
 ---
 
+## V4.7.4 (2026-06-20)
+- Feat: log comparatif IA vs archer — chaque volée enregistre `log_ia` (arrows_ia, arrows_final, corrections, analysis)
+- Dataset auto-alimenté : chaque correction terrain devient une donnée d'entraînement
+- Rétro-compatible : champ `log_ia` additionnel, sessions existantes non affectées
+
+---
+
 ## V4.7.3 (2026-06-20)
 - Feat: system prompt minimaliste — biais "sous-compter > sur-compter", doute = ne pas compter
 - Feat: méthode d'élimination — commence à 0 flèche, prouve chaque ajout (tige 3D + empennage)

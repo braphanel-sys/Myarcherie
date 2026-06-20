@@ -564,7 +564,17 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
     currentSession.arrowCount += apv ? apv * 2 : (result.archer1.count||0) + (result.archer2.count||0);
   } else if (result.arrows) {
     displayResult(result);
-    currentSession.volleys.push({ ...result, photo:imageBase64 });
+    const arrows_ia = [...result.arrows];
+    const log_ia = {
+      timestamp: new Date().toISOString(),
+      model: result.model || 'claude-sonnet-4-6',
+      apv: apv || result.arrows.length,
+      arrows_ia,
+      arrows_final: [...arrows_ia],
+      corrections: [],
+      analysis: result.analysis || ''
+    };
+    currentSession.volleys.push({ ...result, photo:imageBase64, log_ia });
     currentSession.totalScore += result.total || 0;
     currentSession.arrowCount += apv || result.count || 0;
   }
@@ -644,6 +654,12 @@ function editArrow(gridId, idx, currentVal) {
     const oldVal = old === 'M' ? 0 : (old === 'X' ? 10 : parseInt(old));
     const newVal = parsed === 'M' ? 0 : (parsed === 'X' ? 10 : parseInt(parsed));
     volley.arrows[idx] = parsed;
+    if (volley.log_ia) {
+      volley.log_ia.arrows_final = [...volley.arrows];
+      volley.log_ia.corrections = volley.log_ia.arrows_ia
+        .map((s, i) => volley.arrows[i] !== s ? { index: i, from: s, to: volley.arrows[i] } : null)
+        .filter(Boolean);
+    }
     volley.total = volley.total - oldVal + newVal;
     currentSession.totalScore = currentSession.totalScore - oldVal + newVal;
     document.getElementById('arrows-grid').innerHTML = arrowsHtml(volley.arrows, 'F', 'arrows-grid');
