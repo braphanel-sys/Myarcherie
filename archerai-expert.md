@@ -33,7 +33,7 @@ le prompt mais rien ne bouge".
 **Repo GitHub :** `braphanel-sys/Myarcherie`
 **Hébergement :** Vercel Pro — auto-deploy sur push GitHub
 **Vercel project ID :** `prj_GCysKmS3Xg2RxXSuUEBrGi97qAW9` / team `team_QMCo4yvciZKyPaOhT6QqukWn`
-**Version actuelle :** ArcherAI V4.7.3 (juin 2026)
+**Version actuelle :** ArcherAI V4.7.4 (juin 2026)
 
 ## Stack technique
 
