@@ -60,14 +60,16 @@ Identifie le type (WA/VEGAS/BEURSAULT/GEF) et applique le barème.
 ${BAREMES}
 
 IMPORTANT — Procède dans cet ordre STRICT :
-1. Dans le champ "analysis", liste chaque flèche que tu identifies ainsi :
-   "F1: tige visible [position], empennage [couleur/matière] visible → [zone] → [score]"
-   N'inclure une flèche dans cette liste que si TU VOIS SA TIGE ET SON EMPENNAGE.
-2. Compte les entrées Fx dans ton analysis → c'est TON NOMBRE DE FLÈCHES.
-3. Remplis arrows[] avec exactement ce nombre de scores, dans l'ordre de ton analysis.
+1. Pour chaque flèche que tu identifies, crée une entrée dans "detections" avec :
+   - "position" : où elle se trouve sur la cible (ex: "haut-gauche", "centre", "bas-droite")
+   - "empennage" : couleur et matière de l'empennage visible (ex: "bleu plastique", "blanc plume")
+   - "score" : valeur selon le barème
+   N'ajouter une entrée QUE si tu vois physiquement la tige ET l'empennage de cette flèche.
+2. "arrows" doit contenir EXACTEMENT autant de valeurs que "detections" — ni plus, ni moins.
+3. "count" = longueur de "detections".
 
 Réponds UNIQUEMENT JSON:
-{"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"F1: tige visible haut-gauche, empennage bleu → bleu int → 6. F2: tige centre, empennage blanc → rouge ext → 7. F3: tige bas-droite, empennage rouge → jaune → 9."}
+{"type":"WA","detections":[{"id":1,"position":"haut-gauche","empennage":"bleu plastique","score":9},{"id":2,"position":"centre","empennage":"rouge plastique","score":8},{"id":3,"position":"bas-droite","empennage":"blanc plume","score":7}],"arrows":[9,8,7],"total":24,"count":3,"analysis":"Groupement serré dans le rouge/jaune."}
 Si pas de cible: {"error":"Pas de cible détectée"}`;
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
