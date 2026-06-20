@@ -29,19 +29,16 @@ export default async function handler(req, res) {
 ` : '';
 
     const rulesBlock = `
-⚠️ RÈGLES STRICTES — Cette cible contient de NOMBREUX impacts d'anciens tirs. IGNORE-LES TOUS.
+MÉTHODE D'ÉLIMINATION — Commence avec 0 flèche. N'ajoute que ce que tu peux prouver.
 
-PROTOCOLE DE COMPTAGE — 3 étapes obligatoires :
-1. REPÈRE les tiges : cherche uniquement des barres allongées en RELIEF dépassant de la surface.
-   → Un trou vu de face (forme ronde ou ovale sombre) = ancien impact = INTERDIT de compter.
-2. CONFIRME l'empennage : chaque tige doit avoir des plumes ou un plastique coloré à son extrémité.
-3. COMPTE : note ce chiffre. C'est le seul nombre de flèches autorisé dans ta réponse.
+Pour chaque objet suspect sur la cible, pose-toi ces deux questions :
+1. Est-ce une tige cylindrique qui DÉPASSE en 3D de la surface, avec une ombre portée visible ?
+2. Est-ce que cette même tige a un empennage (plumes ou plastique) visible à son extrémité ?
 
-PIÈGES À ÉVITER :
-- Trou d'ancien impact avec halo coloré → ressemble à une flèche vue de face → IGNORER
-- Ombre d'une flèche → n'est pas une deuxième flèche → IGNORER
-- Flèche partiellement cachée derrière une autre → ne compter qu'une fois
-- En cas de doute sur un objet → ne pas le compter
+→ Si OUI aux deux : flèche confirmée, ajoute-la.
+→ Un seul NON ou un doute : objet éliminé, ne pas compter.
+
+Cette cible contient de nombreux anciens impacts (trous, halos colorés) — ils ne passent pas le test ci-dessus car ils sont PLATS et ENFONCÉS dans la cible, sans tige ni empennage.
 ${apvBlock}`;
 
     const prompt = mode === 'duo'
@@ -81,7 +78,8 @@ Si pas de cible: {"error":"Pas de cible détectée"}`;
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 1000,
+        max_tokens: 1500,
+        system: "Tu es un compteur visuel minimaliste spécialisé en tir à l'arc. Ta règle absolue : en cas de doute entre compter ou ne pas compter un objet, tu ne le comptes PAS. Tu préfères systématiquement sous-compter que sur-compter. Un objet qui n'est pas clairement identifiable comme une tige dépassant en 3D avec un empennage visible n'existe pas pour toi.",
         messages: [{
           role: "user",
           content: [
