@@ -29,13 +29,19 @@ export default async function handler(req, res) {
 ` : '';
 
     const rulesBlock = `
-⚠️ RÈGLES STRICTES — Cette cible peut contenir de NOMBREUX impacts d'anciens tirs (trous + halos colorés). Tu dois les IGNORER complètement.
+⚠️ RÈGLES STRICTES — Cette cible contient de NOMBREUX impacts d'anciens tirs. IGNORE-LES TOUS.
 
-Une FLÈCHE PLANTÉE doit avoir IMPÉRATIVEMENT :
-1. Une tige (hampe) visible, dépassant de la surface de la cible
-2. Un empennage (plumes ou plastique coloré) visible à l'extrémité
+PROTOCOLE DE COMPTAGE — 3 étapes obligatoires :
+1. REPÈRE les tiges : cherche uniquement des barres allongées en RELIEF dépassant de la surface.
+   → Un trou vu de face (forme ronde ou ovale sombre) = ancien impact = INTERDIT de compter.
+2. CONFIRME l'empennage : chaque tige doit avoir des plumes ou un plastique coloré à son extrémité.
+3. COMPTE : note ce chiffre. C'est le seul nombre de flèches autorisé dans ta réponse.
 
-Sans ces 2 éléments visibles = ancien impact = à IGNORER, ne JAMAIS le compter comme une flèche.
+PIÈGES À ÉVITER :
+- Trou d'ancien impact avec halo coloré → ressemble à une flèche vue de face → IGNORER
+- Ombre d'une flèche → n'est pas une deuxième flèche → IGNORER
+- Flèche partiellement cachée derrière une autre → ne compter qu'une fois
+- En cas de doute sur un objet → ne pas le compter
 ${apvBlock}`;
 
     const prompt = mode === 'duo'

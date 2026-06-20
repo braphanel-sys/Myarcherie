@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { imageBase64, mode, a1, a2, desc1, desc2 } = req.body;
+    const { imageBase64, mode, a1, a2, desc1, desc2, apv } = req.body;
     if (!imageBase64) return res.status(400).json({ error: 'No image provided' });
 
     // Le prompt est construit côté serveur — le client n'envoie que des données
@@ -22,8 +22,31 @@ export default async function handler(req, res) {
 
     const BAREMES = `Barèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M`;
 
+    const apvBlock = apv ? `
+⚠️ NOMBRE DE FLÈCHES ATTENDU : exactement ${apv} flèche${apv > 1 ? 's' : ''} dans cette volée.
+- Si tu en identifies plus que ${apv} → tu confonds très probablement avec d'anciens impacts visibles sur la cible. RECOMPTE en t'appuyant uniquement sur les tiges + empennages visibles.
+- Si tu en identifies moins → certaines flèches ont raté la cible (noter "M").
+` : '';
+
+    const rulesBlock = `
+⚠️ RÈGLES STRICTES — Cette cible contient de NOMBREUX impacts d'anciens tirs. IGNORE-LES TOUS.
+
+PROTOCOLE DE COMPTAGE — 3 étapes obligatoires :
+1. REPÈRE les tiges : cherche uniquement des barres allongées en RELIEF dépassant de la surface.
+   → Un trou vu de face (forme ronde ou ovale sombre) = ancien impact = INTERDIT de compter.
+2. CONFIRME l'empennage : chaque tige doit avoir des plumes ou un plastique coloré à son extrémité.
+3. COMPTE : note ce chiffre. C'est le seul nombre de flèches autorisé dans ta réponse.
+
+PIÈGES À ÉVITER :
+- Trou d'ancien impact avec halo coloré → ressemble à une flèche vue de face → IGNORER
+- Ombre d'une flèche → n'est pas une deuxième flèche → IGNORER
+- Flèche partiellement cachée derrière une autre → ne compter qu'une fois
+- En cas de doute sur un objet → ne pas le compter
+${apvBlock}`;
+
     const prompt = mode === 'duo'
       ? `Tu es un expert en tir à l'arc. Analyse cette cible, 2 archers.
+${rulesBlock}
 ${name1} : ${d1}.
 ${name2} : ${d2}.
 Identifie le type (WA/VEGAS/BEURSAULT/GEF), attribue chaque flèche selon description et score. Ne compte que les fûts physiquement plantés, ignore les impacts vides.
@@ -32,6 +55,7 @@ Réponds UNIQUEMENT JSON:
 {"type":"WA","archer1":{"name":"${name1}","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."},"archer2":{"name":"${name2}","arrows":[10,9,8],"total":27,"count":3,"analysis":"..."}}
 Si pas de cible: {"error":"Pas de cible détectée"}`
       : `Tu es un expert en tir à l'arc. Analyse cette cible.
+${rulesBlock}
 Identifie le type (WA/VEGAS/BEURSAULT/GEF) et applique le barème. Ne compte que les fûts physiquement plantés, ignore les impacts vides.
 ${BAREMES}
 Réponds UNIQUEMENT JSON:
@@ -46,7 +70,7 @@ Si pas de cible: {"error":"Pas de cible détectée"}`;
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-6",
         max_tokens: 1000,
         messages: [{
           role: "user",
