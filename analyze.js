@@ -56,10 +56,18 @@ Réponds UNIQUEMENT JSON:
 Si pas de cible: {"error":"Pas de cible détectée"}`
       : `Tu es un expert en tir à l'arc. Analyse cette cible.
 ${rulesBlock}
-Identifie le type (WA/VEGAS/BEURSAULT/GEF) et applique le barème. Ne compte que les fûts physiquement plantés, ignore les impacts vides.
+Identifie le type (WA/VEGAS/BEURSAULT/GEF) et applique le barème.
 ${BAREMES}
+
+IMPORTANT — Procède dans cet ordre STRICT :
+1. Dans le champ "analysis", liste chaque flèche que tu identifies ainsi :
+   "F1: tige visible [position], empennage [couleur/matière] visible → [zone] → [score]"
+   N'inclure une flèche dans cette liste que si TU VOIS SA TIGE ET SON EMPENNAGE.
+2. Compte les entrées Fx dans ton analysis → c'est TON NOMBRE DE FLÈCHES.
+3. Remplis arrows[] avec exactement ce nombre de scores, dans l'ordre de ton analysis.
+
 Réponds UNIQUEMENT JSON:
-{"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"..."}
+{"type":"WA","arrows":[9,8,7],"total":24,"count":3,"analysis":"F1: tige visible haut-gauche, empennage bleu → bleu int → 6. F2: tige centre, empennage blanc → rouge ext → 7. F3: tige bas-droite, empennage rouge → jaune → 9."}
 Si pas de cible: {"error":"Pas de cible détectée"}`;
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
