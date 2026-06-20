@@ -6,6 +6,16 @@
 
 ---
 
+## V4.7.3 (2026-06-20)
+- Feat: system prompt minimaliste — biais "sous-compter > sur-compter", doute = ne pas compter
+- Feat: méthode d'élimination — commence à 0 flèche, prouve chaque ajout (tige 3D + empennage)
+- Feat: max_tokens 1000 → 1500 pour laisser de la place au raisonnement
+- Résultat : sur-comptage ramené à 0 sur le dataset de 23 photos (avec apv)
+- Dataset validation géométrique : 23 photos cibles réelles, annotations_full.json, scripts baseline
+- Scripts : run-baseline.js, run-direct.js, validate.js, geo-scoring.js
+
+---
+
 ## V4.6.9-dev (2026-06-16)
 - Feat: prompt anti-sur-comptage — règles strictes "tige + empennage visibles" pour qualifier une flèche
 - Transmission de `apv` (nombre attendu de flèches) au prompt IA via /api/analyze
