@@ -1,0 +1,1012 @@
+[
+  {
+    "photo": "1781431057959.jpg",
+    "scores": [
+      9,
+      8,
+      7,
+      6
+    ],
+    "analysis": "4 flèches confirmées (tiges + empennages verts/jaunes visibles en 3D avec ombres portées distinctes). Groupement central mais dispersé entre rouge et bleu. Les nombreux anciens impacts (trous/halos) sur la cible ont été ignorés car plats et sans tige. Marge de progression notable sur la régularité.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-gauche (rouge/jaune)",
+        "empennage": "vert/jaune plastique",
+        "score": 9
+      },
+      {
+        "id": 2,
+        "position": "centre (rouge)",
+        "empennage": "vert/jaune plastique",
+        "score": 8
+      },
+      {
+        "id": 3,
+        "position": "centre-bas (rouge/bleu)",
+        "empennage": "vert/jaune plastique",
+        "score": 7
+      },
+      {
+        "id": 4,
+        "position": "haut-droite (bleu)",
+        "empennage": "vert/jaune plastique",
+        "score": 6
+      }
+    ]
+  },
+  {
+    "photo": "1781431057974.jpg",
+    "scores": [
+      10,
+      10,
+      8,
+      2
+    ],
+    "analysis": "Cible WA standard 5 zones. 3 flèches groupées dans le jaune/rouge avec empennages verts visibles, 1 flèche décrochée en bas-droite dans le blanc avec empennage bleu/vert visible. Groupement principal très serré au centre (jaune/rouge), une flèche écartée. Total : 30/40.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-gauche, dans le jaune",
+        "empennage": "vert/jaune plastique",
+        "score": 10
+      },
+      {
+        "id": 2,
+        "position": "centre, dans le jaune",
+        "empennage": "vert/jaune plastique",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "centre-droit, dans le rouge",
+        "empennage": "bleu/vert plastique",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "bas-droite, dans le blanc (hors zone colorée)",
+        "empennage": "bleu/vert plastique",
+        "score": 2
+      }
+    ]
+  },
+  {
+    "photo": "1781431057990.jpg",
+    "scores": [
+      9,
+      8,
+      8,
+      9
+    ],
+    "analysis": "4 flèches clairement identifiées avec tiges dépassant en 3D et empennages visibles. Groupement concentré dans la zone rouge/jaune (7-10), avec deux flèches dans le rouge (8) et deux dans la zone jaune/rouge (9). Bonne volée avec groupement serré autour du centre.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "haut-centre-gauche",
+        "empennage": "vert/blanc plastique",
+        "score": 9
+      },
+      {
+        "id": 2,
+        "position": "haut-centre",
+        "empennage": "bleu/blanc plastique",
+        "score": 8
+      },
+      {
+        "id": 3,
+        "position": "centre-droite",
+        "empennage": "bleu/blanc plastique",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "centre-bas",
+        "empennage": "bleu/blanc plastique",
+        "score": 9
+      }
+    ]
+  },
+  {
+    "photo": "1781431058008.jpg",
+    "scores": [
+      9,
+      6,
+      10,
+      9
+    ],
+    "analysis": "4 flèches confirmées par tige + empennage visibles. Groupement globalement centré : 1 flèche dans le jaune (10), 2 dans le rouge/9 (bleu intérieur), 1 dans le bleu (6). Nombreux anciens impacts (trous et halos) ignorés car plats, sans tige ni empennage. Score volée : 34/40.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "haut-centre",
+        "empennage": "violet/bleu plastique",
+        "score": 9
+      },
+      {
+        "id": 2,
+        "position": "haut-droite",
+        "empennage": "bleu/blanc plastique",
+        "score": 6
+      },
+      {
+        "id": 3,
+        "position": "centre-jaune",
+        "empennage": "vert plastique",
+        "score": 10
+      },
+      {
+        "id": 4,
+        "position": "bas-centre",
+        "empennage": "blanc plastique",
+        "score": 9
+      }
+    ]
+  },
+  {
+    "photo": "1781431058032.jpg",
+    "scores": [
+      9,
+      10,
+      9,
+      8
+    ],
+    "analysis": "4 flèches confirmées par tige 3D + empennage visible. Groupement concentré dans la zone rouge/jaune (8-10). Volée cohérente avec un archer de niveau intermédiaire à confirmé. Les nombreux anciens impacts (trous) sur la cible ont été ignorés car plats et sans tige.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "haut-centre",
+        "empennage": "vert plastique",
+        "score": 9
+      },
+      {
+        "id": 2,
+        "position": "centre-légèrement-gauche",
+        "empennage": "bleu plastique",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "centre-droit",
+        "empennage": "bleu plastique",
+        "score": 9
+      },
+      {
+        "id": 4,
+        "position": "bas-droite",
+        "empennage": "bleu plastique",
+        "score": 8
+      }
+    ]
+  },
+  {
+    "photo": "1781431058059.jpg",
+    "scores": [
+      10,
+      10,
+      9,
+      8
+    ],
+    "analysis": "Excellent groupement serré dans le jaune et rouge (zone 8-10). Les 4 tiges sont clairement visibles dépassant en 3D avec empennages distincts. Groupement d'environ 5-8 cm de diamètre centré sur le jaune — très belle volée.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-gauche, impact dans le jaune",
+        "empennage": "vert plastique",
+        "score": 10
+      },
+      {
+        "id": 2,
+        "position": "centre, impact dans le jaune",
+        "empennage": "bleu plastique",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "centre-droit, impact dans le jaune/rouge",
+        "empennage": "rouge plastique",
+        "score": 9
+      },
+      {
+        "id": 4,
+        "position": "bas-centre, impact dans le rouge",
+        "empennage": "bleu/vert plastique",
+        "score": 8
+      }
+    ]
+  },
+  {
+    "photo": "1781431058082.jpg",
+    "scores": [
+      6,
+      8,
+      7,
+      7
+    ],
+    "analysis": "4 flèches identifiées avec tige et empennage visibles. Groupement dispersé principalement dans le rouge (7-8) avec une flèche en zone bleue (6). Total : 28 points.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "haut-droite, zone bleue/rouge",
+        "empennage": "vert et blanc plastique",
+        "score": 6
+      },
+      {
+        "id": 2,
+        "position": "centre-droite, zone rouge proche jaune",
+        "empennage": "bleu et blanc plastique",
+        "score": 8
+      },
+      {
+        "id": 3,
+        "position": "centre-gauche, zone rouge",
+        "empennage": "noir/sombre plastique",
+        "score": 7
+      },
+      {
+        "id": 4,
+        "position": "bas-centre, zone rouge/bleue",
+        "empennage": "jaune et bleu plastique",
+        "score": 7
+      }
+    ]
+  },
+  {
+    "photo": "1781431058109.jpg",
+    "scores": [
+      10,
+      10,
+      8,
+      7
+    ],
+    "analysis": "4 flèches identifiées avec tiges dépassant en 3D et empennages plastique visibles. Beau groupement concentré dans la zone centrale (jaune/rouge). Deux flèches dans le 10, une dans le 8, une dans le 7. Score de volée : 35/40.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-gauche, zone jaune/rouge",
+        "empennage": "bleu/vert plastique",
+        "score": 10
+      },
+      {
+        "id": 2,
+        "position": "centre, zone jaune",
+        "empennage": "blanc/vert plastique",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "centre-droit, zone rouge",
+        "empennage": "bleu/vert plastique",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "bas-centre, zone rouge/bleu",
+        "empennage": "vert plastique",
+        "score": 7
+      }
+    ]
+  },
+  {
+    "photo": "1781431058139.jpg",
+    "scores": [
+      10,
+      10,
+      9,
+      7
+    ],
+    "analysis": "4 flèches confirmées par tiges dépassant en 3D avec empennages visibles et ombres portées nettes. Groupement très serré dans la zone centrale (jaune/rouge), 3 flèches dans ou proches du 10, 1 flèche légèrement plus basse dans le rouge/bleu (7). Excellente volée, groupement de qualité compétitive.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-gauche, zone jaune/rouge",
+        "empennage": "bleu plastique",
+        "score": 10
+      },
+      {
+        "id": 2,
+        "position": "centre, zone jaune",
+        "empennage": "noir/sombre plastique",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "centre-droit, zone rouge/jaune",
+        "empennage": "vert plastique",
+        "score": 9
+      },
+      {
+        "id": 4,
+        "position": "bas-centre, zone rouge/bleu",
+        "empennage": "bleu plastique",
+        "score": 7
+      }
+    ]
+  },
+  {
+    "photo": "1781431058168.jpg",
+    "scores": [
+      8,
+      8,
+      6,
+      "M"
+    ],
+    "analysis": "Cible WA standard. 4 flèches identifiées avec tiges dépassant en 3D et empennages visibles. 2 flèches groupées dans le rouge (8 pts chacune), 1 flèche dans le bleu bas-droite (6 pts), 1 flèche manquée ayant raté la cible et atterri sur le sol en bas (M). Groupement principal acceptable dans le rouge, mais dispersion notable avec une flèche hors cible. Score volée : 22 points.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-rouge, légèrement haut-gauche",
+        "empennage": "orange/jaune plastique",
+        "score": 8
+      },
+      {
+        "id": 2,
+        "position": "centre-rouge, légèrement droite",
+        "empennage": "bleu/vert plastique",
+        "score": 8
+      },
+      {
+        "id": 3,
+        "position": "bord bleu, bas-droite",
+        "empennage": "bleu plastique",
+        "score": 6
+      },
+      {
+        "id": 4,
+        "position": "hors cible, bas-centre (sol)",
+        "empennage": "bleu plastique",
+        "score": "M"
+      }
+    ]
+  },
+  {
+    "photo": "vollee_01_09h57.jpg",
+    "scores": [
+      10,
+      10,
+      8,
+      7,
+      2,
+      5
+    ],
+    "analysis": "6 flèches identifiées avec tiges et empennages orange plastique visibles. Groupement principal dans le jaune/rouge (4 flèches), une flèche égarée dans le blanc à droite (score 2), une flèche en zone bleue haute-droite (score 5). Dispersion notable indiquant un groupement central correct mais deux flèches très écartées pénalisant le score.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-haut, zone jaune/10",
+        "empennage": "orange plastique",
+        "score": 10
+      },
+      {
+        "id": 2,
+        "position": "centre, zone jaune/10",
+        "empennage": "orange plastique",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "centre-bas, zone rouge/8",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "bas-centre, zone rouge/7",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 5,
+        "position": "droite, zone blanche/2",
+        "empennage": "orange plastique",
+        "score": 2
+      },
+      {
+        "id": 6,
+        "position": "haut-droite, zone bleue/5",
+        "empennage": "orange plastique",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "photo": "vollee_02_10h05.jpg",
+    "scores": [
+      10,
+      10,
+      8,
+      7,
+      6,
+      7
+    ],
+    "analysis": "Volée de 6 flèches sur cible WA 122cm. Groupement principal concentré dans le jaune/rouge (4 flèches), avec 2 flèches descendant vers le bas dans le rouge et le bleu. Score total estimé : 48/60. Empennages majoritairement noirs et oranges (plastique). Bon groupement vertical légèrement décalé vers le bas-gauche.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-gauche jaune",
+        "empennage": "noir plastique",
+        "score": 10
+      },
+      {
+        "id": 2,
+        "position": "centre jaune",
+        "empennage": "noir plastique",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "centre-haut rouge",
+        "empennage": "noir plastique",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "centre-bas rouge",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 5,
+        "position": "bas-centre bleu",
+        "empennage": "orange plastique",
+        "score": 6
+      },
+      {
+        "id": 6,
+        "position": "bas-droite rouge/bleu",
+        "empennage": "orange plastique",
+        "score": 7
+      }
+    ]
+  },
+  {
+    "photo": "vollee_03_10h11.jpg",
+    "scores": [
+      10,
+      10,
+      9,
+      8,
+      7,
+      8
+    ],
+    "analysis": "6 flèches identifiées par leurs tiges dépassant en 3D et empennages orange plastique visibles. Groupement globalement centré dans le jaune/rouge. 2 flèches en zone 10, 1 en 9, 2 en 8, 1 en 7. Bon groupement avec légère dispersion vers le bas-gauche.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-gauche, zone jaune",
+        "empennage": "orange plastique",
+        "score": 10
+      },
+      {
+        "id": 2,
+        "position": "centre, zone jaune",
+        "empennage": "orange plastique",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "centre-droit, zone jaune/rouge",
+        "empennage": "orange plastique",
+        "score": 9
+      },
+      {
+        "id": 4,
+        "position": "bas-centre, zone rouge",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 5,
+        "position": "bas-gauche, zone rouge/bleu",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 6,
+        "position": "bas-droite, zone rouge",
+        "empennage": "orange plastique",
+        "score": 8
+      }
+    ]
+  },
+  {
+    "photo": "vollee_04_10h21.jpg",
+    "scores": [
+      9,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "analysis": "Volée de 6 flèches sur cible WA 122cm. Groupement principalement dans la zone jaune/rouge (8-10), avec deux flèches dispersées dans le bleu. Score total estimé : 49/60. Bon groupement central mais deux flèches éloignées indiquent une légère inconsistance de tir.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "haut-centre, zone rouge/jaune",
+        "empennage": "noir plastique",
+        "score": 9
+      },
+      {
+        "id": 2,
+        "position": "haut-droite, zone bleue",
+        "empennage": "noir plastique",
+        "score": 6
+      },
+      {
+        "id": 3,
+        "position": "droite, zone bleue/rouge",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 4,
+        "position": "bas-centre, zone rouge",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 5,
+        "position": "bas-centre-gauche, zone jaune/rouge",
+        "empennage": "noir plastique",
+        "score": 9
+      },
+      {
+        "id": 6,
+        "position": "centre, zone jaune",
+        "empennage": "noir plastique",
+        "score": 10
+      }
+    ]
+  },
+  {
+    "photo": "vollee_05_10h28.jpg",
+    "scores": [
+      8,
+      9,
+      6,
+      10,
+      6,
+      3
+    ],
+    "analysis": "6 flèches identifiées avec tiges dépassant en 3D et empennages orange plastique visibles. Groupement principal dans le rouge/jaune (3 flèches), deux flèches dans le bleu, une flèche égarée dans le noir/blanc gauche. Score total : 42/60.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "haut-gauche (zone rouge, vers 11h)",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 2,
+        "position": "centre-haut (zone jaune/rouge, vers 12h)",
+        "empennage": "orange plastique",
+        "score": 9
+      },
+      {
+        "id": 3,
+        "position": "droite (zone bleue, vers 3h)",
+        "empennage": "orange plastique",
+        "score": 6
+      },
+      {
+        "id": 4,
+        "position": "centre (zone jaune, légèrement bas)",
+        "empennage": "orange plastique",
+        "score": 10
+      },
+      {
+        "id": 5,
+        "position": "bas-centre (zone bleue, vers 6h)",
+        "empennage": "orange plastique",
+        "score": 6
+      },
+      {
+        "id": 6,
+        "position": "gauche (zone blanche/noire, vers 9h)",
+        "empennage": "orange plastique",
+        "score": 3
+      }
+    ]
+  },
+  {
+    "photo": "vollee_06_10h38.jpg",
+    "scores": [
+      6,
+      5,
+      8,
+      7,
+      9,
+      6
+    ],
+    "analysis": "Cible WA 122cm outdoor. 6 flèches identifiées, toutes avec empennage orange plastique. Groupement dispersé entre le bleu et le rouge, avec quelques flèches proches du jaune. Score estimé 41/60. Nombreux anciens impacts (trous/halos) non comptabilisés conformément à la méthode d'élimination.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "gauche-haut (bleu ~9h)",
+        "empennage": "orange plastique",
+        "score": 6
+      },
+      {
+        "id": 2,
+        "position": "gauche-milieu (bleu ~7-8h)",
+        "empennage": "orange plastique",
+        "score": 5
+      },
+      {
+        "id": 3,
+        "position": "centre-gauche (rouge ~8h)",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "centre (rouge ~6h)",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 5,
+        "position": "centre-droit (rouge/jaune ~5h)",
+        "empennage": "orange plastique",
+        "score": 9
+      },
+      {
+        "id": 6,
+        "position": "bas-centre-droite (bleu ~5h)",
+        "empennage": "orange plastique",
+        "score": 6
+      }
+    ]
+  },
+  {
+    "photo": "vollee_07_10h44.jpg",
+    "scores": [
+      8,
+      8,
+      10,
+      8,
+      7,
+      6
+    ],
+    "analysis": "Groupement concentré dans le rouge/jaune avec 5 flèches en zone rouge ou mieux. Une flèche dans le bleu intérieur (6). Empennages uniformément orange plastique. Score total : 47/60.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "haut-gauche zone rouge",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 2,
+        "position": "centre-gauche zone rouge",
+        "empennage": "orange/noir plastique",
+        "score": 8
+      },
+      {
+        "id": 3,
+        "position": "centre zone jaune",
+        "empennage": "orange plastique",
+        "score": 10
+      },
+      {
+        "id": 4,
+        "position": "centre-bas zone rouge",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 5,
+        "position": "centre-droit zone rouge",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 6,
+        "position": "bas-centre zone bleu interne",
+        "empennage": "orange plastique",
+        "score": 6
+      }
+    ]
+  },
+  {
+    "photo": "vollee_08_10h51.jpg",
+    "scores": [
+      9,
+      10,
+      8,
+      7,
+      8,
+      5
+    ],
+    "analysis": "6 flèches identifiées avec tiges dépassant en 3D et empennages orange plastique clairement visibles. Groupement principal dans la zone rouge/jaune (7-10). Une flèche dispersée dans le bleu (5). Score total estimé : 47/60. Nombreux anciens impacts (trous plats) non comptabilisés.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-gauche, zone jaune/rouge",
+        "empennage": "orange plastique",
+        "score": 9
+      },
+      {
+        "id": 2,
+        "position": "centre, zone jaune",
+        "empennage": "orange plastique",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "centre-bas, zone rouge",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "bas-centre, zone rouge/bleu",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 5,
+        "position": "droite-haut, zone rouge",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 6,
+        "position": "bas-gauche, zone bleu",
+        "empennage": "orange plastique",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "photo": "vollee_09_10h57.jpg",
+    "scores": [
+      9,
+      10,
+      8,
+      6,
+      8,
+      7
+    ],
+    "analysis": "Volée de 6 flèches. Groupement principal dans le bas-centre de la cible entre zones jaune et rouge. Une flèche isolée bas-gauche en zone bleue. Toutes les flèches présentent des tiges noires dépassant en 3D avec empennages orange plastique clairement visibles. Score total : 48/60.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-bas, légèrement gauche, zone jaune/rouge",
+        "empennage": "orange plastique, tige noire visible",
+        "score": 9
+      },
+      {
+        "id": 2,
+        "position": "centre-bas, zone jaune",
+        "empennage": "orange plastique, tige noire visible",
+        "score": 10
+      },
+      {
+        "id": 3,
+        "position": "bas-centre, zone rouge basse",
+        "empennage": "orange plastique, tige noire visible",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "bas-gauche, zone bleue",
+        "empennage": "orange/noir plastique, tige noire visible",
+        "score": 6
+      },
+      {
+        "id": 5,
+        "position": "droite-centre, zone rouge",
+        "empennage": "orange plastique, tige noire visible",
+        "score": 8
+      },
+      {
+        "id": 6,
+        "position": "droite-centre bas, zone rouge/bleue",
+        "empennage": "orange plastique, tige noire visible",
+        "score": 7
+      }
+    ]
+  },
+  {
+    "photo": "vollee_10_11h02.jpg",
+    "scores": [
+      5,
+      6,
+      8,
+      8,
+      9,
+      1
+    ],
+    "analysis": "Cible WA 122cm outdoor. 6 flèches identifiées par tige + empennage orange plastique visibles. Groupement principal dans le rouge/bleu gauche et centre-bas. Une flèche décrochée à l'extrême droite (zone blanche ou hors). Nombreux anciens impacts (trous) ignorés conformément à la méthode. Score volée : 37/60.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "gauche, zone bleue, légèrement bas",
+        "empennage": "orange plastique",
+        "score": 5
+      },
+      {
+        "id": 2,
+        "position": "gauche, zone bleue, juste au-dessus de #1",
+        "empennage": "orange plastique",
+        "score": 6
+      },
+      {
+        "id": 3,
+        "position": "centre-bas, zone rouge",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "centre-bas, zone rouge, légèrement à droite de #3",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 5,
+        "position": "centre-bas, zone jaune/rouge limite",
+        "empennage": "orange plastique",
+        "score": 9
+      },
+      {
+        "id": 6,
+        "position": "extrême droite, hors cible / zone blanche basse",
+        "empennage": "orange plastique",
+        "score": 1
+      }
+    ]
+  },
+  {
+    "photo": "vollee_11_11h11.jpg",
+    "scores": [
+      5,
+      8,
+      9,
+      10,
+      6,
+      5
+    ],
+    "analysis": "6 flèches confirmées avec tiges et empennages orange plastique visibles. Groupement dispersé sur toute la cible WA 122cm. Une flèche dans le 10 (jaune), une dans le 9 (jaune/rouge), une dans le 8 (rouge), deux dans le bleu (5), une dans le bleu (6). Score total : 43/60. Dispersion importante suggérant un archer débutant ou intermédiaire travaillant la régularité.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "gauche-bas (zone bleue)",
+        "empennage": "orange plastique",
+        "score": 5
+      },
+      {
+        "id": 2,
+        "position": "centre-gauche (zone rouge)",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 3,
+        "position": "centre-bas (jaune/rouge)",
+        "empennage": "orange plastique",
+        "score": 9
+      },
+      {
+        "id": 4,
+        "position": "centre (jaune)",
+        "empennage": "orange/sombre plastique",
+        "score": 10
+      },
+      {
+        "id": 5,
+        "position": "droite (zone bleue)",
+        "empennage": "orange plastique",
+        "score": 6
+      },
+      {
+        "id": 6,
+        "position": "haut-droite (bleu/noir)",
+        "empennage": "orange plastique",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "photo": "vollee_12_11h17.jpg",
+    "scores": [
+      7,
+      8,
+      7,
+      6,
+      6,
+      5
+    ],
+    "analysis": "6 flèches identifiées avec tiges dépassant en 3D et empennages orange plastique clairement visibles. Groupement principalement dans la zone rouge/bleue basse. Dispersion verticale notable, suggérant une inconsistance dans l'ancrage ou le lâcher. Score total : 39/60.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "gauche, zone rouge basse",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 2,
+        "position": "centre-bas, zone rouge",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 3,
+        "position": "bas-centre légèrement gauche, zone rouge basse",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 4,
+        "position": "bas-centre, zone bleue basse",
+        "empennage": "orange plastique",
+        "score": 6
+      },
+      {
+        "id": 5,
+        "position": "bas-droite, zone bleue",
+        "empennage": "orange plastique",
+        "score": 6
+      },
+      {
+        "id": 6,
+        "position": "droite, zone bleue droite",
+        "empennage": "orange plastique",
+        "score": 5
+      }
+    ]
+  },
+  {
+    "photo": "vollee_13_11h43.jpg",
+    "scores": [
+      10,
+      9,
+      8,
+      7,
+      6,
+      8
+    ],
+    "analysis": "6 flèches confirmées par tiges dépassant en 3D avec empennages orange plastique visibles. Groupement principal concentré dans la zone jaune/rouge (centre-droite). Une flèche s'écarte en bas-droite dans le bleu (6). Toutes les flèches présentent un empennage orange identique, suggérant un seul archer. Score total : 48/60. Nombreux anciens impacts (trous plats) non comptabilisés.",
+    "detections": [
+      {
+        "id": 1,
+        "position": "centre-jaune, légèrement à droite du 10",
+        "empennage": "orange plastique",
+        "score": 10
+      },
+      {
+        "id": 2,
+        "position": "centre-jaune, très proche du 1",
+        "empennage": "orange plastique",
+        "score": 9
+      },
+      {
+        "id": 3,
+        "position": "rouge, légèrement bas-gauche du jaune",
+        "empennage": "orange plastique",
+        "score": 8
+      },
+      {
+        "id": 4,
+        "position": "rouge, bas-droite, limite rouge/bleu",
+        "empennage": "orange plastique",
+        "score": 7
+      },
+      {
+        "id": 5,
+        "position": "bleu, bas-droite",
+        "empennage": "orange plastique",
+        "score": 6
+      },
+      {
+        "id": 6,
+        "position": "rouge, bas-centre, légèrement à droite",
+        "empennage": "orange plastique",
+        "score": 8
+      }
+    ]
+  }
+]

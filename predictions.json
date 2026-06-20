@@ -5,7 +5,9 @@
       9,
       8,
       7
-    ]
+    ],
+    "analysis": "Cible WA 122cm standard. 3 flèches plantées visibles: 1 flèche dans la zone jaune/or périphérique (9 points), 1 flèche en limite jaune/rouge (8 points), 1 flèche dans la zone rouge (7 points). La cible montre de nombreux impacts anciens témoignant d'une utilisation intensive. Les flèches sont groupées dans la partie centrale-droite de la cible, indiquant un groupement correct mais légèrement décalé à droite.",
+    "detections": null
   },
   {
     "photo": "1781431057974.jpg",
@@ -15,28 +17,33 @@
       8,
       7,
       6
-    ]
+    ],
+    "analysis": "5 flèches plantées identifiées. 2 flèches dans le jaune (zone 9), 1 flèche dans le rouge zone 8, 1 flèche dans le rouge zone 7, 1 flèche dans le bleu zone 6. Groupement relativement serré centré sur la zone rouge/jaune, légèrement décalé vers le bas-gauche du centre. La cible montre de nombreux impacts antérieurs indiquant une utilisation intensive.",
+    "detections": null
   },
   {
     "photo": "1781431057990.jpg",
     "scores": [
-      10,
       9,
       8,
       7,
-      6
-    ]
+      6,
+      5
+    ],
+    "analysis": "Cible WA 122cm standard avec nombreux impacts anciens visibles. 5 flèches physiquement plantées identifiées: 1 flèche dans la zone jaune/or (9), 2 flèches dans la zone rouge (8 et 7), 1 flèche dans la zone bleue extérieure (6), 1 flèche dans la zone bleue intérieure/rouge limite (5). La cible montre une utilisation intensive avec de très nombreux impacts anciens, particulièrement concentrés dans les zones rouges et bleues. Le groupement général est centré mais dispersé sur environ 3 zones.",
+    "detections": null
   },
   {
     "photo": "1781431058008.jpg",
     "scores": [
       10,
       9,
-      9,
       8,
       7,
       6
-    ]
+    ],
+    "analysis": "5 flèches plantées détectées. 1 flèche dans le jaune zone 10 (anneau extérieur du jaune), 1 flèche dans le jaune zone 9 (limite jaune/rouge), 1 flèche dans le rouge zone 8, 1 flèche dans le rouge zone 7 (limite rouge/bleu), 1 flèche dans le bleu zone 6. Groupement central correct avec légère dispersion vers le bas-droite. Cible WA 122cm standard avec nombreux impacts anciens visibles.",
+    "detections": null
   },
   {
     "photo": "1781431058032.jpg",
@@ -46,7 +53,9 @@
       8,
       7,
       6
-    ]
+    ],
+    "analysis": "Cible WA 122cm détectée avec de nombreux impacts anciens visibles. 5 flèches actuellement plantées: 1 dans le jaune intérieur (10), 1 dans le jaune/limite rouge (9), 1 dans le rouge zone 8, 1 dans le rouge zone 7, 1 dans le bleu zone 6. Groupement centré légèrement vers le haut-droit du centre. Bonne régularité sur les zones or/rouge, une flèche légèrement déviée dans le bleu.",
+    "detections": null
   },
   {
     "photo": "1781431058059.jpg",
@@ -56,15 +65,19 @@
       9,
       9,
       9
-    ]
+    ],
+    "analysis": "5 flèches plantées physiquement dans la cible. Toutes les flèches sont groupées dans la zone jaune (X/10) et rouge proche du centre. 2 flèches estimées à 10 (jaune intérieur/péri-centre), 3 flèches à 9 (jaune extérieur/limite rouge). Groupement très serré et centré, excellent niveau de précision. La cible montre de nombreux impacts antérieurs très denses dans les zones rouges et jaunes, témoignant d'une pratique intensive.",
+    "detections": null
   },
   {
     "photo": "1781431058082.jpg",
     "scores": [
       9,
-      8,
-      7
-    ]
+      7,
+      6
+    ],
+    "analysis": "3 flèches physiquement plantées dans la cible. Flèche 1 (verte/blanche): plantée dans la zone rouge proche du jaune, limite rouge/jaune côté droit → 9 points (zone jaune extérieure). Flèche 2 (noire/bleue): plantée dans la zone rouge, milieu-bas → 7 points. Flèche 3 (jaune/bleue): plantée dans la zone bleue, bas-centre → 6 points. La cible présente de nombreux impacts anciens (trous) témoignant d'une utilisation intensive. Total: 9+7+6 = 22 points.",
+    "detections": null
   },
   {
     "photo": "1781431058109.jpg",
@@ -73,7 +86,9 @@
       9,
       8,
       7
-    ]
+    ],
+    "analysis": "Cible WA 122cm standard. 4 flèches physiquement plantées détectées. 1 flèche dans le jaune zone 10 (anneau extérieur du jaune), 1 flèche dans le jaune/rouge frontière côté 9, 1 flèche dans le rouge zone 8, 1 flèche dans le rouge zone 7. Regroupement serré centré sur la zone rouge/jaune, indiquant un bon niveau de pratique. Nombreux impacts vides ignorés conformément aux instructions.",
+    "detections": null
   },
   {
     "photo": "1781431058139.jpg",
@@ -81,46 +96,55 @@
       10,
       9,
       9,
-      8
-    ]
+      8,
+      6
+    ],
+    "analysis": "5 flèches plantées physiquement. 2 flèches dans le jaune (10 et 9 - dont une très centrale proche du X mais sans certitude suffisante pour X), 2 flèches dans le rouge zone 8-9 (comptées 9 et 8), 1 flèche dans le bleu extérieur (6). La cible est de type WA standard 122cm avec zones classiques. Nombreux impacts anciens visibles sur toute la cible indiquant une utilisation intensive.",
+    "detections": null
   },
   {
     "photo": "1781431058168.jpg",
     "scores": [
-      10,
-      9,
       9,
       8,
       7,
       6,
-      1
-    ]
+      5,
+      3
+    ],
+    "analysis": "Cible WA 122cm détectée, vue de dessus. 6 flèches physiquement plantées: 2 flèches dans la zone rouge intérieure (8 et 7), 1 flèche en limite jaune/rouge (9), 1 flèche dans le bleu intérieur (6), 1 flèche en limite bleu/noir (5), 1 flèche dans le blanc/noir (3). Groupement principal centré sur la zone rouge avec légère dispersion vers la gauche. Une flèche isolée en bas du bleu/blanc. Score estimé: 9+8+7+6+5+3 = 38/60.",
+    "detections": null
   },
   {
     "photo": "vollee_01_09h57.jpg",
     "scores": [
-      10,
       10,
       9,
       8,
       7,
       6,
       4,
+      3,
       2
-    ]
+    ],
+    "analysis": "Cible WA 122cm officielle (World Archery / JVD Products). 8 flèches plantées physiquement identifiées. Répartition: 1 flèche en jaune (10), 1 en jaune extérieur (9), 1 en rouge intérieur (8), 1 en rouge extérieur (7), 1 en bleu intérieur (6), 1 en noir intérieur (4), 1 en noir extérieur (3), 1 en blanc intérieur (2). Groupement majoritairement concentré en zone centrale (rouge/jaune), avec quelques flèches dispersées vers l'extérieur. Score total estimé: 49/80.",
+    "detections": null
   },
   {
     "photo": "vollee_02_10h05.jpg",
     "scores": [
       10,
-      10,
+      9,
       9,
       8,
       8,
       7,
-      6,
-      5
-    ]
+      7,
+      7,
+      6
+    ],
+    "analysis": "Cible WA 122cm outdoor confirmée (logo World Archery + JVD Products). 9 flèches plantées, regroupement notable dans les zones jaune et rouge indiquant un archer de niveau intermédiaire à avancé. Groupement serré au centre mais légèrement décalé vers la gauche/bas. Score estimé 71/90. Bon potentiel, travail sur la régularité latérale recommandé.",
+    "detections": null
   },
   {
     "photo": "vollee_03_10h11.jpg",
@@ -129,20 +153,24 @@
       9,
       9,
       8,
-      7,
+      8,
       7
-    ]
+    ],
+    "analysis": "Cible WA 122cm outdoor confirmée (World Archery / JVD Products). 6 flèches physiquement plantées. Groupement centré sur la zone jaune-rouge, indiquant un tireur de niveau intermédiaire-avancé. 2 flèches en jaune (10), 2 flèches en limite jaune/rouge (9), 2 flèches en rouge (8 et 7). Nombreux impacts vides visibles témoignant de séances précédentes. Bonne cohérence de groupement.",
+    "detections": null
   },
   {
     "photo": "vollee_04_10h21.jpg",
     "scores": [
+      10,
       9,
-      8,
       8,
       7,
       6,
-      6
-    ]
+      5
+    ],
+    "analysis": "Cible WA 122cm outdoor officielle (JVD/World Archery). 6 flèches plantées : 2 en zone jaune (10+9), 2 en zone rouge (8+7), 2 en zone bleue (6+5). Groupement centré mais dispersé verticalement. Le tireur maîtrise la direction horizontale mais présente une dispersion verticale notable. Score moyen par flèche : 7.5/10.",
+    "detections": null
   },
   {
     "photo": "vollee_05_10h28.jpg",
@@ -151,83 +179,99 @@
       9,
       8,
       7,
+      7,
       6,
+      5,
+      4,
       6
-    ]
+    ],
+    "analysis": "Cible WA 122cm outdoor (World Archery). 9 flèches plantées. Groupement principal autour de la zone rouge/jaune (7-10), indiquant un archer intermédiaire avec bonne intention de visée centrale. Dispersion verticale notable suggère une inconsistance dans le lâcher ou la tenue de l'arc. Deux flèches dans le bleu et une dans le noir révèlent quelques impacts parasites. Score moyen par flèche: ~6.9/10.",
+    "detections": null
   },
   {
     "photo": "vollee_06_10h38.jpg",
     "scores": [
-      6,
-      6,
-      8,
       7,
+      6,
       8,
       9,
       7,
-      6,
       6
-    ]
+    ],
+    "analysis": "Cible WA 122cm outdoor (World Archery). 6 flèches plantées identifiées. Groupement centré entre rouge et bleu, légèrement bas-gauche. Dispersion modérée suggérant un archer intermédiaire. Aucune flèche dans le blanc ou hors-cible. Moyenne de 7.2 points/flèche. Travail recommandé sur la régularité pour resserrer le groupement vers le jaune.",
+    "detections": null
   },
   {
     "photo": "vollee_07_10h44.jpg",
     "scores": [
-      10,
-      10,
-      8,
+      9,
+      9,
       8,
       7,
+      7,
       6
-    ]
+    ],
+    "analysis": "Cible WA officielle 122cm outdoor (JVD Products). 6 flèches plantées : 2 en zone jaune (9), 2 en zone rouge (8 et 7), 1 en zone rouge basse (7), 1 en zone bleue (6). Groupement concentré entre 6 et 9, centré légèrement bas-gauche. Bonne cohérence du groupement, travail à faire sur la montée vers le centre.",
+    "detections": null
   },
   {
     "photo": "vollee_08_10h51.jpg",
     "scores": [
       10,
       9,
+      9,
+      8,
       8,
       7,
       7,
-      7,
       6
-    ]
+    ],
+    "analysis": "Cible WA 122cm outdoor (World Archery / JVD Products). 8 flèches plantées. Groupement principal en zone rouge/jaune (7-10), démontrant une bonne maîtrise technique. 2 flèches en jaune (9-10), 4 en rouge (7-8), 2 en bleu (6). Dispersion verticale marquée suggérant une variation de pression des doigts ou de l'ancrage. Travail recommandé sur la régularité du lâcher.",
+    "detections": null
   },
   {
     "photo": "vollee_09_10h57.jpg",
     "scores": [
       10,
       9,
-      9,
+      8,
       7,
       7,
       6
-    ]
+    ],
+    "analysis": "Cible WA officielle 122cm (JVD Products). 6 flèches plantées: 2 dans le jaune (10+9), 3 dans le rouge (8+7+7), 1 dans le bleu (6). Groupement concentré en zone basse du centre, légèrement décalé vers le bas. Bon niveau de tir mais dérive verticale basse à corriger.",
+    "detections": null
   },
   {
     "photo": "vollee_10_11h02.jpg",
     "scores": [
+      9,
       8,
-      9,
-      9,
-      9,
+      8,
+      7,
+      7,
       0
-    ]
+    ],
+    "analysis": "Cible WA 122cm outdoor confirmée (logo World Archery, JVD Products). 6 flèches physiquement plantées: cluster de 3 flèches en zone jaune/rouge bas-centre (9,8,8), 2 flèches rouge gauche (7,7), 1 flèche hors-cible bas-droite (M=0). Groupement central encourageant mais déviation à gauche notable. Score: 39/60.",
+    "detections": null
   },
   {
     "photo": "vollee_11_11h11.jpg",
     "scores": [
-      6,
-      6,
-      7,
       9,
       8,
-      5,
+      7,
+      6,
+      6,
       3
-    ]
+    ],
+    "analysis": "Cible WA 122cm officielle (World Archery / JVD Products). 6 flèches plantées avec plumes orange. Groupement principal en zones rouge/bleu (7-8), une flèche en jaune (9), deux en bleu (6), et une flèche très excentrée en noir/blanc (3). Dispersion importante suggérant un archer débutant ou intermédiaire. La cible présente de nombreux impacts anciens (trous) indiquant une utilisation intensive.",
+    "detections": null
   },
   {
     "photo": "vollee_12_11h17.jpg",
     "scores": [
+      9,
       8,
       7,
       7,
@@ -235,7 +279,9 @@
       6,
       6,
       5
-    ]
+    ],
+    "analysis": "Cible WA 122cm outdoor confirmée (logo World Archery + JVD Products). 8 flèches physiquement plantées : 1 en jaune (9), 2 en rouge (8+7), 4 en bleu (6+6+6+5), groupement dispersé suggérant un tireur en apprentissage ou tir à longue distance. Nombreux impacts vides visibles indiquant une séance prolongée.",
+    "detections": null
   },
   {
     "photo": "vollee_13_11h43.jpg",
@@ -243,9 +289,11 @@
       9,
       9,
       8,
-      7,
+      8,
       7,
       7
-    ]
+    ],
+    "analysis": "Cible WA 122cm officielle (JVD Products / World Archery). 6 fûts physiquement plantés, groupés en cluster serré dans la zone basse-droite du rouge et de l'or. 2 flèches en zone jaune (9), 2 en rouge supérieur (8), 2 en rouge inférieur (7). Le groupement est cohérent mais décalé à droite et bas par rapport au centre, suggérant une erreur de visée systématique (dérive droite + tendance basse). Score estimé: 48/60.",
+    "detections": null
   }
 ]

@@ -36,13 +36,24 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function extractArrows(result) {
   if (!result || result.error) return null;
   if (Array.isArray(result.arrows)) return result.arrows;
-  return null; // duo / format inattendu : ignoré dans la baseline
+  return null;
 }
 
-async function analyzeOne(photoFile, prompt) {
+function extractAnalysis(result) {
+  if (!result) return null;
+  return result.analysis || null;
+}
+
+function extractDetections(result) {
+  if (!result || !Array.isArray(result.detections)) return null;
+  return result.detections;
+}
+
+async function analyzeOne(photoFile, prompt, apv) {
   const buf = fs.readFileSync(photoFile);
   const imageBase64 = buf.toString('base64');
   const body = prompt ? { imageBase64, prompt } : { imageBase64 };
+  if (apv) body.apv = apv;
 
   const res = await fetch(endpoint, {
     method: 'POST',
@@ -63,10 +74,13 @@ async function analyzeOne(photoFile, prompt) {
     const file = path.join(photosDir, ann.photo);
     process.stdout.write(`[${i + 1}/${annotations.length}] ${ann.photo} ... `);
     try {
-      const result = await analyzeOne(file, prompt);
+      const apv = ann.scores_reels ? ann.scores_reels.length : null;
+      const result = await analyzeOne(file, prompt, apv);
       const arrows = extractArrows(result);
-      if (!arrows) { console.log('pas de flèches détectées'); predictions.push({ photo: ann.photo, scores: [] }); }
-      else { console.log(`${arrows.length} flèche(s)`); predictions.push({ photo: ann.photo, scores: arrows }); }
+      const analysis = extractAnalysis(result);
+      const detections = extractDetections(result);
+      if (!arrows) { console.log('pas de flèches détectées'); predictions.push({ photo: ann.photo, scores: [], analysis: null, detections: null }); }
+      else { console.log(`${arrows.length} flèche(s)`); predictions.push({ photo: ann.photo, scores: arrows, analysis, detections }); }
     } catch (err) {
       console.log('ERREUR ' + err.message);
       predictions.push({ photo: ann.photo, scores: [] });
