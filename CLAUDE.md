@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-ArcherAI is a single-page archery scoring app powered by Claude Vision. It has two distinct parts:
+ArcherAI is a single-page archery scoring app powered by Claude Vision. **Version actuelle : V4.7.3 — branche `main`.**
 
-- **`index.html`** (~851 lines) — CSS + HTML uniquement. Le JS est dans `app.js`.
-- **`app.js`** (~1386 lines) — tout le JavaScript de l'app (anciennement inline dans index.html).
+- **`index.html`** (~866 lines) — CSS + HTML uniquement. Le JS est dans `app.js`.
+- **`app.js`** (~1625 lines) — tout le JavaScript de l'app (anciennement inline dans index.html).
 - **`api/analyze.js`** — a Vercel serverless function that proxies requests to the Anthropic API. Reads `ANTHROPIC_API_KEY` from the environment.
 
-The root `analyze.js` is kept in sync with `api/analyze.js` and reflects the current prompt logic. `analyze (1).js`, `analyze (2).js`, `analyze (3).js` are old iterations (deleted from repo); the live endpoint is `api/analyze.js`.
+`analyze (1).js`, `analyze (2).js`, `analyze (3).js` are old iterations (deleted from repo); the live endpoint is `api/analyze.js`. Note: the root `analyze.js` mirror has been deleted.
 
 ## Running locally
 
@@ -64,13 +64,15 @@ CSS variables are in `:root` at the top of `<style>`:
 
 Any new UI element must use these variables — never hardcode colors.
 
-## Three scoring modes
+## Scoring modes
 
 | Mode | Archers | Arrows | Scoring |
 |---|---|---|---|
 | Solo | 1 (current user profile) | 3–6 | WA / Vegas / Beursault auto-detected |
 | Duo | 2 fixed | 3–6 each | WA / Vegas, attributed by feather color |
 | Beursault | 1–5 dynamic | **1 per archer** | 1 / 2 / 3 pts, score capped in `callAPI()` |
+
+> **Évolution prévue (pas encore codée) :** Solo + Duo → **mode unique** avec filtre couleur plumes par archer. Le mode Beursault reste inchangé.
 
 ## State and persistence
 
@@ -102,15 +104,16 @@ Colors are stored as `{ [colorName]: count }` objects (e.g. `{ 'Noir': 2, 'Jaune
 
 | File | Description |
 |---|---|
-| `index.html` | CSS + HTML uniquement (~851 lignes) |
-| `app.js` | Tout le JavaScript de l'app (~1386 lignes) |
+| `index.html` | CSS + HTML uniquement (~866 lignes) |
+| `app.js` | Tout le JavaScript de l'app (~1625 lignes) |
 | `api/analyze.js` | Live Vercel serverless function (Anthropic proxy) |
-| `analyze.js` | Mirror of `api/analyze.js` — kept in sync, use as reference |
 | `sw.js` | Service Worker — stale-while-revalidate, offline queue |
 | `manifest.json` | PWA manifest |
 | `icon.svg` | Gold target + red arrow icon |
 | `guide-scoring.html` | Photo best-practices guide (linked from app header) |
+| `annotation-tool.html` | Outil local standalone d'annotation de photos (calibration ellipse + positions flèches) — localStorage à ajouter |
 | `CHANGELOG.md` | Version history |
+| `SCORING_GEOMETRIQUE.md` | Document de conception du chantier géométrique (clos) |
 | `RETOURS_TERRAIN.md` | Live field feedback tracker — problems reported by club members + solutions |
 
 ---
@@ -149,3 +152,71 @@ Le prompt impose à l'IA :
 - **Au démarrage de chaque session sur ce projet**, lire et charger `~/.claude/agents/archerai-expert.md` avant toute action.
 - Ne jamais modifier `api/analyze.js` sans confirmation explicite de l'utilisateur.
 - Mettre à jour ce fichier à chaque modification du projet — il sert d'historique.
+
+---
+
+## Chantier géométrique — CLOS (26/06/2026)
+
+Le chantier de scoring géométrique a été conduit et conclu. **Résultat : l'approche couleur actuelle gagne.**
+
+| Approche | MAE moyen (erreur par flèche) |
+|---|---|
+| Couleur (actuelle) | **0.797** |
+| Géométrique (testé) | 1.136 |
+
+La géométrie pure (l'IA donne des coordonnées `{x, y}`, le client calcule le score) est moins précise que l'approche couleur sur le dataset de 23 photos réelles. Voir `SCORING_GEOMETRIQUE.md` pour le détail complet.
+
+**Décisions retenues pour plus tard :**
+- Cadre de visée circulaire (overlay caméra) — chantier indépendant, toujours pertinent
+- Stockage des coordonnées `impacts` dans les structures de données — utile pour dispersion future
+- `test_mono_keypoint.py` supprimé, remplacé par `benchmark.js` (Hungarian matching, unifié)
+
+---
+
+## Benchmark (`tests/benchmark.js`)
+
+Outil de mesure de la précision de scoring sur le dataset de photos réelles.
+
+```bash
+cd tests && ANTHROPIC_API_KEY=sk-... node benchmark.js
+```
+
+- Dataset : `Photo training/cibles_reelles/` — 23 photos (10 timestamps + 13 vollées)
+- Annotations : `annotations_full.json` — champs `scores_reels` + `apv` par photo
+- Algorithme : Hungarian matching symétrique (pénalité = 10 pour flèche manquante/en trop)
+- Baseline couleur : **0.797 MAE** (V4.7.3)
+- `geo-scoring.js` : `scoreFromXY(x, y)` — coordonnées normalisées (0,0)=centre, r=1=bord externe
+
+**Règle :** avant tout changement de prompt dans `api/analyze.js`, faire tourner le benchmark et vérifier qu'aucune régression n'est introduite.
+
+---
+
+## Dataset annotations (`Photo training/cibles_reelles/`)
+
+Schéma `annotations_positions.json` validé par Opus :
+
+```json
+{
+  "photo": "nom.jpg",
+  "format": "WA",
+  "etat_cible": "propre|usagee",
+  "scores_reels": [10, 9, 8],
+  "calibration_px": { "cx": 450, "cy": 630, "rx_px": 410, "ry_px": 400 },
+  "arrows_px": [
+    { "px": 460, "py": 620, "score_humain": 10 }
+  ]
+}
+```
+
+- Pixels bruts de l'image (coordonnées EXIF-corrigées pour les photos browser)
+- **Priorité d'annotation : les 10 photos timestamps** (`1781431057*.jpg`) — pas les 13 vollées
+- Outil : `annotation-tool.html` — local, standalone, pas de serveur requis
+  - TODO : ajouter localStorage pour persister les annotations entre sessions browser
+
+---
+
+## Prochaines priorités (ordre)
+
+1. **Cadre de visée circulaire** — overlay caméra, cercle unique normalisé. L'archer aligne le blason sur le cercle → garantit prise de vue de face. Chantier autonome.
+2. **Log comparatif** — afficher l'écart entre la session actuelle et la précédente du même format.
+3. **SoM stochastique** (Set-of-Mark) — technique de prompting avancée pour améliorer la localisation des flèches.
