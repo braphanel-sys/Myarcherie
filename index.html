@@ -376,6 +376,69 @@
   @keyframes scaleIn  { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
   @keyframes spin     { to{transform:rotate(360deg)} }
 
+  /* Viseur de cadrage */
+  .cadrage-tip {
+    margin-top: 12px;
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .cadrage-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: color 0.2s;
+  }
+  .cadrage-toggle:hover { color: var(--gold); }
+  .cadrage-toggle-icon {
+    font-size: 0.9rem;
+    transition: transform 0.2s;
+  }
+  .cadrage-toggle.open .cadrage-toggle-icon { transform: rotate(180deg); }
+
+  .cadrage-body {
+    display: none;
+    padding: 0 16px 16px;
+  }
+  .cadrage-body.open { display: block; }
+
+  .cadrage-svg-wrap {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .cadrage-rules {
+    display: flex;
+    gap: 10px;
+  }
+  .cadrage-rule {
+    flex: 1;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    border-left: 3px solid;
+  }
+  .cadrage-rule.good { border-color: #2ECC71; }
+  .cadrage-rule.bad  { border-color: var(--red); }
+  .cadrage-rule strong { display: block; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .cadrage-rule.good strong { color: #2ECC71; }
+  .cadrage-rule.bad  strong { color: var(--red); }
+
   @media(max-width:600px) {
     .stat-value{font-size:1.45rem} .modal{padding:22px} .modal-result{font-size:2.7rem} .btn-modal-row{flex-direction:column}
   }
@@ -673,6 +736,65 @@
       </div>
       <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
     </div>
+
+  <!-- Viseur de cadrage -->
+  <div class="cadrage-tip" id="cadrage-tip">
+    <button class="cadrage-toggle" id="cadrage-toggle" onclick="toggleCadrage()">
+      📐 Conseils de cadrage
+      <span class="cadrage-toggle-icon">▾</span>
+    </button>
+    <div class="cadrage-body" id="cadrage-body">
+      <div class="cadrage-svg-wrap">
+        <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" width="100%">
+          <!-- Fond -->
+          <rect width="320" height="200" fill="#111" rx="8"/>
+          <!-- Coins du viseur -->
+          <line x1="16" y1="28" x2="16" y2="16" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+          <line x1="16" y1="16" x2="28" y2="16" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+          <line x1="304" y1="28" x2="304" y2="16" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+          <line x1="304" y1="16" x2="292" y2="16" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+          <line x1="16" y1="172" x2="16" y2="184" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+          <line x1="16" y1="184" x2="28" y2="184" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+          <line x1="304" y1="172" x2="304" y2="184" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+          <line x1="304" y1="184" x2="292" y2="184" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"/>
+          <!-- Cercle guide 80% -->
+          <ellipse cx="160" cy="100" rx="130" ry="78" fill="none" stroke="#2ECC71" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.7"/>
+          <!-- Cible simulée -->
+          <circle cx="160" cy="100" r="72" fill="#ccc"/>
+          <circle cx="160" cy="100" r="64" fill="#bbb"/>
+          <circle cx="160" cy="100" r="56" fill="#222"/>
+          <circle cx="160" cy="100" r="48" fill="#1a1a1a"/>
+          <circle cx="160" cy="100" r="40" fill="#2980B9"/>
+          <circle cx="160" cy="100" r="32" fill="#1a6ea8"/>
+          <circle cx="160" cy="100" r="24" fill="#C0392B"/>
+          <circle cx="160" cy="100" r="16" fill="#a02820"/>
+          <circle cx="160" cy="100" r="8"  fill="#FFD700"/>
+          <!-- Flèches simulées -->
+          <circle cx="163" cy="97"  r="2.5" fill="#E8D0A0" stroke="#fff" stroke-width="0.5"/>
+          <circle cx="148" cy="108" r="2.5" fill="#E8D0A0" stroke="#fff" stroke-width="0.5"/>
+          <circle cx="172" cy="112" r="2.5" fill="#E8D0A0" stroke="#fff" stroke-width="0.5"/>
+          <circle cx="155" cy="91"  r="2.5" fill="#E8D0A0" stroke="#fff" stroke-width="0.5"/>
+          <circle cx="168" cy="101" r="2.5" fill="#E8D0A0" stroke="#fff" stroke-width="0.5"/>
+          <circle cx="143" cy="98"  r="2.5" fill="#E8D0A0" stroke="#fff" stroke-width="0.5"/>
+          <!-- Croix centre -->
+          <line x1="154" y1="100" x2="166" y2="100" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+          <line x1="160" y1="94"  x2="160" y2="106" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+          <!-- Label cercle guide -->
+          <text x="278" y="36" fill="#2ECC71" font-size="9" font-family="sans-serif" opacity="0.8">80–90%</text>
+        </svg>
+      </div>
+      <div class="cadrage-rules">
+        <div class="cadrage-rule good">
+          <strong>✓ Bon cadrage</strong>
+          Blason occupe 80–90 % du cadre. De face, lumière naturelle. Toutes les flèches visibles.
+        </div>
+        <div class="cadrage-rule bad">
+          <strong>✗ À éviter</strong>
+          Trop loin, de biais, contre-jour, flèche coupée sur un bord.
+        </div>
+      </div>
+    </div>
+  </div>
 
     <div class="analyze-section" id="analyze-section">
       <div class="preview-wrapper">

@@ -6,6 +6,9 @@
 
 ---
 
+## V4.7.5 (2026-06-27)
+- Feat: viseur de cadrage — guide SVG dépliable sous la zone upload (bon cadrage / à éviter), fonction `toggleCadrage()` dans `app.js`
+
 ## V4.7.4 (2026-06-20)
 - Feat: log comparatif IA vs archer — chaque volée enregistre `log_ia` (arrows_ia, arrows_final, corrections, analysis)
 - Dataset auto-alimenté : chaque correction terrain devient une donnée d'entraînement

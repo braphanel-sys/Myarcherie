@@ -1640,3 +1640,12 @@ async function exportDebugZip() {
     if (btn) { btn.disabled = false; btn.textContent = '📦 Exporter les données de debug'; }
   }
 }
+
+// ── VISEUR DE CADRAGE ──
+function toggleCadrage() {
+  const body   = document.getElementById('cadrage-body');
+  const toggle = document.getElementById('cadrage-toggle');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  toggle.classList.toggle('open', !isOpen);
+}
