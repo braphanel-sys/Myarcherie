@@ -6,6 +6,9 @@
 
 ---
 
+## V4.7.8 (2026-06-27)
+- Fix: bandeau version corrigé → v4.7.8 (oubli de mise à jour depuis V4.7.4)
+
 ## V4.7.7 (2026-06-27)
 - Fix: bandeau mise à jour SW — check `reg.waiting` au démarrage pour attraper le cas où le nouveau SW est déjà installé avant l'attachement du listener
 
