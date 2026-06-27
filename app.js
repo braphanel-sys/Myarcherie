@@ -1248,6 +1248,10 @@ window.addEventListener('load', () => {
   // ── SERVICE WORKER & BANDEAU DE MISE À JOUR ──
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').then(reg => {
+      if (reg.waiting) {
+        showUpdateBanner(reg.waiting);
+        return;
+      }
       reg.addEventListener('updatefound', () => {
         const newSW = reg.installing;
         newSW.addEventListener('statechange', () => {

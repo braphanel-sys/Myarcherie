@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-ArcherAI is a single-page archery scoring app powered by Claude Vision. **Version actuelle : V4.7.6 — branche `dev`.**
+ArcherAI is a single-page archery scoring app powered by Claude Vision. **Version actuelle : V4.7.7 — branche `dev`.**
 
 - **`index.html`** (~866 lines) — CSS + HTML uniquement. Le JS est dans `app.js`.
 - **`app.js`** (~1625 lines) — tout le JavaScript de l'app (anciennement inline dans index.html).

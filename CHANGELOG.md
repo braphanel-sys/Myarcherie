@@ -6,6 +6,9 @@
 
 ---
 
+## V4.7.7 (2026-06-27)
+- Fix: bandeau mise à jour SW — check `reg.waiting` au démarrage pour attraper le cas où le nouveau SW est déjà installé avant l'attachement du listener
+
 ## V4.7.6 (2026-06-27)
 - Fix: SW ignore manifest.json dans le handler fetch (évite TypeError CORS/SSO Vercel sur manifest.json)
 
