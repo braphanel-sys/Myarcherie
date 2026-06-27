@@ -6,6 +6,9 @@
 
 ---
 
+## V4.7.9 (2026-06-27)
+- Fix: viseur de cadrage déplacé avant la zone upload et ouvert par défaut
+
 ## V4.7.8 (2026-06-27)
 - Fix: bandeau version corrigé → v4.7.8 (oubli de mise à jour depuis V4.7.4)
 

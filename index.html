@@ -551,7 +551,7 @@
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);">
-      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.7.8</span>
+      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.7.9</span>
     </div>
   </div>
 
@@ -727,23 +727,13 @@
     <!-- Photo de référence du blason — V4.6.5-dev -->
     <div id="reference-wrapper" style="margin-bottom: 20px;"></div>
 
-    <div class="upload-section">
-      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
-           ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
-        <span class="upload-icon">🎯</span>
-        <h3>Photographier la cible</h3>
-        <p>Avant de retirer les flèches !</p>
-      </div>
-      <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
-    </div>
-
   <!-- Viseur de cadrage -->
   <div class="cadrage-tip" id="cadrage-tip">
-    <button class="cadrage-toggle" id="cadrage-toggle" onclick="toggleCadrage()">
+    <button class="cadrage-toggle open" id="cadrage-toggle" onclick="toggleCadrage()">
       📐 Conseils de cadrage
       <span class="cadrage-toggle-icon">▾</span>
     </button>
-    <div class="cadrage-body" id="cadrage-body">
+    <div class="cadrage-body open" id="cadrage-body">
       <div class="cadrage-svg-wrap">
         <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" width="100%">
           <!-- Fond -->
@@ -795,6 +785,16 @@
       </div>
     </div>
   </div>
+
+    <div class="upload-section">
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+           ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
+        <span class="upload-icon">🎯</span>
+        <h3>Photographier la cible</h3>
+        <p>Avant de retirer les flèches !</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
+    </div>
 
     <div class="analyze-section" id="analyze-section">
       <div class="preview-wrapper">
