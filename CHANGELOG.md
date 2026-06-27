@@ -6,6 +6,9 @@
 
 ---
 
+## V4.7.6 (2026-06-27)
+- Fix: SW ignore manifest.json dans le handler fetch (évite TypeError CORS/SSO Vercel sur manifest.json)
+
 ## V4.7.5 (2026-06-27)
 - Feat: viseur de cadrage — guide SVG dépliable sous la zone upload (bon cadrage / à éviter), fonction `toggleCadrage()` dans `app.js`
 

@@ -1,4 +1,4 @@
-const CACHE = 'archerAI-v4.7.5';
+const CACHE = 'archerAI-v4.7.6';
 const FILES = [
   '/',
   '/index.html',
@@ -23,6 +23,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   if (e.request.url.includes('/api/')) return;
+  if (e.request.url.includes('manifest.json')) return;
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );
