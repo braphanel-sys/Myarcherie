@@ -73,14 +73,22 @@ function logVollee(volleeIndex, imageBase64, iaResponse, durationMs, scoreCorrig
 // ==========================================
 // NAVIGATION
 // ==========================================
-function showScreen(name) {
+function showScreen(name, pushHistory = true) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
+  if (pushHistory && name !== 'home') history.pushState({ screen: name }, '');
   if (name === 'history') renderHistoryScreen();
   if (name === 'home')    { renderHomeRecap(); renderProfilCard(); }
   if (name === 'setup')   buildFormatsGrid();
   if (name === 'profil')  loadProfilScreen();
 }
+
+window.addEventListener('popstate', () => {
+  const current = document.querySelector('.screen.active')?.id?.replace('screen-', '') || 'home';
+  const backMap = { setup: 'home', profil: 'home', history: 'home', session: 'home', 'tri-saisie': 'session', 'tri-results': 'session' };
+  const target = backMap[current];
+  if (target) showScreen(target, false);
+});
 
 // ==========================================
 // PROFIL

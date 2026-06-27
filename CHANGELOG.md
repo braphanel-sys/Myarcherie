@@ -6,6 +6,9 @@
 
 ---
 
+## V4.8.0 (2026-06-27)
+- Feat: bouton retour Android intercepté via History API — évite la fermeture de l'app depuis setup/profil/historique/session
+
 ## V4.7.9 (2026-06-27)
 - Fix: viseur de cadrage déplacé avant la zone upload et ouvert par défaut
 
