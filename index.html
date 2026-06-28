@@ -576,7 +576,7 @@
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);">
-      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.1</span>
+      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.3</span>
     </div>
   </div>
 
@@ -867,7 +867,10 @@
   <div class="screen" id="screen-history">
     <div class="history-screen-header">
       <div class="history-screen-title">📋 Historique</div>
-      <button class="btn-icon" onclick="showScreen('home')">← Retour</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn-icon" onclick="exportObservationsIA()" title="Exporter observations IA">🔬</button>
+        <button class="btn-icon" onclick="showScreen('home')">← Retour</button>
+      </div>
     </div>
     <div class="filters" id="history-filters"></div>
     <div id="history-sessions-list"></div>
@@ -1021,7 +1024,7 @@
     <div class="viseur-corner viseur-corner-tr"></div>
     <div class="viseur-corner viseur-corner-bl"></div>
     <div class="viseur-corner viseur-corner-br"></div>
-    <div class="viseur-hint">Centrez le blason dans le cercle</div>
+    <div class="viseur-hint" id="viseur-hint">Centrez le blason dans le cercle</div>
   </div>
   <button class="viseur-close-btn" onclick="closeViseur()">✕</button>
   <div class="viseur-controls">

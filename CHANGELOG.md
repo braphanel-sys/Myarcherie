@@ -6,6 +6,12 @@
 
 ---
 
+## V4.8.3 (2026-06-28)
+- Feat: export observations IA — bouton 🔬 dans l'écran historique ; génère `observations_IA_YYYY-MM-DD.md` avec analyse IA, flèches IA vs final, nb corrections, par volée et par session
+
+## V4.8.2 (2026-06-28)
+- Feat: viseur live en mode référence — `openViseur('reference')` capture vers `currentSession.referencePhoto` ; bouton "Viseur live (référence)" ajouté sous le bouton référence ; hint contextuel selon le mode
+
 ## V4.8.1 (2026-06-28)
 - Feat: viseur caméra live — overlay plein écran avec cercle dashed gold + vignette pour centrer le blason avant capture ; bouton "Viseur live" sous la zone upload ; capture → flow processFile standard (compression 1200px/JPEG 0.82)
 

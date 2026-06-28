@@ -503,6 +503,13 @@ function renderReferenceButton() {
     ">📸 Photo du blason (référence)</label>
     <input type="file" id="input-photo-reference" accept="image/*" capture="environment"
            style="display:none" onchange="if(this.files[0]) captureReferencePhoto(this.files[0])">
+    <button onclick="openViseur('reference')" style="
+      display:block; width:100%; margin-top:8px;
+      background:transparent; border:1px dashed rgba(201,168,76,0.4);
+      color:var(--gold); padding:10px 20px; border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:0.85rem;
+      text-align:center; cursor:pointer;
+    ">🔲 Viseur live (référence)</button>
     <p style="text-align:center; font-size:0.7rem; color:var(--text-muted); margin-top:6px; font-style:italic;">
       Optionnel — facilite l'analyse des volées (branche dev)
     </p>
@@ -1033,6 +1040,38 @@ function renderHistoryScreen() {
       ${volleysHtml}
     </div>`;
   }).join('');
+}
+
+function exportObservationsIA() {
+  const sessions = getSavedSessions();
+  const withLogs = sessions.filter(s => s.volleys?.some(v => v.log_ia?.analysis));
+  if (!withLogs.length) { alert('Aucune observation IA disponible (vollées sans log_ia).'); return; }
+
+  const lines = ['# Observations IA — ArcherAI', `Exporté le ${new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric'})}`, ''];
+  withLogs.forEach(s => {
+    const date = formatDate(s.endDate || s.startDate);
+    lines.push('---', `## ${s.format.name}${s.arc ? ' — ' + s.arc : ''} · ${date} · ${s.totalScore}${s.format.maxScore ? '/' + s.format.maxScore : ''} pts`, '');
+    s.volleys.forEach((v, vi) => {
+      if (!v.log_ia?.analysis) return;
+      const ia  = (v.log_ia.arrows_ia  || []).join(', ') || '—';
+      const fin = (v.log_ia.arrows_final|| []).join(', ') || '—';
+      const cor = v.log_ia.corrections ?? '?';
+      lines.push(`### Volée ${vi + 1}`);
+      lines.push(`- **IA :** ${ia}`);
+      lines.push(`- **Final :** ${fin}`);
+      lines.push(`- **Corrections :** ${cor}`);
+      lines.push(`- **Analyse :**`);
+      lines.push(`  > ${v.log_ia.analysis.replace(/\n/g, '\n  > ')}`);
+      lines.push('');
+    });
+  });
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `observations_IA_${new Date().toISOString().slice(0,10)}.md`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 function toggleHistoryDetail(i) {
@@ -1664,8 +1703,14 @@ function toggleCadrage() {
 
 // ── VISEUR CAMÉRA LIVE ──
 let viseurStream = null;
+let viseurMode = 'scoring'; // 'scoring' | 'reference'
 
-function openViseur() {
+function openViseur(mode = 'scoring') {
+  viseurMode = mode;
+  const hint = document.getElementById('viseur-hint');
+  if (hint) hint.textContent = mode === 'reference'
+    ? 'Photo de référence — blason vierge avant de tirer'
+    : 'Centrez le blason dans le cercle';
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     alert('Caméra non disponible sur cet appareil ou ce navigateur.');
     return;
@@ -1706,12 +1751,22 @@ function captureViseur() {
   out.width = w; out.height = h;
   out.getContext('2d').drawImage(raw, 0, 0, w, h);
   const compressed = out.toDataURL('image/jpeg', 0.82);
-  currentImageBase64 = compressed.split(',')[1];
-  logEvent('photo_uploadee', { size_kb: Math.round(currentImageBase64.length * 0.75 / 1024), source: 'viseur' });
-  document.getElementById('preview-img').src = compressed;
-  document.getElementById('analyze-section').classList.add('visible');
-  document.getElementById('result-card').classList.remove('visible');
-  document.getElementById('result-duo').classList.remove('visible');
-  document.getElementById('btn-analyze').disabled = false;
-  document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const base64 = compressed.split(',')[1];
+  const sizeKb = Math.round(base64.length * 0.75 / 1024);
+
+  if (viseurMode === 'reference') {
+    currentSession.referencePhoto = { base64, ts: new Date().toISOString(), captured: true };
+    autoSaveSession();
+    logEvent('reference_blason_capturee', { size_kb: sizeKb, source: 'viseur' });
+    showReferenceCaptured();
+  } else {
+    currentImageBase64 = base64;
+    logEvent('photo_uploadee', { size_kb: sizeKb, source: 'viseur' });
+    document.getElementById('preview-img').src = compressed;
+    document.getElementById('analyze-section').classList.add('visible');
+    document.getElementById('result-card').classList.remove('visible');
+    document.getElementById('result-duo').classList.remove('visible');
+    document.getElementById('btn-analyze').disabled = false;
+    document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
