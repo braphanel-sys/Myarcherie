@@ -6,6 +6,9 @@
 
 ---
 
+## V4.8.1 (2026-06-28)
+- Feat: viseur caméra live — overlay plein écran avec cercle dashed gold + vignette pour centrer le blason avant capture ; bouton "Viseur live" sous la zone upload ; capture → flow processFile standard (compression 1200px/JPEG 0.82)
+
 ## V4.8.0 (2026-06-27)
 - Feat: bouton retour Android intercepté via History API — évite la fermeture de l'app depuis setup/profil/historique/session
 

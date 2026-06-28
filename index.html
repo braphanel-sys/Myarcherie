@@ -439,6 +439,31 @@
   .cadrage-rule.good strong { color: #2ECC71; }
   .cadrage-rule.bad  strong { color: var(--red); }
 
+  /* == VISEUR CAMÉRA LIVE == */
+  .viseur-modal { position:fixed; inset:0; z-index:2000; background:#000; display:none; }
+  .viseur-modal video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .viseur-overlay { position:absolute; inset:0; pointer-events:none; }
+  .viseur-vignette { position:absolute; inset:0; background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 68%); }
+  .viseur-ring {
+    position:absolute; width:min(85vw,85vh); height:min(85vw,85vh);
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    border:1.5px dashed var(--gold); border-radius:50%;
+  }
+  .viseur-ring::before { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:24px; height:1px; background:rgba(201,168,76,0.5); }
+  .viseur-ring::after  { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:1px; height:24px; background:rgba(201,168,76,0.5); }
+  .viseur-corner { position:absolute; width:22px; height:22px; }
+  .viseur-corner-tl { top:18px; left:16px; border-top:2px solid var(--gold); border-left:2px solid var(--gold); }
+  .viseur-corner-tr { top:18px; right:16px; border-top:2px solid var(--gold); border-right:2px solid var(--gold); }
+  .viseur-corner-bl { bottom:18px; left:16px; border-bottom:2px solid var(--gold); border-left:2px solid var(--gold); }
+  .viseur-corner-br { bottom:18px; right:16px; border-bottom:2px solid var(--gold); border-right:2px solid var(--gold); }
+  .viseur-hint { position:absolute; bottom:130px; left:0; right:0; text-align:center; color:rgba(201,168,76,0.85); font-family:'DM Sans',sans-serif; font-size:0.82rem; letter-spacing:0.5px; text-shadow:0 1px 4px rgba(0,0,0,0.9); }
+  .viseur-close-btn { position:absolute; top:16px; right:16px; z-index:10; width:42px; height:42px; border-radius:50%; background:rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .viseur-controls { position:absolute; bottom:38px; left:0; right:0; display:flex; justify-content:center; z-index:10; }
+  .viseur-capture-btn { width:70px; height:70px; border-radius:50%; background:var(--gold); border:4px solid #fff; cursor:pointer; font-size:2rem; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(0,0,0,0.6); transition:transform 0.1s; }
+  .viseur-capture-btn:active { transform:scale(0.94); }
+  .btn-viseur-open { display:block; width:100%; margin-top:10px; padding:11px 16px; background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.35); border-radius:12px; color:var(--gold); font-family:'DM Sans',sans-serif; font-size:0.88rem; cursor:pointer; letter-spacing:0.5px; transition:background 0.2s; }
+  .btn-viseur-open:hover,.btn-viseur-open:active { background:rgba(201,168,76,0.2); }
+
   @media(max-width:600px) {
     .stat-value{font-size:1.45rem} .modal{padding:22px} .modal-result{font-size:2.7rem} .btn-modal-row{flex-direction:column}
   }
@@ -551,7 +576,7 @@
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);">
-      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.0</span>
+      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.1</span>
     </div>
   </div>
 
@@ -794,6 +819,7 @@
         <p>Avant de retirer les flèches !</p>
       </div>
       <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
+      <button class="btn-viseur-open" onclick="openViseur()">🔲 Viseur live — cadrer le blason</button>
     </div>
 
     <div class="analyze-section" id="analyze-section">
@@ -982,6 +1008,25 @@
   <button style="background:linear-gradient(135deg,#C9A84C,#A07830);color:#0D0D0D;border:none;
     padding:6px 14px;border-radius:8px;font-family:'Bebas Neue',sans-serif;
     font-size:0.8rem;letter-spacing:1.5px;cursor:pointer;">Actualiser</button>
+</div>
+
+<!-- Viseur caméra live -->
+<div id="viseur-modal" class="viseur-modal">
+  <video id="viseur-video" autoplay playsinline muted></video>
+  <canvas id="viseur-canvas" style="display:none"></canvas>
+  <div class="viseur-overlay">
+    <div class="viseur-vignette"></div>
+    <div class="viseur-ring"></div>
+    <div class="viseur-corner viseur-corner-tl"></div>
+    <div class="viseur-corner viseur-corner-tr"></div>
+    <div class="viseur-corner viseur-corner-bl"></div>
+    <div class="viseur-corner viseur-corner-br"></div>
+    <div class="viseur-hint">Centrez le blason dans le cercle</div>
+  </div>
+  <button class="viseur-close-btn" onclick="closeViseur()">✕</button>
+  <div class="viseur-controls">
+    <button class="viseur-capture-btn" onclick="captureViseur()">📷</button>
+  </div>
 </div>
 
 </body>

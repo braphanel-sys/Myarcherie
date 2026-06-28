@@ -1661,3 +1661,57 @@ function toggleCadrage() {
   body.classList.toggle('open', !isOpen);
   toggle.classList.toggle('open', !isOpen);
 }
+
+// ── VISEUR CAMÉRA LIVE ──
+let viseurStream = null;
+
+function openViseur() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert('Caméra non disponible sur cet appareil ou ce navigateur.');
+    return;
+  }
+  document.getElementById('viseur-modal').style.display = 'block';
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }
+  }).then(stream => {
+    viseurStream = stream;
+    document.getElementById('viseur-video').srcObject = stream;
+  }).catch(err => {
+    closeViseur();
+    alert('Impossible d\'accéder à la caméra : ' + err.message);
+  });
+}
+
+function closeViseur() {
+  document.getElementById('viseur-modal').style.display = 'none';
+  const video = document.getElementById('viseur-video');
+  if (viseurStream) { viseurStream.getTracks().forEach(t => t.stop()); viseurStream = null; }
+  video.srcObject = null;
+}
+
+function captureViseur() {
+  const video = document.getElementById('viseur-video');
+  if (!video.videoWidth) return;
+  const raw = document.getElementById('viseur-canvas');
+  raw.width = video.videoWidth; raw.height = video.videoHeight;
+  raw.getContext('2d').drawImage(video, 0, 0);
+  closeViseur();
+  const MAX = 1200;
+  let w = raw.width, h = raw.height;
+  if (w > MAX || h > MAX) {
+    if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+    else       { w = Math.round(w * MAX / h); h = MAX; }
+  }
+  const out = document.createElement('canvas');
+  out.width = w; out.height = h;
+  out.getContext('2d').drawImage(raw, 0, 0, w, h);
+  const compressed = out.toDataURL('image/jpeg', 0.82);
+  currentImageBase64 = compressed.split(',')[1];
+  logEvent('photo_uploadee', { size_kb: Math.round(currentImageBase64.length * 0.75 / 1024), source: 'viseur' });
+  document.getElementById('preview-img').src = compressed;
+  document.getElementById('analyze-section').classList.add('visible');
+  document.getElementById('result-card').classList.remove('visible');
+  document.getElementById('result-duo').classList.remove('visible');
+  document.getElementById('btn-analyze').disabled = false;
+  document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
