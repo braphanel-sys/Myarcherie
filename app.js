@@ -819,11 +819,8 @@ function endSession() {
   const btnPhotos = document.getElementById('btn-download-photos');
   if (btnPhotos) btnPhotos.style.display = hasPhotos ? 'block' : 'none';
   document.getElementById('modal-overlay').classList.add('visible');
-  // Auto-export ZIP debug — branche dev uniquement (V4.6.7-dev)
-  const versionLabel = document.querySelector('#version-banner')?.textContent || '';
-  if (versionLabel.toLowerCase().includes('dev') && typeof exportDebugZip === 'function') {
-    setTimeout(() => exportDebugZip(), 800);
-  }
+  // Auto-export ZIP debug à chaque fin de session (branche dev)
+  if (typeof exportDebugZip === 'function') setTimeout(() => exportDebugZip(), 800);
 }
 
 function restartSession() {

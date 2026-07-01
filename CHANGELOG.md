@@ -6,6 +6,9 @@
 
 ---
 
+## V4.8.5 (2026-07-01)
+- Fix: auto-export ZIP debug réactivé systématiquement à chaque fin de session (suppression du guard version "dev" devenu inopérant)
+
 ## V4.8.4 (2026-07-01)
 - Feat: viseur Illuminated Duplex — pochoir SVG (fond opaque + trou circulaire net), réticule 4 branches (épais/fin/gap), point central illuminé doré ; remplace vignette gradient + cercle dashed
 
