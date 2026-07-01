@@ -6,6 +6,17 @@
 
 ---
 
+## V4.8.6 (2026-07-01)
+- Fix critique: deleteSession avec filtre actif supprimait la mauvaise session (index filtered vs sessions) — passage d'absIdx explicite
+- Fix critique: autoSaveSession strippe désormais les photos base64 avant localStorage — évite QuotaExceededError silencieux sur sessions longues
+- Fix critique: cap historique à 30 sessions (limite documentée mais non appliquée dans le code)
+- Fix critique: api/analyze.js — CORS ternaire cassé (renvoyait ALLOWED_ORIGIN dans les 2 branches)
+- Fix: api/analyze.js — retry avec backoff sur 429/5xx Anthropic (2 tentatives supplémentaires)
+- Fix: api/analyze.js — validation stricte apv (entier 1-12, sinon null)
+- Fix: api/analyze.js — retrait des console.log de debug en prod
+- Perf: preconnect Google Fonts + COLORS Map pour lookup O(1)
+- Fix: downloadSessionPhotos alerte si aucune photo dispo au lieu de return silencieux
+
 ## V4.8.5 (2026-07-01)
 - Fix: auto-export ZIP debug réactivé systématiquement à chaque fin de session (suppression du guard version "dev" devenu inopérant)
 

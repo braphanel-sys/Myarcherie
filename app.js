@@ -26,6 +26,8 @@ const COLORS = [
   {name:'Bleu',hex:'#3498DB'},{name:'Vert',hex:'#2ECC71'},{name:'Orange',hex:'#E67E22'},
   {name:'Jaune',hex:'#F1C40F'},{name:'Violet',hex:'#9B59B6'},{name:'Rose',hex:'#FF69B4'},{name:'Gris',hex:'#95A5A6'},
 ];
+const COLOR_HEX = new Map(COLORS.map(c => [c.name, c.hex]));
+const getColorHex = name => COLOR_HEX.get(name) || '#888';
 
 // ==========================================
 // STATE
@@ -124,10 +126,9 @@ function renderProfilCard() {
   arcEl.textContent  = profil.arc || '';
   const f = profil.fleche || {};
   const dots = [f.coq, f.lat1, f.lat2, f.enc].filter(Boolean);
-  colEl.innerHTML = dots.map(name => {
-    const c = COLORS.find(x => x.name === name);
-    return `<div class="profil-color-dot" style="background:${c ? c.hex : '#888'}"></div>`;
-  }).join('');
+  colEl.innerHTML = dots.map(name =>
+    `<div class="profil-color-dot" style="background:${getColorHex(name)}"></div>`
+  ).join('');
 }
 
 // ==========================================
@@ -724,14 +725,12 @@ function displayDuoResult(result) {
   document.getElementById('total-value-2').textContent = result.archer2.total || 0;
   document.getElementById('analysis-2').textContent = result.archer2.analysis || '';
   const f1 = archer1Fleche || {}, f2 = archer2Fleche || {};
-  document.getElementById('duo-colors-1').innerHTML = [f1.coq, f1.lat1, f1.lat2, f1.enc].filter(Boolean).map(name => {
-    const c = COLORS.find(x => x.name === name);
-    return `<div class="duo-color-dot" style="background:${c?c.hex:'#888'}"></div>`;
-  }).join('');
-  document.getElementById('duo-colors-2').innerHTML = [f2.coq, f2.lat1, f2.lat2, f2.enc].filter(Boolean).map(name => {
-    const c = COLORS.find(x => x.name === name);
-    return `<div class="duo-color-dot" style="background:${c?c.hex:'#888'}"></div>`;
-  }).join('');
+  document.getElementById('duo-colors-1').innerHTML = [f1.coq, f1.lat1, f1.lat2, f1.enc].filter(Boolean).map(name =>
+    `<div class="duo-color-dot" style="background:${getColorHex(name)}"></div>`
+  ).join('');
+  document.getElementById('duo-colors-2').innerHTML = [f2.coq, f2.lat1, f2.lat2, f2.enc].filter(Boolean).map(name =>
+    `<div class="duo-color-dot" style="background:${getColorHex(name)}"></div>`
+  ).join('');
   const duo = document.getElementById('result-duo');
   duo.classList.add('visible');
   duo.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -845,7 +844,7 @@ function goHome() {
 async function downloadSessionPhotos() {
   if (!currentSession) return;
   const volleys = currentSession.volleys.filter(v => v.photo);
-  if (!volleys.length) return;
+  if (!volleys.length) { alert('Aucune photo disponible pour cette session.'); return; }
 
   const btn = document.getElementById('btn-download-photos');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Préparation...'; }
@@ -886,7 +885,18 @@ const SESSION_DRAFT_KEY = 'archerAI_session_draft';
 function autoSaveSession() {
   if (!currentSession) return;
   currentSession.lastActivityAt = new Date().toISOString();
-  localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify(currentSession));
+  // Strip photos base64 avant sauvegarde — sinon quota localStorage (~5-10 Mo) explosé sur session longue
+  const draft = { ...currentSession, volleys: currentSession.volleys.map(v => {
+    const { photo, ...rest } = v;
+    if (rest.archer1) { const { photo: p1, ...a1 } = rest.archer1; rest.archer1 = a1; }
+    if (rest.archer2) { const { photo: p2, ...a2 } = rest.archer2; rest.archer2 = a2; }
+    return rest;
+  }) };
+  try {
+    localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify(draft));
+  } catch(e) {
+    console.warn('autoSaveSession quota', e);
+  }
 }
 
 function clearSessionDraft() {
@@ -972,7 +982,14 @@ function _showRestoreToast(s) {
 // ==========================================
 const SESSIONS_KEY = 'archerAI_sessions';
 function getSavedSessions() { try { return JSON.parse(localStorage.getItem(SESSIONS_KEY)||'[]'); } catch { return []; } }
-function saveSession(s) { const all = getSavedSessions(); all.unshift(s); localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); }
+const SESSIONS_MAX = 30;
+function saveSession(s) {
+  const all = getSavedSessions();
+  all.unshift(s);
+  if (all.length > SESSIONS_MAX) all.length = SESSIONS_MAX;
+  try { localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); }
+  catch(e) { console.warn('saveSession quota', e); }
+}
 function deleteSession(i) {
   if (!confirm('Supprimer cette session ?')) return;
   const all = getSavedSessions(); all.splice(i,1); localStorage.setItem(SESSIONS_KEY, JSON.stringify(all)); renderHistoryScreen();
@@ -990,9 +1007,11 @@ function renderHistoryScreen() {
   const active = filtersEl.dataset.active || 'all';
   filtersEl.innerHTML = `<div class="filter-chip ${active==='all'?'active':''}" onclick="setHistoryFilter('all')">Tout</div>` +
     formatIds.map(id => { const f = sessions.find(s => s.format.id===id).format; return `<div class="filter-chip ${active===id?'active':''}" onclick="setHistoryFilter('${id}')">${f.name}</div>`; }).join('');
-  const filtered = active === 'all' ? sessions : sessions.filter(s => s.format.id === active);
+  const filtered = sessions
+    .map((s, absIdx) => ({ s, absIdx }))
+    .filter(x => active === 'all' || x.s.format.id === active);
   if (!filtered.length) { container.innerHTML = '<div class="history-empty">Aucune session pour ce format.</div>'; return; }
-  container.innerHTML = filtered.map((s,i) => {
+  container.innerHTML = filtered.map(({s, absIdx}, i) => {
     const pct = s.format.maxScore ? Math.round((s.totalScore/s.format.maxScore)*100) : null;
     const objTag = s.objectif && s.objectif.score
       ? s.totalScore >= s.objectif.score
@@ -1024,7 +1043,7 @@ function renderHistoryScreen() {
         <div style="display:flex;flex-direction:column;align-items:flex-end">
           <div class="session-card-score">${s.totalScore}</div>
           <div class="session-card-max">${s.format.maxScore?'/ '+s.format.maxScore:''}</div>
-          <button class="btn-delete-session" onclick="event.stopPropagation();deleteSession(${i})">🗑</button>
+          <button class="btn-delete-session" onclick="event.stopPropagation();deleteSession(${absIdx})">🗑</button>
         </div>
       </div>
       ${bar}

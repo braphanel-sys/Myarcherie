@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   // CORS restreint au domaine de l'app
   const ALLOWED_ORIGIN = 'https://myarcherie.vercel.app';
   const origin = req.headers.origin || '';
-  res.setHeader('Access-Control-Allow-Origin', origin === ALLOWED_ORIGIN ? ALLOWED_ORIGIN : ALLOWED_ORIGIN);
+  res.setHeader('Access-Control-Allow-Origin', origin === ALLOWED_ORIGIN ? ALLOWED_ORIGIN : '');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { imageBase64, mode, a1, a2, desc1, desc2, apv } = req.body;
+    const { imageBase64, mode, a1, a2, desc1, desc2, apv: apvRaw } = req.body;
     if (!imageBase64) return res.status(400).json({ error: 'No image provided' });
 
     // Le prompt est construit côté serveur — le client n'envoie que des données
@@ -19,6 +19,8 @@ export default async function handler(req, res) {
     const name2 = sanitize(a2, 30) || 'Archer 2';
     const d1 = sanitize(desc1, 120) || 'inconnue';
     const d2 = sanitize(desc2, 120) || 'inconnue';
+    const apvInt = Number.isInteger(apvRaw) ? apvRaw : parseInt(apvRaw);
+    const apv = Number.isFinite(apvInt) && apvInt >= 1 && apvInt <= 12 ? apvInt : null;
 
     const BAREMES = `Barèmes: WA: jaune=X/10/9,rouge=8/7,bleu=6/5,noir=4/3,blanc=2/1,hors=M | VEGAS: jaune=X/10/9,rouge=8/7,bleu=6,hors=M | BEURSAULT/GEF: centre=3,milieu=2,ext=1,hors=M`;
 
@@ -69,31 +71,35 @@ Réponds UNIQUEMENT JSON:
 {"type":"WA","detections":[{"id":1,"position":"haut-gauche","empennage":"bleu plastique","score":9},{"id":2,"position":"centre","empennage":"rouge plastique","score":8},{"id":3,"position":"bas-droite","empennage":"blanc plume","score":7}],"arrows":[9,8,7],"total":24,"count":3,"analysis":"Groupement serré dans le rouge/jaune."}
 Si pas de cible: {"error":"Pas de cible détectée"}`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1500,
-        system: "Tu es un compteur visuel minimaliste spécialisé en tir à l'arc. Ta règle absolue : en cas de doute entre compter ou ne pas compter un objet, tu ne le comptes PAS. Tu préfères systématiquement sous-compter que sur-compter. Un objet qui n'est pas clairement identifiable comme une tige dépassant en 3D avec un empennage visible n'existe pas pour toi.",
-        messages: [{
-          role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: "image/jpeg", data: imageBase64 } },
-            { type: "text", text: prompt }
-          ]
-        }]
-      })
+    const anthropicBody = JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      system: "Tu es un compteur visuel minimaliste spécialisé en tir à l'arc. Ta règle absolue : en cas de doute entre compter ou ne pas compter un objet, tu ne le comptes PAS. Tu préfères systématiquement sous-compter que sur-compter. Un objet qui n'est pas clairement identifiable comme une tige dépassant en 3D avec un empennage visible n'existe pas pour toi.",
+      messages: [{
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: "image/jpeg", data: imageBase64 } },
+          { type: "text", text: prompt }
+        ]
+      }]
     });
 
-    const data = await response.json();
-
-    console.log('API status:', response.status);
-    console.log('API data:', JSON.stringify(data).substring(0, 300));
+    // Retry sur 429/5xx (2 tentatives supplémentaires avec backoff)
+    let response, data;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01"
+        },
+        body: anthropicBody
+      });
+      if (response.status < 500 && response.status !== 429) break;
+      if (attempt < 2) await new Promise(r => setTimeout(r, 800 * (attempt + 1)));
+    }
+    data = await response.json();
 
     if (!data || !data.content || !Array.isArray(data.content)) {
       return res.status(500).json({ error: 'Réponse API invalide: ' + JSON.stringify(data).substring(0, 200) });
