@@ -443,14 +443,16 @@
   .viseur-modal { position:fixed; inset:0; z-index:2000; background:#000; display:none; }
   .viseur-modal video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
   .viseur-overlay { position:absolute; inset:0; pointer-events:none; }
-  .viseur-vignette { position:absolute; inset:0; background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 68%); }
+  .viseur-vignette { display:none; }
   .viseur-ring {
-    position:absolute; width:min(85vw,85vh); height:min(85vw,85vh);
+    position:absolute; width:min(72vw,72vh); height:min(72vw,72vh);
     top:50%; left:50%; transform:translate(-50%,-50%);
-    border:1.5px dashed var(--gold); border-radius:50%;
+    border-radius:50%;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.68);
   }
-  .viseur-ring::before { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:24px; height:1px; background:rgba(201,168,76,0.5); }
-  .viseur-ring::after  { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:1px; height:24px; background:rgba(201,168,76,0.5); }
+  .viseur-ring::before { display:none; }
+  .viseur-ring::after  { display:none; }
+  .viseur-duplex { position:absolute; inset:0; width:100%; height:100%; }
   .viseur-corner { position:absolute; width:22px; height:22px; }
   .viseur-corner-tl { top:18px; left:16px; border-top:2px solid var(--gold); border-left:2px solid var(--gold); }
   .viseur-corner-tr { top:18px; right:16px; border-top:2px solid var(--gold); border-right:2px solid var(--gold); }
@@ -576,7 +578,7 @@
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);">
-      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.3</span>
+      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.4</span>
     </div>
   </div>
 
@@ -1018,8 +1020,27 @@
   <video id="viseur-video" autoplay playsinline muted></video>
   <canvas id="viseur-canvas" style="display:none"></canvas>
   <div class="viseur-overlay">
-    <div class="viseur-vignette"></div>
-    <div class="viseur-ring"></div>
+    <div class="viseur-ring">
+      <svg class="viseur-duplex" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="viseur-glow">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <circle cx="100" cy="100" r="99" fill="none" stroke="#C9A84C" stroke-width="1" opacity="0.7"/>
+        <line x1="100" y1="10"  x2="100" y2="65"  stroke="#C9A84C" stroke-width="3.5" stroke-linecap="round" opacity="0.95"/>
+        <line x1="100" y1="69"  x2="100" y2="88"  stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+        <line x1="100" y1="190" x2="100" y2="135" stroke="#C9A84C" stroke-width="3.5" stroke-linecap="round" opacity="0.95"/>
+        <line x1="100" y1="131" x2="100" y2="112" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+        <line x1="10"  y1="100" x2="65"  y2="100" stroke="#C9A84C" stroke-width="3.5" stroke-linecap="round" opacity="0.95"/>
+        <line x1="69"  y1="100" x2="88"  y2="100" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+        <line x1="190" y1="100" x2="135" y2="100" stroke="#C9A84C" stroke-width="3.5" stroke-linecap="round" opacity="0.95"/>
+        <line x1="131" y1="100" x2="112" y2="100" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+        <circle cx="100" cy="100" r="4.5" fill="#C9A84C" filter="url(#viseur-glow)" opacity="0.95"/>
+        <circle cx="100" cy="100" r="2.5" fill="#FFE080"/>
+      </svg>
+    </div>
     <div class="viseur-corner viseur-corner-tl"></div>
     <div class="viseur-corner viseur-corner-tr"></div>
     <div class="viseur-corner viseur-corner-bl"></div>

@@ -6,6 +6,9 @@
 
 ---
 
+## V4.8.4 (2026-07-01)
+- Feat: viseur Illuminated Duplex — pochoir SVG (fond opaque + trou circulaire net), réticule 4 branches (épais/fin/gap), point central illuminé doré ; remplace vignette gradient + cercle dashed
+
 ## V4.8.3 (2026-06-28)
 - Feat: export observations IA — bouton 🔬 dans l'écran historique ; génère `observations_IA_YYYY-MM-DD.md` avec analyse IA, flèches IA vs final, nb corrections, par volée et par session
 
