@@ -33,7 +33,6 @@ const getColorHex = name => COLOR_HEX.get(name) || '#888';
 // STATE
 // ==========================================
 let selectedFormatId = null;
-let objectifEnabled = false;
 let mode = 'solo';
 let currentSession = null;
 let currentImageBase64 = null;
@@ -79,7 +78,7 @@ function showScreen(name, pushHistory = true) {
   if (pushHistory && name !== 'home') history.pushState({ screen: name }, '');
   if (name === 'history') renderHistoryScreen();
   if (name === 'home')    { renderHomeRecap(); renderProfilCard(); }
-  if (name === 'setup')   buildFormatsGrid();
+  if (name === 'setup')   { buildSetupScreen(); window.scrollTo(0, 0); }
   if (name === 'profil')  loadProfilScreen();
 }
 
@@ -144,76 +143,94 @@ function renderHomeRecap() {
 }
 
 // ==========================================
-// SETUP — FORMATS
+// SETUP — TIROIRS
 // ==========================================
-function buildFormatsGrid() {
-  const grid = document.getElementById('formats-grid');
-  const arcType = profil.arc || null;
-  const recommended = arcType ? FFTA_FORMATS.filter(f => f.arcs.includes(arcType)) : [];
-  const sections = ['Salle', 'Extérieur', 'Autres'];
-  const selectedSection = selectedFormatId
-    ? (FFTA_FORMATS.find(f => f.id === selectedFormatId)?.section || 'Extérieur')
-    : 'Extérieur';
-  let html = '';
+const TIROIR_FORMATS = {
+  salle: ['salle-40', 'salle-vegas', 'salle-60', 'libre'],
+  ext:   ['ext-20', 'ext-30', 'ext-40', 'ext-50', 'ext-50-comp', 'ext-60', 'ext-70', 'beursault', 'libre']
+};
 
-  sections.forEach(section => {
-    const formats = FFTA_FORMATS.filter(f => f.section === section);
-    if (!formats.length) return;
-    const isOpen = section === selectedSection;
-    const secKey = section.replace(/[^a-z]/gi, '');
-    html += `<div class="format-section-label${isOpen ? '' : ' closed'}" id="sec-label-${secKey}" onclick="toggleSection('${secKey}')">
-      ${section}<span class="format-section-chevron">▾</span>
-    </div>`;
-    const rec = formats.filter(f => recommended.includes(f));
-    const others = formats.filter(f => !recommended.includes(f));
-    html += `<div class="format-section-body${isOpen ? '' : ' closed'}" id="sec-body-${secKey}">`;
-    html += rec.map(f => formatCardHtml(f, true)).join('');
-    html += others.map(f => formatCardHtml(f, false)).join('');
-    html += '</div>';
+function buildSetupScreen() {
+  ['salle', 'ext'].forEach(tid => {
+    const grid = document.getElementById('fgrid-' + tid);
+    if (!grid) return;
+    const arcType = profil.arc || null;
+    grid.innerHTML = TIROIR_FORMATS[tid].map(id => {
+      const f = FFTA_FORMATS.find(x => x.id === id);
+      if (!f) return '';
+      const isRec = arcType && f.arcs.includes(arcType);
+      const isSel = id === selectedFormatId;
+      return `<div class="format-btn${isSel ? ' selected' : ''}" onclick="selectFormatBtn(this,'${id}')">
+        <span class="format-btn-name">${formatShortName(f)}${isRec ? ' ⭐' : ''}</span>
+        <span class="format-btn-detail">${formatShortDetail(f)}</span>
+      </div>`;
+    }).join('');
   });
 
-  grid.innerHTML = html;
+  const activeTid = selectedFormatId
+    ? (TIROIR_FORMATS.salle.includes(selectedFormatId) ? 'salle' : 'ext')
+    : null;
+  ['salle', 'ext'].forEach(tid => {
+    const h = document.getElementById('th-' + tid);
+    const b = document.getElementById('body-' + tid);
+    const open = tid === activeTid;
+    h?.classList.toggle('active', open);
+    b?.classList.toggle('open', open);
+  });
 
-  if (selectedFormatId) {
-    const el = document.getElementById('fc-' + selectedFormatId);
-    if (el) el.classList.add('selected');
-    document.getElementById('custom-fields').classList.toggle('visible', selectedFormatId === 'libre');
-  }
+  document.getElementById('custom-fields').classList.toggle('visible', selectedFormatId === 'libre');
+  updateCTA();
 }
 
-function toggleSection(secKey) {
-  const label = document.getElementById('sec-label-' + secKey);
-  const body  = document.getElementById('sec-body-' + secKey);
-  if (!label || !body) return;
-  const closing = !body.classList.contains('closed');
-  label.classList.toggle('closed', closing);
-  body.classList.toggle('closed', closing);
+function formatShortName(f) {
+  if (f.id === 'libre') return 'Libre';
+  if (f.id === 'beursault') return 'Beursault';
+  if (f.id === 'salle-vegas') return 'Vegas';
+  if (f.id === 'salle-40') return 'WA 40cm';
+  if (f.id === 'salle-60') return 'WA 60cm';
+  if (f.distance) return f.distance + 'm';
+  return f.name;
 }
 
-function formatCardHtml(f, isRecommended) {
-  return `<div class="format-card${isRecommended ? ' recommended-card' : ''}" id="fc-${f.id}" onclick="selectFormat('${f.id}')">
-    <div class="format-card-left">
-      <div class="format-name">${f.name}</div>
-      <div class="format-detail">${f.detail}</div>
-    </div>
-    <div class="format-right">
-      ${isRecommended ? '<span class="badge-recommended">⭐</span>' : ''}
-      <div class="format-score-max">${f.maxScore || '—'}</div>
-    </div>
-  </div>`;
+function formatShortDetail(f) {
+  if (f.id === 'libre') return 'Format<br>personnalisé';
+  if (f.id === 'beursault') return 'Format club<br>1 fl./archer';
+  if (f.blason && f.volleys && f.apv) return `${f.blason}<br>${f.volleys}×${f.apv} = ${f.volleys * f.apv} fl.`;
+  return f.detail;
 }
 
-function selectFormat(id) {
+function toggleTiroir(id) {
+  const h = document.getElementById('th-' + id);
+  const b = document.getElementById('body-' + id);
+  const isOpen = b.classList.contains('open');
+  document.querySelectorAll('.tiroir-body').forEach(x => x.classList.remove('open'));
+  document.querySelectorAll('.tiroir-header').forEach(x => x.classList.remove('active'));
+  if (!isOpen) { b.classList.add('open'); h.classList.add('active'); }
+}
+
+function selectFormatBtn(el, id) {
   selectedFormatId = id;
-  document.querySelectorAll('.format-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('fc-' + id).classList.add('selected');
+  document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
   document.getElementById('custom-fields').classList.toggle('visible', id === 'libre');
+  updateCTA();
 }
 
-function toggleObjectif() {
-  objectifEnabled = !objectifEnabled;
-  document.getElementById('objectif-switch').classList.toggle('on', objectifEnabled);
-  document.getElementById('objectif-fields').classList.toggle('visible', objectifEnabled);
+function selectObjFocus(el) {
+  const grid = el.closest('.obj-focus-grid');
+  const wasSelected = el.classList.contains('selected');
+  grid.querySelectorAll('.obj-btn').forEach(b => b.classList.remove('selected'));
+  if (!wasSelected) el.classList.add('selected');
+}
+
+function updateCTA() {
+  const btn = document.getElementById('cta-btn');
+  const label = document.getElementById('cta-label');
+  if (!btn || !label) return;
+  const f = selectedFormatId ? FFTA_FORMATS.find(x => x.id === selectedFormatId) : null;
+  btn.classList.toggle('ready', !!f);
+  btn.disabled = !f;
+  label.textContent = f ? '▶ Commencer — ' + f.name : 'Sélectionne un format';
 }
 
 function getSelectedFormat() {
@@ -235,13 +252,16 @@ function getSelectedFormat() {
 // START SESSION
 // ==========================================
 function startSession() {
+  window.scrollTo(0, 0);
   const format = getSelectedFormat();
   if (!format) { alert('Veuillez sélectionner un format de tir.'); return; }
 
-  const objectif = objectifEnabled ? {
-    score: parseInt(document.getElementById('obj-score').value) || null,
-    date:  document.getElementById('obj-date').value || null
-  } : null;
+  const openBody = document.querySelector('.tiroir-body.open');
+  const selectedFocus = openBody?.querySelector('.obj-btn.selected');
+  const scoreInput = openBody?.querySelector('.obj-score-input');
+  const objectif = (selectedFocus || (scoreInput && scoreInput.value))
+    ? { focus: selectedFocus?.dataset.focus || null, score: parseInt(scoreInput?.value) || null }
+    : null;
 
   currentSession = { format, arc: profil.arc || null, objectif, volleys:[], totalScore:0, arrowCount:0, startDate:new Date().toISOString(), referencePhoto: null };
   logEvent('nouvelle_session', { mode: mode });
@@ -254,10 +274,7 @@ function startSession() {
   if (objectif && objectif.score) {
     barWrap.classList.add('visible');
     document.getElementById('obj-bar-label').textContent = `Objectif ${objectif.score}${format.maxScore ? ' / '+format.maxScore : ''}`;
-    if (objectif.date) {
-      const diff = Math.ceil((new Date(objectif.date) - new Date()) / 86400000);
-      document.getElementById('objectif-deadline').textContent = diff > 0 ? `⏳ ${diff} jour${diff>1?'s':''} avant l'échéance` : '📅 Échéance atteinte';
-    } else document.getElementById('objectif-deadline').textContent = '';
+    document.getElementById('objectif-deadline').textContent = '';
   } else barWrap.classList.remove('visible');
 
   updateVolleyLabel();
@@ -388,6 +405,12 @@ function processFile(file) {
       document.getElementById('result-card').classList.remove('visible');
       document.getElementById('btn-analyze').disabled = false;
       document.getElementById('analyze-section').scrollIntoView({behavior:'smooth',block:'nearest'});
+      const cadrageBody = document.getElementById('cadrage-body');
+      const cadrageToggle = document.getElementById('cadrage-toggle');
+      if (cadrageBody && cadrageBody.classList.contains('open')) {
+        cadrageBody.classList.remove('open');
+        cadrageToggle.classList.remove('open');
+      }
     };
     img.src = dataUrl;
   };
@@ -562,6 +585,7 @@ async function callAPI(imageBase64, a1fleche, a1name) {
   }
   updateSessionBar(); updateHistory();
   autoSaveSession();
+  setTimeout(() => document.getElementById('upload-zone')?.scrollIntoView({ behavior:'smooth', block:'start' }), 1200);
   const volleeIndex = currentSession.volleys.length;
   logVollee(volleeIndex, imageBase64, result, durationMs);
   logEvent('session_state', { total: currentSession.totalScore, volleys: volleeIndex, arrows: currentSession.arrowCount });
@@ -1699,5 +1723,7 @@ function captureViseur() {
     document.getElementById('result-card').classList.remove('visible');
     document.getElementById('btn-analyze').disabled = false;
     document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const _cb = document.getElementById('cadrage-body'), _ct = document.getElementById('cadrage-toggle');
+    if (_cb && _cb.classList.contains('open')) { _cb.classList.remove('open'); _ct?.classList.remove('open'); }
   }
 }

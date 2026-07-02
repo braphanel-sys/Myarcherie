@@ -6,6 +6,13 @@
 
 ---
 
+## V4.8.9 (2026-07-02)
+- Feat: nouvelle session redesignée — tiroirs Salle 🏛️ / Extérieur 🌿 en accordéon (un seul ouvert à la fois), grille 2 colonnes, objectif de séance (4 focus + score cible) intégré dans chaque tiroir
+- Feat: CTA "Commencer" sticky en bas, grisé jusqu'à sélection d'un format, affiche le nom du format une fois actif
+- Fix: scrollTo(0,0) au démarrage de session et à l'ouverture du setup screen
+- Fix: scroll auto vers la zone upload 1,2s après chaque volée scorée
+- Fix: repli automatique du bloc "Conseils de cadrage" après la première capture photo (upload ou viseur)
+
 ## V4.8.8 (2026-07-02)
 - Feat: effet tiroir sur les sections de formats (Salle / Extérieur / Autres) — clic sur le header collapse/expand, chevron animé, section du format sélectionné ouverte par défaut (Extérieur sinon)
 
