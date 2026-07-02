@@ -151,17 +151,25 @@ function buildFormatsGrid() {
   const arcType = profil.arc || null;
   const recommended = arcType ? FFTA_FORMATS.filter(f => f.arcs.includes(arcType)) : [];
   const sections = ['Salle', 'Extérieur', 'Autres'];
+  const selectedSection = selectedFormatId
+    ? (FFTA_FORMATS.find(f => f.id === selectedFormatId)?.section || 'Extérieur')
+    : 'Extérieur';
   let html = '';
 
   sections.forEach(section => {
     const formats = FFTA_FORMATS.filter(f => f.section === section);
     if (!formats.length) return;
-    html += `<div class="format-section-label${section !== 'Autres' ? '' : ''}">${section}</div>`;
-    // Recommandés en premier dans chaque section
+    const isOpen = section === selectedSection;
+    const secKey = section.replace(/[^a-z]/gi, '');
+    html += `<div class="format-section-label${isOpen ? '' : ' closed'}" id="sec-label-${secKey}" onclick="toggleSection('${secKey}')">
+      ${section}<span class="format-section-chevron">▾</span>
+    </div>`;
     const rec = formats.filter(f => recommended.includes(f));
     const others = formats.filter(f => !recommended.includes(f));
+    html += `<div class="format-section-body${isOpen ? '' : ' closed'}" id="sec-body-${secKey}">`;
     html += rec.map(f => formatCardHtml(f, true)).join('');
     html += others.map(f => formatCardHtml(f, false)).join('');
+    html += '</div>';
   });
 
   grid.innerHTML = html;
@@ -171,6 +179,15 @@ function buildFormatsGrid() {
     if (el) el.classList.add('selected');
     document.getElementById('custom-fields').classList.toggle('visible', selectedFormatId === 'libre');
   }
+}
+
+function toggleSection(secKey) {
+  const label = document.getElementById('sec-label-' + secKey);
+  const body  = document.getElementById('sec-body-' + secKey);
+  if (!label || !body) return;
+  const closing = !body.classList.contains('closed');
+  label.classList.toggle('closed', closing);
+  body.classList.toggle('closed', closing);
 }
 
 function formatCardHtml(f, isRecommended) {

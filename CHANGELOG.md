@@ -6,6 +6,9 @@
 
 ---
 
+## V4.8.8 (2026-07-02)
+- Feat: effet tiroir sur les sections de formats (Salle / Extérieur / Autres) — clic sur le header collapse/expand, chevron animé, section du format sélectionné ouverte par défaut (Extérieur sinon)
+
 ## V4.8.7 (2026-07-02)
 - Suppression complète du mode Duo : bouton/onglet retiré de l'interface session, toute la logique JS supprimée (buildDuoFleche, saveDuoProfiles, setMode, displayDuoResult, isDuo), variables d'état archer1Fleche/archer2Fleche supprimées, localStorage archer2Fleche/archer2Name non plus exportés/importés
 - callAPI simplifié : signature `(imageBase64, a1fleche, a1name)`, toujours mode:'solo', utilise profil.fleche + profil.prenom

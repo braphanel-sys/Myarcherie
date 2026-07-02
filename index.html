@@ -89,11 +89,15 @@
   .format-section-label {
     font-size:0.68rem; color:var(--gold); text-transform:uppercase; letter-spacing:2px;
     padding:10px 0 6px; display:flex; align-items:center; gap:8px; margin-top:4px;
+    cursor:pointer; user-select:none;
   }
   .format-section-label::after { content:''; flex:1; height:1px; background:var(--border); }
-  .format-section-label.recommended { color:var(--gold); }
+  .format-section-chevron { font-size:0.85rem; transition:transform 0.2s ease; margin-left:2px; }
+  .format-section-label.closed .format-section-chevron { transform:rotate(-90deg); }
+  .format-section-body { display:flex; flex-direction:column; gap:7px; margin-bottom:4px; overflow:hidden; transition:opacity 0.18s ease; }
+  .format-section-body.closed { display:none; }
 
-  .formats-grid { display:flex; flex-direction:column; gap:7px; }
+  .formats-grid { display:flex; flex-direction:column; }
   .format-card { background:var(--dark3); border:1px solid var(--border); border-radius:11px;
     padding:13px 16px; cursor:pointer; transition:all 0.2s;
     display:flex; align-items:center; justify-content:space-between; }
@@ -571,7 +575,7 @@
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);">
-      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.7</span>
+      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.8</span>
     </div>
   </div>
 
