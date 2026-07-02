@@ -193,8 +193,6 @@
   .mode-btn.active { background:var(--gold); color:var(--dark); border-color:var(--gold); }
 
   /* Archers config */
-  .archers-config { display:none; gap:12px; margin-bottom:18px; }
-  .archers-config.visible { display:flex; flex-direction:column; }
   .archer-card { background:var(--dark3); border:1px solid var(--border); border-radius:14px; padding:15px 18px; }
   .archer-card-title { font-family:'Bebas Neue',sans-serif; font-size:0.97rem; letter-spacing:2px; color:var(--gold); margin-bottom:10px; }
   .archer-name-input { width:100%; background:var(--dark2); border:1px solid var(--border); border-radius:8px;
@@ -268,13 +266,6 @@
   .result-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:13px; border-bottom:1px solid var(--border); }
   .result-header h3 { font-family:'Bebas Neue',sans-serif; font-size:0.97rem; letter-spacing:2px; color:var(--text-muted); }
   .volley-number { background:var(--gold); color:var(--dark); font-family:'Bebas Neue',sans-serif; font-size:0.83rem; padding:3px 11px; border-radius:20px; letter-spacing:1px; }
-  .result-duo { display:none; gap:12px; margin-bottom:18px; animation:fadeUp 0.4s ease; }
-  .result-duo.visible { display:flex; flex-direction:column; }
-  .duo-card { background:var(--dark3); border:1px solid var(--border); border-radius:14px; padding:18px; }
-  .duo-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:11px; border-bottom:1px solid var(--border); }
-  .duo-archer-name { font-family:'Bebas Neue',sans-serif; font-size:1.05rem; letter-spacing:2px; }
-  .duo-colors { display:flex; gap:5px; }
-  .duo-color-dot { width:15px; height:15px; border-radius:50%; border:1px solid rgba(255,255,255,0.2); }
 
   .arrows-grid { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:16px; }
   .arrow-score { display:flex; flex-direction:column; align-items:center; gap:4px; }
@@ -580,7 +571,7 @@
     </div>
 
     <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.1);">
-      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.6</span>
+      <span id="version-banner" style="font-size:0.7rem;color:#8A8070;letter-spacing:2px;font-family:'Bebas Neue',sans-serif;">ArcherAI v4.8.7</span>
     </div>
   </div>
 
@@ -603,7 +594,7 @@
     </div>
 
     <div class="form-section">
-      <label class="form-label">Plumes <span style="color:var(--text-muted);font-size:0.7rem;font-style:italic">(utilisées en mode Duo)</span></label>
+      <label class="form-label">Plumes</label>
       <div class="fleche-config" id="profil-fleche-config">
         <div class="fleche-row">
           <div class="fleche-row-label">🪶 Coq</div>
@@ -721,37 +712,6 @@
       </div>
     </div>
 
-    <div class="mode-toggle">
-      <button class="mode-btn active" onclick="setMode('solo')" id="btn-mode-solo">🏹 Solo</button>
-      <button class="mode-btn" onclick="setMode('duo')" id="btn-mode-duo">🏹🏹 Duo</button>
-    </div>
-
-    <div class="archers-config" id="archers-config">
-      <div class="archer-card">
-        <div class="archer-card-title">🏹 Archer 1 (moi)</div>
-        <input type="text" class="archer-name-input" id="archer1-name" placeholder="Prénom" oninput="saveDuoProfiles()">
-        <div class="colors-label">Plumes</div>
-        <div class="fleche-config">
-          <div class="fleche-row"><div class="fleche-row-label">🪶 Coq</div><div class="fleche-color-chips" id="a1-coq-chips"></div></div>
-          <div class="fleche-row"><div class="fleche-row-label">🪶 Lat. gauche</div><div class="fleche-color-chips" id="a1-lat1-chips"></div></div>
-          <div class="fleche-row"><div class="fleche-row-label">🪶 Lat. droite</div><div class="fleche-color-chips" id="a1-lat2-chips"></div></div>
-          <div class="fleche-row"><div class="fleche-row-label">🔩 Encoche</div><div class="fleche-color-chips" id="a1-enc-chips"></div></div>
-        </div>
-        <div class="fleche-preview" id="preview1"></div>
-      </div>
-      <div class="archer-card">
-        <div class="archer-card-title">🏹 Archer 2</div>
-        <input type="text" class="archer-name-input" id="archer2-name" placeholder="Prénom" oninput="saveDuoProfiles()">
-        <div class="colors-label">Plumes</div>
-        <div class="fleche-config">
-          <div class="fleche-row"><div class="fleche-row-label">🪶 Coq</div><div class="fleche-color-chips" id="a2-coq-chips"></div></div>
-          <div class="fleche-row"><div class="fleche-row-label">🪶 Lat. gauche</div><div class="fleche-color-chips" id="a2-lat1-chips"></div></div>
-          <div class="fleche-row"><div class="fleche-row-label">🪶 Lat. droite</div><div class="fleche-color-chips" id="a2-lat2-chips"></div></div>
-          <div class="fleche-row"><div class="fleche-row-label">🔩 Encoche</div><div class="fleche-color-chips" id="a2-enc-chips"></div></div>
-        </div>
-        <div class="fleche-preview" id="preview2"></div>
-      </div>
-    </div>
 
     <!-- Photo de référence du blason — V4.6.5-dev -->
     <div id="reference-wrapper" style="margin-bottom: 20px;"></div>
@@ -846,20 +806,6 @@
       <div class="result-analysis" id="result-analysis"></div>
     </div>
 
-    <div class="result-duo" id="result-duo">
-      <div class="duo-card">
-        <div class="duo-header"><div class="duo-archer-name" id="duo-name-1">Archer 1</div><div class="duo-colors" id="duo-colors-1"></div></div>
-        <div class="arrows-grid" id="arrows-grid-1"></div>
-        <div class="result-total"><div class="total-label">Score volée</div><div class="total-value" id="total-value-1">0</div></div>
-        <div class="result-analysis" id="analysis-1"></div>
-      </div>
-      <div class="duo-card">
-        <div class="duo-header"><div class="duo-archer-name" id="duo-name-2">Archer 2</div><div class="duo-colors" id="duo-colors-2"></div></div>
-        <div class="arrows-grid" id="arrows-grid-2"></div>
-        <div class="result-total"><div class="total-label">Score volée</div><div class="total-value" id="total-value-2">0</div></div>
-        <div class="result-analysis" id="analysis-2"></div>
-      </div>
-    </div>
 
     <div class="history-section">
       <div class="section-title">Feuille de score</div>

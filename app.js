@@ -37,8 +37,6 @@ let objectifEnabled = false;
 let mode = 'solo';
 let currentSession = null;
 let currentImageBase64 = null;
-let archer1Fleche = {};
-let archer2Fleche = {};
 let profil = {};
 
 // ── DEBUG LOG (branche dev uniquement — V4.6.4-dev) ──
@@ -245,13 +243,6 @@ function startSession() {
     } else document.getElementById('objectif-deadline').textContent = '';
   } else barWrap.classList.remove('visible');
 
-  // Pré-remplir Archer 1 depuis profil
-  document.getElementById('archer1-name').value = profil.prenom || '';
-  archer1Fleche = { ...(profil.fleche || {}) };
-  archer2Fleche = JSON.parse(localStorage.getItem('archer2Fleche') || '{}');
-  buildDuoFleche(1);
-  buildDuoFleche(2);
-
   updateVolleyLabel();
   showScreen('session');
 }
@@ -282,12 +273,6 @@ function selectFlecheColor(target, key, colorName) {
     profil.fleche = Object.assign({}, profil.fleche||{}, {[key]: colorName});
     saveProfil();
     loadProfilFleche();
-  } else {
-    const idx = parseInt(target);
-    if (idx === 1) archer1Fleche = Object.assign({}, archer1Fleche, {[key]: colorName});
-    else archer2Fleche = Object.assign({}, archer2Fleche, {[key]: colorName});
-    saveDuoProfiles();
-    buildDuoFleche(idx);
   }
 }
 
@@ -324,32 +309,6 @@ function loadProfilFleche() {
   renderFlechePreview('profil-fleche-preview', profil.fleche);
 }
 
-// ── DUO FLECHE ──
-
-function buildDuoFleche(archerIdx) {
-  const f = archerIdx === 1 ? archer1Fleche : archer2Fleche;
-  const prefix = archerIdx === 1 ? 'a1' : 'a2';
-  const t = String(archerIdx);
-  buildFlecheChips(`${prefix}-coq-chips`,  f.coq,  t, 'coq');
-  buildFlecheChips(`${prefix}-lat1-chips`, f.lat1, t, 'lat1');
-  buildFlecheChips(`${prefix}-lat2-chips`, f.lat2, t, 'lat2');
-  buildFlecheChips(`${prefix}-enc-chips`,  f.enc,  t, 'enc');
-  renderFlechePreview(`preview${archerIdx}`, archerIdx === 1 ? archer1Fleche : archer2Fleche);
-}
-
-function saveDuoProfiles() {
-  localStorage.setItem('archer2Fleche', JSON.stringify(archer2Fleche));
-  localStorage.setItem('archer2Name', document.getElementById('archer2-name').value);
-}
-
-function setMode(m) {
-  mode = m;
-  document.getElementById('btn-mode-solo').classList.toggle('active', m === 'solo');
-  document.getElementById('btn-mode-duo').classList.toggle('active', m === 'duo');
-  document.getElementById('archers-config').classList.toggle('visible', m === 'duo');
-  document.getElementById('result-card').classList.remove('visible');
-  document.getElementById('result-duo').classList.remove('visible');
-}
 
 // ==========================================
 // FILE / DRAG
@@ -410,7 +369,6 @@ function processFile(file) {
       document.getElementById('preview-img').src = compressed;
       document.getElementById('analyze-section').classList.add('visible');
       document.getElementById('result-card').classList.remove('visible');
-      document.getElementById('result-duo').classList.remove('visible');
       document.getElementById('btn-analyze').disabled = false;
       document.getElementById('analyze-section').scrollIntoView({behavior:'smooth',block:'nearest'});
     };
@@ -526,9 +484,7 @@ function saveQueue(q) { localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
 
 function addToQueue(imageBase64) {
   const q = getQueue();
-  q.push({ imageBase64, mode, archer1Fleche, archer2Fleche,
-    archer1Name: document.getElementById('archer1-name').value,
-    archer2Name: document.getElementById('archer2-name').value, timestamp:Date.now() });
+  q.push({ imageBase64, a1fleche: profil.fleche || {}, a1name: profil.prenom || '', timestamp:Date.now() });
   saveQueue(q); updateQueueBanner();
 }
 
@@ -546,7 +502,7 @@ async function processQueue() {
   if (banner) banner.innerHTML = '⏳ Analyse en cours...';
   let done = 0;
   for (const item of q) {
-    try { const r = await callAPI(item.imageBase64, item.mode, item.archer1Fleche||{}, item.archer2Fleche||{}, item.archer1Name, item.archer2Name); if (r) done++; }
+    try { const r = await callAPI(item.imageBase64, item.a1fleche||item.archer1Fleche||{}, item.a1name||item.archer1Name||''); if (r) done++; }
     catch { break; }
   }
   saveQueue(done === q.length ? [] : q.slice(done));
@@ -556,29 +512,22 @@ async function processQueue() {
 // ==========================================
 // API
 // ==========================================
-async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2name) {
+async function callAPI(imageBase64, a1fleche, a1name) {
   if (!currentSession) return null; // pas de session active : la queue reste en attente
-  const isDuo = currentMode === 'duo';
-  const a1 = a1name || 'Archer 1', a2 = a2name || 'Archer 2';
+  const a1 = a1name || 'Archer 1';
   const desc1 = describeFleche(a1fleche);
-  const desc2 = describeFleche(a2fleche);
 
   const t0 = Date.now();
   const response = await fetch("/api/analyze", {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ imageBase64, mode: isDuo ? 'duo' : 'solo', a1, a2, desc1, desc2, apv: currentSession.format?.apv || null })
+    body: JSON.stringify({ imageBase64, mode: 'solo', a1, desc1, apv: currentSession.format?.apv || null })
   });
   const durationMs = Date.now() - t0;
   const result = await response.json();
   if (result.error) return null;
 
   const apv = currentSession.format?.apv;
-  if (isDuo && result.archer1) {
-    displayDuoResult(result);
-    currentSession.volleys.push({ duo:true, archer1:result.archer1, archer2:result.archer2, photo:imageBase64 });
-    currentSession.totalScore += (result.archer1.total||0) + (result.archer2.total||0);
-    currentSession.arrowCount += apv ? apv * 2 : (result.archer1.count||0) + (result.archer2.count||0);
-  } else if (result.arrows) {
+  if (result.arrows) {
     displayResult(result);
     const arrows_ia = [...result.arrows];
     const log_ia = {
@@ -608,7 +557,6 @@ async function callAPI(imageBase64, currentMode, a1fleche, a2fleche, a1name, a2n
 
 async function analyzeImage() {
   if (!currentImageBase64) return;
-  if (mode === 'duo' && (!archer1Fleche.coq && !archer1Fleche.lat1) && (!archer2Fleche.coq && !archer2Fleche.lat1)) { alert('⚠️ Configurez les plumes des 2 archers !'); return; }
   const btn = document.getElementById('btn-analyze');
   const overlay = document.getElementById('preview-overlay');
   btn.disabled = true; overlay.classList.add('analyzing');
@@ -620,9 +568,7 @@ async function analyzeImage() {
     alert('📶 Pas de connexion — photo mise en file d\'attente !'); return;
   }
   try {
-    const a1 = document.getElementById('archer1-name').value;
-    const a2 = document.getElementById('archer2-name').value;
-    await callAPI(currentImageBase64, mode, archer1Fleche, archer2Fleche, a1, a2);
+    await callAPI(currentImageBase64, profil.fleche || {}, profil.prenom || '');
     overlay.classList.remove('analyzing');
   } catch(err) {
     overlay.classList.remove('analyzing'); btn.disabled = false;
@@ -680,24 +626,6 @@ function editArrow(gridId, idx, currentVal) {
     currentSession.totalScore = currentSession.totalScore - oldVal + newVal;
     document.getElementById('arrows-grid').innerHTML = arrowsHtml(volley.arrows, 'F', 'arrows-grid');
     document.getElementById('result-total-value').textContent = volley.total;
-  } else if (gridId === 'arrows-grid-1') {
-    const old = volley.archer1.arrows[idx];
-    const oldVal = old === 'M' ? 0 : (old === 'X' ? 10 : parseInt(old));
-    const newVal = parsed === 'M' ? 0 : (parsed === 'X' ? 10 : parseInt(parsed));
-    volley.archer1.arrows[idx] = parsed;
-    volley.archer1.total = volley.archer1.total - oldVal + newVal;
-    currentSession.totalScore = currentSession.totalScore - oldVal + newVal;
-    document.getElementById('arrows-grid-1').innerHTML = arrowsHtml(volley.archer1.arrows, 'F', 'arrows-grid-1');
-    document.getElementById('total-value-1').textContent = volley.archer1.total;
-  } else if (gridId === 'arrows-grid-2') {
-    const old = volley.archer2.arrows[idx];
-    const oldVal = old === 'M' ? 0 : (old === 'X' ? 10 : parseInt(old));
-    const newVal = parsed === 'M' ? 0 : (parsed === 'X' ? 10 : parseInt(parsed));
-    volley.archer2.arrows[idx] = parsed;
-    volley.archer2.total = volley.archer2.total - oldVal + newVal;
-    currentSession.totalScore = currentSession.totalScore - oldVal + newVal;
-    document.getElementById('arrows-grid-2').innerHTML = arrowsHtml(volley.archer2.arrows, 'F', 'arrows-grid-2');
-    document.getElementById('total-value-2').textContent = volley.archer2.total;
   }
 
   updateSessionBar();
@@ -715,26 +643,6 @@ function displayResult(result) {
   card.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function displayDuoResult(result) {
-  document.getElementById('duo-name-1').textContent = result.archer1.name || 'Archer 1';
-  document.getElementById('arrows-grid-1').innerHTML = arrowsHtml(result.archer1.arrows, 'F', 'arrows-grid-1');
-  document.getElementById('total-value-1').textContent = result.archer1.total || 0;
-  document.getElementById('analysis-1').textContent = result.archer1.analysis || '';
-  document.getElementById('duo-name-2').textContent = result.archer2.name || 'Archer 2';
-  document.getElementById('arrows-grid-2').innerHTML = arrowsHtml(result.archer2.arrows, 'F', 'arrows-grid-2');
-  document.getElementById('total-value-2').textContent = result.archer2.total || 0;
-  document.getElementById('analysis-2').textContent = result.archer2.analysis || '';
-  const f1 = archer1Fleche || {}, f2 = archer2Fleche || {};
-  document.getElementById('duo-colors-1').innerHTML = [f1.coq, f1.lat1, f1.lat2, f1.enc].filter(Boolean).map(name =>
-    `<div class="duo-color-dot" style="background:${getColorHex(name)}"></div>`
-  ).join('');
-  document.getElementById('duo-colors-2').innerHTML = [f2.coq, f2.lat1, f2.lat2, f2.enc].filter(Boolean).map(name =>
-    `<div class="duo-color-dot" style="background:${getColorHex(name)}"></div>`
-  ).join('');
-  const duo = document.getElementById('result-duo');
-  duo.classList.add('visible');
-  duo.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
 
 // ==========================================
 // SESSION BAR
@@ -769,7 +677,6 @@ function updateHistory() {
   container.innerHTML = '<div class="history-list">' +
     [...currentSession.volleys].reverse().map((v,ri) => {
       const i = currentSession.volleys.length - ri;
-      if (v.duo) return `<div class="history-item"><div class="history-left"><div class="history-volley">VOLÉE ${i}</div><div style="font-size:0.76rem;color:var(--text-muted)">${v.archer1.name}: ${v.archer1.total}pts &nbsp;|&nbsp; ${v.archer2.name}: ${v.archer2.total}pts</div></div><div class="history-score">${(v.archer1.total||0)+(v.archer2.total||0)}</div></div>`;
       return `<div class="history-item"><div class="history-left"><div class="history-volley">VOLÉE ${i}</div><div class="history-arrows">${(v.arrows||[]).map(s=>`<div class="mini-badge ${getBadgeClass(s)}">${s}</div>`).join('')}</div></div><div class="history-score">${v.total}</div></div>`;
     }).join('') + '</div>';
 }
@@ -830,7 +737,6 @@ function restartSession() {
   clearSessionDraft();
   updateSessionBar(); updateHistory();
   document.getElementById('result-card').classList.remove('visible');
-  document.getElementById('result-duo').classList.remove('visible');
   document.getElementById('analyze-section').classList.remove('visible');
   document.getElementById('modal-overlay').classList.remove('visible');
 }
@@ -855,7 +761,7 @@ async function downloadSessionPhotos() {
     const folder = zip.folder(`ArcherAI_${date}`);
 
     volleys.forEach((v, i) => {
-      const score = v.total || (v.archer1 ? `${v.archer1.total}-${v.archer2.total}` : '');
+      const score = v.total || '';
       const filename = `volee-${i+1}_${score}pts.jpg`;
       folder.file(filename, v.photo, { base64: true });
     });
@@ -1244,8 +1150,6 @@ function exportData() {
         archerProfil: JSON.parse(localStorage.getItem('archerProfil') || '{}'),
         archerAI_sessions: JSON.parse(localStorage.getItem('archerAI_sessions') || '[]'),
         archerAI_session_draft: JSON.parse(localStorage.getItem('archerAI_session_draft') || 'null'),
-        archer2Fleche: JSON.parse(localStorage.getItem('archer2Fleche') || '{}'),
-        archer2Name: localStorage.getItem('archer2Name') || '',
         archerAI_tri_draft: JSON.parse(localStorage.getItem('archerAI_tri_draft') || 'null')
       }
     };
@@ -1279,8 +1183,6 @@ function importData(event) {
       if (d.archerAI_sessions)       localStorage.setItem('archerAI_sessions', JSON.stringify(d.archerAI_sessions));
       if (d.archerAI_session_draft)  localStorage.setItem('archerAI_session_draft', JSON.stringify(d.archerAI_session_draft));
       else                           localStorage.removeItem('archerAI_session_draft');
-      if (d.archer2Fleche)           localStorage.setItem('archer2Fleche', JSON.stringify(d.archer2Fleche));
-      if (d.archer2Name)             localStorage.setItem('archer2Name', d.archer2Name);
       if (d.archerAI_tri_draft)      localStorage.setItem('archerAI_tri_draft', JSON.stringify(d.archerAI_tri_draft));
 
       alert('✅ Import réussi ! Rechargement de l\'app...');
@@ -1299,9 +1201,6 @@ function importData(event) {
 // ==========================================
 window.addEventListener('load', () => {
   profil = JSON.parse(localStorage.getItem('archerProfil') || '{}');
-  archer2Fleche = JSON.parse(localStorage.getItem('archer2Fleche') || '{}');
-  const a2input = document.getElementById('archer2-name');
-  if (a2input) a2input.value = localStorage.getItem('archer2Name') || '';
   renderProfilCard();
   renderHomeRecap();
   updateQueueBanner();
@@ -1781,7 +1680,6 @@ function captureViseur() {
     document.getElementById('preview-img').src = compressed;
     document.getElementById('analyze-section').classList.add('visible');
     document.getElementById('result-card').classList.remove('visible');
-    document.getElementById('result-duo').classList.remove('visible');
     document.getElementById('btn-analyze').disabled = false;
     document.getElementById('analyze-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }

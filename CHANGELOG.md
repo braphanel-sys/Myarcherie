@@ -6,6 +6,12 @@
 
 ---
 
+## V4.8.7 (2026-07-02)
+- Suppression complète du mode Duo : bouton/onglet retiré de l'interface session, toute la logique JS supprimée (buildDuoFleche, saveDuoProfiles, setMode, displayDuoResult, isDuo), variables d'état archer1Fleche/archer2Fleche supprimées, localStorage archer2Fleche/archer2Name non plus exportés/importés
+- callAPI simplifié : signature `(imageBase64, a1fleche, a1name)`, toujours mode:'solo', utilise profil.fleche + profil.prenom
+- Label "Plumes" dans le profil : suppression de la mention "(utilisées en mode Duo)"
+- Mode unique conservé : Solo avec filtre couleur de plumes depuis le profil archer
+
 ## V4.8.6 (2026-07-01)
 - Fix critique: deleteSession avec filtre actif supprimait la mauvaise session (index filtered vs sessions) — passage d'absIdx explicite
 - Fix critique: autoSaveSession strippe désormais les photos base64 avant localStorage — évite QuotaExceededError silencieux sur sessions longues

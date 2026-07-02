@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-ArcherAI is a single-page archery scoring app powered by Claude Vision. **Version actuelle : V4.8.6 — branche `dev`.**
+ArcherAI is a single-page archery scoring app powered by Claude Vision. **Version actuelle : V4.8.7 — branche `dev`.**
 
 - **`index.html`** (~866 lines) — CSS + HTML uniquement. Le JS est dans `app.js`.
 - **`app.js`** (~1625 lines) — tout le JavaScript de l'app (anciennement inline dans index.html).
@@ -34,12 +34,11 @@ The JS is organized into clearly labeled sections (search for `// ──`):
 | `STATE` | All mutable state (`mode`, `session`, `duoArchers`, `beursaultArchers`, `userProfile`) |
 | `PROFIL` | Load/save profile from localStorage |
 | `WELCOME / PROFIL OVERLAY` | Welcome screen (first visit) reused as "Mon profil" modal |
-| `ARCHERS DUO / BEURSAULT` | Render and manage per-mode archer lists |
+| `ARCHERS BEURSAULT` | Render and manage Beursault archer list |
 | `COLOR COUNTER PER ARCHER` | `incArcherColor()`, `decArcherColor()`, `renderArcherColorGrid()` |
-| `MODE` | `setMode()` — switches between solo/duo/beursault, shows/hides archer config |
-| `BUILD PROMPT` | Construit les données structurées envoyées au serveur (`mode`, `a1`, `a2`, `desc1`, `desc2`) — le prompt IA est généré côté serveur depuis V4.6.0 |
-| `CALL API` | Envoie image + données structurées, parse la réponse, met à jour la session — `arrowCount` basé sur `format.apv` ; guard "sans session active" ; photos base64 strippées avant sauvegarde historique |
-| `DISPLAY SOLO / DUO / BEURSAULT` | Renders scoring results; `arrowsHtml(arrows, prefix, gridId)` — badges cliquables via `editArrow()` |
+| `BUILD PROMPT` | Construit les données structurées envoyées au serveur (`mode:'solo'`, `a1`, `desc1`) — le prompt IA est généré côté serveur depuis V4.6.0 |
+| `CALL API` | `callAPI(imageBase64, a1fleche, a1name)` — envoie image + plumes profil, parse la réponse, met à jour la session — `arrowCount` basé sur `format.apv` ; guard "sans session active" ; photos base64 strippées avant sauvegarde historique |
+| `DISPLAY SOLO` | Renders scoring results; `arrowsHtml(arrows, prefix, gridId)` — badges cliquables via `editArrow()` |
 | `SESSION BAR / HISTORY` | Running score bar and volley history list ; `renderHistoryScreen()` — cartes de session ; `toggleHistoryDetail(i)` — déploie/replie le détail des volées avec badges colorés au tap |
 | `FIN DE SESSION` | End session, clear state |
 | `PERSISTANCE SESSION` | `autoSaveSession()` (sauvegarde + met à jour `lastActivityAt`), `clearSessionDraft()`, `restoreSessionIfExists()` — seuil unique 4h basé sur `lastActivityAt` : silent < 4h, toast 6s ≥ 4h |
@@ -69,10 +68,8 @@ Any new UI element must use these variables — never hardcode colors.
 | Mode | Archers | Arrows | Scoring |
 |---|---|---|---|
 | Solo | 1 (current user profile) | 3–6 | WA / Vegas / Beursault auto-detected |
-| Duo | 2 fixed | 3–6 each | WA / Vegas, attributed by feather color |
-| Beursault | 1–5 dynamic | **1 per archer** | 1 / 2 / 3 pts, score capped in `callAPI()` |
 
-> **Évolution prévue (pas encore codée) :** Solo + Duo → **mode unique** avec filtre couleur plumes par archer. Le mode Beursault reste inchangé.
+> **V4.8.7 :** Le mode Duo a été supprimé. L'app est désormais Solo uniquement. Le filtre couleur de plumes provient du profil archer (`profil.fleche`).
 
 ## State and persistence
 
@@ -85,7 +82,6 @@ All state lives in `localStorage` — no backend database.
 | `archerAI_session_draft` | session en cours — sauvegardée après chaque volée (`autoSaveSession`) avec `photo:base64` par volée, supprimée à la fin ; restaurée au démarrage (toast 6s si > 4h) |
 | `archerAI_tri_draft` | tri de flèches en cours — sauvegardé après chaque impact, restauré au démarrage si session interrompue |
 | `archerAI_sessions` | historique des sessions terminées (tableau, ordre antéchronologique) |
-| `archerAI_duo_archers` | `[{name, colors{}}, {name, colors{}}]` |
 | `archerAI_beursault_archers` | `[{name, colors{}}, ...]` (1–5 items) |
 | `archerAI_queue` | offline queue of base64 images |
 
