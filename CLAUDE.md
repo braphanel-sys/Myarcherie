@@ -213,6 +213,7 @@ Schéma `annotations_positions.json` validé par Opus :
 
 ## Prochaines priorités (ordre)
 
-1. **Cadre de visée circulaire** — overlay caméra, cercle unique normalisé. L'archer aligne le blason sur le cercle → garantit prise de vue de face. Chantier autonome.
-2. **Log comparatif** — afficher l'écart entre la session actuelle et la précédente du même format.
-3. **SoM stochastique** (Set-of-Mark) — technique de prompting avancée pour améliorer la localisation des flèches.
+> **Cadre de visée circulaire** (overlay caméra pour centrer le blason) — **fait**, ne plus le lister ici. Implémenté en viseur caméra live (v4.8.0-4.8.1, cercle dashed gold + vignette), puis itéré en viseur "Illuminated Duplex" (pochoir SVG + réticule 4 branches, voir CHANGELOG). Existe aussi en mode référence (`openViseur('reference')`).
+
+1. **Log comparatif** — afficher l'écart entre la session actuelle et la précédente du même format.
+2. **SoM stochastique** (Set-of-Mark) — technique de prompting avancée pour améliorer la localisation des flèches.
