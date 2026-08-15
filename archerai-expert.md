@@ -3,22 +3,41 @@
 ## Description
 Subagent spécialisé pour le projet ArcherAI — application web PWA de scoring tir à l'arc par IA (Claude Vision). À invoquer automatiquement dès que le contexte concerne ce projet (fichiers index.html, app.js, api/analyze.js, sw.js, ou mention d'ArcherAI).
 
-## Vérifications obligatoires en début de session
+## Étape 0 — Vérifications obligatoires en début de session
 
-**À faire avant toute lecture ou action** (multi-PC + doublon) :
+**Obligatoire pour toute session "stagiaire", sur les deux PC (Ventaillac et Villemur).**
+Contexte : les deux PC travaillent en direct sur le même dossier partagé via la Freebox
+(`/mnt/myarcherie/MyArcherie`, monté en CIFS) — ce n'est plus une copie locale à
+synchroniser, mais un seul jeu de fichiers vu des deux côtés. Cette étape sert à
+détecter deux choses : du travail non poussé sur GitHub (donc pas déployé sur Vercel),
+et du travail en attente laissé par une session précédente (stash).
+
+**À faire avant toute lecture ou action** — jamais de `git pull` brut : on remonte
+les écarts sans rien modifier, et on s'arrête si quelque chose cloche :
 
 ```bash
 # 1. État des lieux environnement
 pwd
 git branch --show-current
 git status
-git pull origin dev
 
-# 2. Vérification du doublon analyze.js
+# 2. Écart avec GitHub (sans fusionner)
+git fetch origin
+git log HEAD..origin/dev --oneline   # commits distants pas encore vus ici
+git log origin/dev..HEAD --oneline   # commits locaux pas encore poussés
+
+# 3. Travail en attente laissé par une session précédente
+git stash list
+
+# 4. Vérification du doublon analyze.js
 diff api/analyze.js analyze.js && echo "IDENTIQUES" || echo "DIVERGENTS"
 cat vercel.json 2>/dev/null
 ls -la api/
 ```
+
+Si `git status` n'est pas propre, ou si `git stash list` n'est pas vide, ou si l'un
+des deux `git log` ci-dessus montre un écart : **s'arrêter et signaler à Raphaël
+avant toute modification.**
 
 ⚠️ Sur Vercel, c'est `api/analyze.js` qui est servi comme fonction serverless.
 Le `analyze.js` racine est probablement une copie. Si divergents : identifier lequel
@@ -27,6 +46,23 @@ le prompt mais rien ne bouge".
 
 > **TODO (chantier propre) :** confirmer si `analyze.js` racine est mort (jamais
 > servi par Vercel), puis le supprimer pour éliminer le piège définitivement.
+
+### Session interrompue avant d'être terminée
+
+Ne jamais laisser le dossier dirty entre deux sessions — l'autre PC peut démarrer
+une session par-dessus du travail à moitié fait. À la place :
+
+```bash
+git stash push -m "description courte de ce qui est en cours"
+```
+
+Le stash sera vu par l'Étape 0 de la session suivante (`git stash list`), sur
+n'importe quel PC, avant que quiconque ne reparte de zéro dessus.
+
+Pour les documents de travail non liés au code live (notes, TODO, brouillons) :
+les regrouper dans un dossier `en_cours/` à la racine du projet plutôt que de les
+laisser éparpillés — contrairement au code (app.js, index.html…), ces fichiers n'ont
+pas besoin de rester en place pour que l'app tourne.
 
 ## Contexte du projet
 
@@ -48,7 +84,7 @@ le prompt mais rien ne bouge".
 ## Structure des fichiers
 
 ```
-~/Documents/MyArcherie/
+/mnt/myarcherie/MyArcherie/   (dossier partagé Freebox — commun aux deux PC, Ventaillac et Villemur ; plus de copie locale sur disque)
 ├── index.html          — app principale (~817 lignes, HTML+CSS uniquement)
 ├── app.js              — tout le JavaScript (~1186 lignes, fichier externe obligatoire)
 ├── analyze.js          — Doublon à clarifier — statut non confirmé (voir TODO)
@@ -129,7 +165,10 @@ Tout le JavaScript doit rester dans `app.js` (fichier externe).
 ### 6. Chirurgie, pas réécriture
 Appliquer des patches chirurgicaux sur le code qui fonctionne. Ne jamais réécrire un bloc entier si seule une ligne pose problème. Principe : *"chaque morceau qui fonctionne, on évite d'y toucher"*.
 
-## Workflow stagiaire (Claude Code CLI)
+## Workflow stagiaire — session dev courante
+
+Précédé par l'**Étape 0** (voir plus haut) à chaque début de session, sur n'importe
+quel PC.
 
 ```bash
 # 1. Vérification lignes
@@ -144,11 +183,28 @@ git commit -m "feat: description courte
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 
-# 4. Push
-git push origin main
+# 4. Push (toujours vers dev — jamais main directement)
+git push origin dev
 
 # 5. Vérification remote
 git log --oneline -3
+```
+
+## Promotion en production (`main`)
+
+**Procédure séparée du workflow courant, déclenchée uniquement par validation
+terrain de Raphaël — jamais automatique.** `dev` ne passe en `main` que lorsque
+Raphaël confirme que les changements ont été testés/validés sur le terrain. Le
+stagiaire peut **proposer** la promotion (par exemple après plusieurs sessions
+stables sur `dev`), mais ne l'exécute jamais sans approbation explicite.
+
+```bash
+# Uniquement après feu vert explicite de Raphaël
+git checkout main
+git pull origin main
+git merge dev
+git push origin main
+git checkout dev
 ```
 
 ## Apprentissages techniques clés

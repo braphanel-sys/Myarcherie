@@ -12,6 +12,23 @@ ArcherAI is a single-page archery scoring app powered by Claude Vision. **Versio
 
 `analyze (1).js`, `analyze (2).js`, `analyze (3).js` are old iterations (deleted from repo); the live endpoint is `api/analyze.js`. Note: the root `analyze.js` mirror has been deleted.
 
+## Étape 0 — obligatoire en début de session (multi-PC)
+
+Ce projet vit dans un dossier partagé via la Freebox (`/mnt/myarcherie/MyArcherie`,
+monté en CIFS), utilisé en direct par deux PC (Ventaillac et Villemur) — plus de
+copie locale sur disque à synchroniser. Avant toute action :
+
+```bash
+git status
+git fetch origin
+git log HEAD..origin/dev --oneline   # commits distants pas encore vus ici
+git log origin/dev..HEAD --oneline   # commits locaux pas encore poussés
+git stash list                       # travail en attente laissé par une session précédente
+```
+
+Si l'un de ces éléments montre quelque chose d'anormal, s'arrêter et le signaler
+avant de modifier quoi que ce soit. Détail complet et raisons dans `archerai-expert.md`.
+
 ## Running locally
 
 Open `index.html` directly in a browser for UI work (no server needed). To test the full AI analysis flow, you need a local server that serves `POST /api/analyze` — for example via Vercel CLI:
@@ -145,7 +162,7 @@ Le prompt impose à l'IA :
 
 ## Règles
 
-- **Au démarrage de chaque session sur ce projet**, lire et charger `~/.claude/agents/archerai-expert.md` avant toute action.
+- **Au démarrage de chaque session sur ce projet (Étape 0, obligatoire, deux PC)**, lire et charger `archerai-expert.md` (chemin relatif, à la racine du projet — pas `~/.claude/agents/`, qui est local à chaque machine et non partagé) avant toute action. Il contient les vérifications multi-PC obligatoires (`git status`, écart avec `origin/dev`, `git stash list`).
 - Ne jamais modifier `api/analyze.js` sans confirmation explicite de l'utilisateur.
 - Mettre à jour ce fichier à chaque modification du projet — il sert d'historique.
 
