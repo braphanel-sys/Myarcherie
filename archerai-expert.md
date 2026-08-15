@@ -64,6 +64,25 @@ les regrouper dans un dossier `en_cours/` à la racine du projet plutôt que de 
 laisser éparpillés — contrairement au code (app.js, index.html…), ces fichiers n'ont
 pas besoin de rester en place pour que l'app tourne.
 
+### Dossier de transit terrain (local, non synchronisé)
+
+Le dossier partagé Freebox (`/mnt/myarcherie/MyArcherie_photos/`) est sur le réseau
+local de la maison — injoignable depuis le terrain/club où les photos sont prises.
+Chaque PC a donc un dossier de transit **local, hors du dossier partagé** :
+
+```
+~/ArcherAI_terrain_brut/
+```
+
+Règle : ce dossier n'est jamais un stockage permanent, uniquement un sas.
+1. Photos prises au club → déposées ici à la rentrée (import téléphone/appareil).
+2. De retour sur le réseau maison → **déplacer** (pas copier) le contenu vers
+   `/mnt/myarcherie/MyArcherie_photos/`, puis vider ce dossier.
+
+Ne jamais laisser de photos s'accumuler ici durablement — sinon on recrée le
+problème de départ (copies dispersées sur chaque PC, plus personne ne sait
+laquelle fait foi).
+
 ## Contexte du projet
 
 **Repo GitHub :** `braphanel-sys/Myarcherie`
